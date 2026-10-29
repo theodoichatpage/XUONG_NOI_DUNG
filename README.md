@@ -1,4 +1,4 @@
-# Xưởng Nội Dung 0.3.0
+# Xưởng Nội Dung 0.4.2
 
 Ứng dụng vận hành nội dung cá nhân, tiếng Việt, Arial, giao diện sáng/tối, chạy không cần cài thư viện.
 
@@ -80,3 +80,14 @@ Mã nguồn extension nằm trong `extension/`, bản ZIP có trong `dist/downlo
 ## Cập nhật giao diện 0.4.1
 
 Chuyển các nhóm Điều hành, Sản xuất, Phân phối, Kết quả, Hệ thống lên thanh ngang. Mỗi nhóm mở danh sách chức năng; chỉ mở một nhóm, đóng khi chọn chức năng, bấm ra ngoài hoặc Escape. Bỏ menu dọc, giữ nguyên route, dữ liệu và extension Bridge 0.4.0. Đã kiểm tra hiển thị dropdown và chuyển sang Bộ truyện bằng trình duyệt.
+
+## Cập nhật 0.4.2 — kênh Webnovel
+
+- Tự chuẩn bị một kênh Webnovel trong dữ liệu trình duyệt khi mở bản mới lần đầu; không tạo trùng, không thay thế tùy chọn kênh có sẵn.
+- Link độc giả: https://www.webnovel.com/ ; quản trị tác giả: https://inkstone.webnovel.com/ . Không lưu trang hay dữ liệu ngân hàng.
+- Kênh mới mặc định English (có thể sửa); không tự tạo tài khoản hay bộ truyện bên Webnovel.
+- Mục Phân phối → Webnovel dẫn qua hồ sơ truyện, dàn ý, chương và ChatGPT. Dàn ý AI được lưu như một nội dung riêng để duyệt; chỉ áp dụng vào hồ sơ sau khi duyệt.
+- Chương có số thứ tự, ngữ cảnh nhân vật/dàn ý, độ dài, ngôn ngữ kênh và tóm tắt chương trước; dùng nút Viết bằng ChatGPT của Bridge 0.4.0.
+- Đăng và hợp đồng thực hiện thủ công trên Inkstone. Chưa có OAuth/đồng bộ tài khoản Webnovel.
+
+Kiểm tra: 3 test migration tạo kênh, không trùng và giữ tùy chọn cũ; 14 test Bridge; đã kiểm tra trên trình duyệt việc tạo hồ sơ và chương đúng kênh cùng nút ChatGPT. Chưa chạy sinh truyện trên tài khoản ChatGPT thật.
