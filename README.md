@@ -1,4 +1,4 @@
-# Xưởng Nội Dung 0.1.0
+# Xưởng Nội Dung 0.2.0
 
 Ứng dụng vận hành nội dung cá nhân, tiếng Việt, Arial, giao diện sáng/tối, chạy không cần cài thư viện.
 
@@ -33,3 +33,13 @@ Chưa có đăng nhập ứng dụng, database máy chủ, AI streaming, cron, O
 - `.openai/hosting.json`: cấu hình triển khai Sites
 
 Nguồn này là nền tảng hoạt động cho giai đoạn 1; các kết nối máy chủ và nền tảng cần triển khai tiếp.
+
+## Cập nhật 0.2.0
+
+- Đóng popup trực tiếp bằng X, Hủy hoặc Escape, giữ bản nháp chưa lưu trong phiên để mở lại. Không dùng window.confirm/window.prompt trong khung nhúng.
+- Tab Đăng bài: hàng đợi duyệt, sao chép bài, mở kênh, ghi nhận link.
+- Tab Theo dõi: bài chậm lịch, thống kê kênh và nhật ký xuất bản.
+- Tab Tạo ảnh: lưu prompt, ghép ngữ cảnh, nhập JPG/PNG/WebP kết quả từ AI thủ công; ảnh lưu được thu nhỏ tối đa 1200 px, giữ bản gốc riêng.
+- Pinterest: ghim, board, mô tả, link đích, ảnh, trạng thái duyệt, link xác nhận.
+- Etsy: sản phẩm, giá, tiền tệ, loại sản phẩm, thông số, 13 tag và link listing. Kiểm tra 13 tag khi duyệt.
+- Gói nội dung có thể sao chép hoặc tải JSON, mở trang nền tảng để đăng thủ công. Chưa có tự đăng, AI tạo ảnh tự động hoặc đồng bộ số liệu qua API.
