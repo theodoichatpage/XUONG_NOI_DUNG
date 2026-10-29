@@ -1,4 +1,4 @@
-# Xưởng Nội Dung 0.2.0
+# Xưởng Nội Dung 0.3.0
 
 Ứng dụng vận hành nội dung cá nhân, tiếng Việt, Arial, giao diện sáng/tối, chạy không cần cài thư viện.
 
@@ -43,3 +43,22 @@ Nguồn này là nền tảng hoạt động cho giai đoạn 1; các kết nố
 - Pinterest: ghim, board, mô tả, link đích, ảnh, trạng thái duyệt, link xác nhận.
 - Etsy: sản phẩm, giá, tiền tệ, loại sản phẩm, thông số, 13 tag và link listing. Kiểm tra 13 tag khi duyệt.
 - Gói nội dung có thể sao chép hoặc tải JSON, mở trang nền tảng để đăng thủ công. Chưa có tự đăng, AI tạo ảnh tự động hoặc đồng bộ số liệu qua API.
+
+## Cập nhật 0.3.0 — luồng vận hành liên kết
+
+- Menu nhóm Điều hành / Sản xuất / Phân phối / Kết quả / Hệ thống, bỏ số thứ tự.
+- Xuất bản gom hàng đợi và lịch tuần/tháng; đường dẫn lịch cũ vẫn mở được.
+- Kênh có đối tượng, ngôn ngữ, tần suất, khung giờ, quy tắc và mẫu mặc định.
+- Bài viết có định dạng, nội dung gốc, số chương, ảnh đã duyệt; chuyển sang ảnh, phiên bản, Pinterest/Etsy từ nội dung đã lưu.
+- Giữ 30 phiên bản chỉnh sửa gần nhất; có thể đưa bản cũ vào trình soạn rồi lưu.
+- Bộ truyện có giới thiệu, thế giới, tóm tắt diễn biến, hồ sơ và chương.
+- Hình ảnh có thư viện, duyệt ảnh, prompt hai lớp; không duyệt khi chưa có ảnh kết quả. Pinterest yêu cầu ảnh đã duyệt 2:3 khi duyệt gói.
+- File ảnh gốc nhập từ bản này được giữ nguyên trong IndexedDB tại thiết bị, tải riêng bằng Tải ảnh gốc. JSON sao lưu chỉ gồm ảnh xem trước, không gồm file gốc.
+- Theo dõi theo từng nội dung/gói: xem, thích, bình luận, chia sẻ, nhấp link, ngày ghi nhận. Dữ liệu là số tăng thêm do người dùng nhập, không phải đồng bộ API.
+- Mẫu câu lệnh có form điền biến và xem trước kèm ngữ cảnh kênh.
+
+### Kiểm tra thực tế bản 0.3.0
+
+Đã kiểm tra bằng trình duyệt: menu nhóm; tạo teaser từ bài gốc và giữ liên kết; lưu chỉnh sửa; lịch trong Xuất bản; ghi 123 lượt xem, 10 lượt thích, 7 lượt nhấp theo bài rồi tải lại vẫn hiển thị đúng; điền biến mẫu teaser và chuyển câu lệnh vào bài mới. File JS được kiểm tra cú pháp với Node.
+
+Các thao tác OAuth, đăng tự động và tạo ảnh AI tự động chưa triển khai. Không có dữ liệu mẫu khởi tạo. Đã kiểm tra nhập ảnh PNG 2:3, duyệt ảnh và tải file gốc về; đối chiếu SHA-256 để xác minh giữ nguyên byte.
