@@ -2,7 +2,7 @@
 
 ## Cài trên Chrome hoặc Microsoft Edge máy tính
 
-1. Giải nén ZIP vào một thư mục cố định. Không chọn cả ZIP.
+1. ZIP chứa duy nhất thư mục `Xuong_ChatGPT_Bridge`. Giải nén và đặt thư mục này ở một nơi cố định. Không chọn cả ZIP.
 2. Chrome: mở `chrome://extensions`; Edge: `edge://extensions`.
 3. Bật **Chế độ nhà phát triển** → **Tải tiện ích đã giải nén** → chọn thư mục chứa `manifest.json`.
 4. Tải lại trang Xưởng và tab ChatGPT sau khi cài. Đăng nhập ChatGPT như bình thường.
@@ -49,3 +49,12 @@ Dữ liệu Xưởng và ảnh gốc vẫn nằm trên thiết bị. Sao lưu JS
 14 kiểm thử tự động cho điều phối, chọn hội thoại, chặn nguồn lạ, công việc trùng, phục hồi kết quả, hủy, xử lý URL ảnh, parse truyện và bảo vệ bản nháp. Kiểm tra cú pháp JavaScript.
 
 Chưa kiểm thử end-to-end trên tài khoản ChatGPT thật với extension được cài. Cần một lượt viết chương và tạo ảnh trên Chrome/Edge của người dùng để xác minh selector giao diện hiện tại; không cam kết nhận mọi định dạng ảnh tự động.
+
+## Cập nhật extension đã cài — giữ nguyên thư mục
+
+1. Tải gói mới từ trang Tải Bridge trong Xưởng. Tên ZIP chứa phiên bản; thư mục bên trong luôn là `Xuong_ChatGPT_Bridge`.
+2. Giải nén ra chỗ tạm, sao chép các file bên trong vào đúng thư mục extension đang dùng và chọn **ghi đè**. Không chép lồng cả thư mục.
+3. Mở `chrome://extensions` hoặc `edge://extensions`, bấm **Tải lại** trên extension đã cài. Không cài thêm một bản thứ hai.
+4. F5 cả Xưởng và ChatGPT, chọn lại tab trong popup và kiểm tra trạng thái xanh trên Xưởng.
+
+Gói sửa cách đóng gói vẫn là Bridge 0.4.0, giao thức kết nối không thay đổi. Nếu popup ghi Xưởng Truyện 1.0.0 thì đó là Bridge khác.
