@@ -62,3 +62,17 @@ Nguồn này là nền tảng hoạt động cho giai đoạn 1; các kết nố
 Đã kiểm tra bằng trình duyệt: menu nhóm; tạo teaser từ bài gốc và giữ liên kết; lưu chỉnh sửa; lịch trong Xuất bản; ghi 123 lượt xem, 10 lượt thích, 7 lượt nhấp theo bài rồi tải lại vẫn hiển thị đúng; điền biến mẫu teaser và chuyển câu lệnh vào bài mới. File JS được kiểm tra cú pháp với Node.
 
 Các thao tác OAuth, đăng tự động và tạo ảnh AI tự động chưa triển khai. Không có dữ liệu mẫu khởi tạo. Đã kiểm tra nhập ảnh PNG 2:3, duyệt ảnh và tải file gốc về; đối chiếu SHA-256 để xác minh giữ nguyên byte.
+
+## Cập nhật 0.4.0 — ChatGPT Bridge
+
+Mã nguồn extension nằm trong `extension/`, bản ZIP có trong `dist/downloads/`. Hướng dẫn đầy đủ tại `extension/HUONG_DAN.md`.
+
+- Chrome/Edge desktop, chọn tab ChatGPT cụ thể; không có API key, không gọi API tạo nội dung.
+- Từ trình soạn bài/chương: Viết bằng ChatGPT. Từ Hình ảnh: Tạo ảnh bằng ChatGPT.
+- Extension điền yêu cầu, người dùng tự bấm Gửi. Chờ kết quả hoàn tất đúng mã công việc để nhận về.
+- Mỗi lần một công việc. Giữ kết quả trong extension đến khi Xưởng xác nhận đã lưu; chống nhận trùng, sai tab, sai hội thoại; khôi phục khi tải lại.
+- Không ghi đè bài vừa chỉnh sửa hoặc đã duyệt/đã đăng: giữ kết quả riêng để người dùng áp dụng. Nội dung nhận về luôn chờ duyệt.
+- Thử tải ảnh từ URL ảnh đang hiển thị trong câu trả lời; giới hạn 5 MB. Không hỗ trợ mọi URL/blob/redirect. Có đường nhập ảnh thủ công.
+- Giới hạn của gói ChatGPT vẫn áp dụng. Không đăng nhập tự động, không lấy mật khẩu hoặc token, không chạy khi trình duyệt đóng.
+
+14 kiểm thử tự động chạy bằng `node --test tests/bridge.test.cjs`; JavaScript đã kiểm tra cú pháp; giao diện tab ChatGPT đã kiểm tra trên preview. Chưa kiểm thử end-to-end với extension cài trên tài khoản ChatGPT thật. Selector giao diện ChatGPT có thể cần cập nhật sau một lượt thử trên máy người dùng.

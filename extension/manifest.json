@@ -1,0 +1,11 @@
+{
+ "manifest_version":3,"name":"Xưởng Nội Dung — ChatGPT Bridge","version":"0.4.0","description":"Chuyển yêu cầu từ Xưởng vào tab ChatGPT đã chọn và đồng bộ kết quả. Không dùng API tạo nội dung.",
+ "permissions":["storage","tabs"],
+ "host_permissions":["https://chatgpt.com/*","https://*.oaiusercontent.com/*"],
+ "background":{"service_worker":"background.js"},
+ "action":{"default_popup":"popup.html","default_title":"Kết nối Xưởng với ChatGPT"},
+ "content_scripts":[
+ {"matches":["https://xuong-noi-dung-studio.loyaloak2048.chatgpt.site/*","http://localhost:8080/*","http://127.0.0.1:8080/*"],"js":["studio-content.js"],"run_at":"document_idle","all_frames":true},
+ {"matches":["https://chatgpt.com/*"],"js":["chatgpt-content.js"],"run_at":"document_idle"}
+ ]
+}
