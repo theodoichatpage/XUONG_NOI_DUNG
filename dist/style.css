@@ -16,3 +16,6 @@ aside#sidebar{position:sticky;inset:auto;top:0;width:100%;height:auto;min-height
 
 /* Source-mode fields and existing dialogs must honor the hidden attribute. */
 [hidden]{display:none!important}
+
+/* Verified Bridge connection status, independent of task completion. */
+.bridge-connection{font-weight:700;max-width:100%;white-space:normal}.bridge-connection.connected{color:#075c38;background:#dcfce7;border-color:#22a06b}.bridge-connection.disconnected{color:#9b1c1c;background:#fee2e2;border-color:#ef7777}.bridge-connection.checking{color:#744606;background:#fff3cd;border-color:#d6ab43}.bridge-connection-panel{border:2px solid;border-radius:8px;padding:16px;margin-bottom:18px}.bridge-connection-panel.connected{border-color:#22a06b}.bridge-connection-panel.disconnected{border-color:#dc5555}.bridge-connection-panel.checking{border-color:#d6ab43}.connection-label{display:block;font-size:19px;margin-bottom:8px}.bridge-connection-panel p{margin:6px 0}header{flex-wrap:wrap;height:auto;min-height:68px}header #bridgeStatus{font-size:12px}html.dark .bridge-connection.connected{background:#143d2c;color:#b4f4ce}html.dark .bridge-connection.disconnected{background:#4a2222;color:#ffcece}html.dark .bridge-connection.checking{background:#493a1a;color:#ffe6a0}
