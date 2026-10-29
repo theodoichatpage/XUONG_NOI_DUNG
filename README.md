@@ -1,4 +1,4 @@
-# Xưởng Nội Dung 0.4.2
+# Xưởng Nội Dung 0.5.0
 
 Ứng dụng vận hành nội dung cá nhân, tiếng Việt, Arial, giao diện sáng/tối, chạy không cần cài thư viện.
 
@@ -91,3 +91,11 @@ Chuyển các nhóm Điều hành, Sản xuất, Phân phối, Kết quả, Hệ
 - Đăng và hợp đồng thực hiện thủ công trên Inkstone. Chưa có OAuth/đồng bộ tài khoản Webnovel.
 
 Kiểm tra: 3 test migration tạo kênh, không trùng và giữ tùy chọn cũ; 14 test Bridge; đã kiểm tra trên trình duyệt việc tạo hồ sơ và chương đúng kênh cùng nút ChatGPT. Chưa chạy sinh truyện trên tài khoản ChatGPT thật.
+
+## Bước 1 — Bộ truyện / Webnovel
+
+Từ Webnovel, chọn **Tạo bộ truyện** → **Tạo từ chủ đề** hoặc **Sáng tạo từ kịch bản mẫu**. Script dài được chia theo đoạn/câu và tổng hợp Content DNA theo nhiều tầng. Duyệt lần lượt DNA (nếu có), Concept, Story Bible, Nhân vật, Dàn ý trước khi viết chương. AI chỉ tạo bản chờ duyệt. Các job vẫn đi qua Xưởng ChatGPT Bridge 0.4.0 hiện tại; không cần API key.
+
+Kết quả mỗi giai đoạn được lưu riêng theo series/job; dàn ý dùng Tập → Arc → Kế hoạch chương → Cảnh. Chương approved/live chỉ sửa qua Revision. Sau khi duyệt chương, yêu cầu AI trích xuất Story Memory + summary rồi kiểm tra/duyệt dữ liệu đó trước chương sau. Không xác nhận resolved chỉ từ kế hoạch.
+
+Chạy kiểm thử: `node --test tests/*.test.cjs`. Đây là kiểm thử với JSON ChatGPT mô phỏng; vòng Bridge/ChatGPT Plus thật còn phải được xác nhận trong trình duyệt có Bridge kết nối. Xem `docs/webnovel-step1-verification.md`.
