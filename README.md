@@ -76,3 +76,7 @@ Mã nguồn extension nằm trong `extension/`, bản ZIP có trong `dist/downlo
 - Giới hạn của gói ChatGPT vẫn áp dụng. Không đăng nhập tự động, không lấy mật khẩu hoặc token, không chạy khi trình duyệt đóng.
 
 14 kiểm thử tự động chạy bằng `node --test tests/bridge.test.cjs`; JavaScript đã kiểm tra cú pháp; giao diện tab ChatGPT đã kiểm tra trên preview. Chưa kiểm thử end-to-end với extension cài trên tài khoản ChatGPT thật. Selector giao diện ChatGPT có thể cần cập nhật sau một lượt thử trên máy người dùng.
+
+## Cập nhật giao diện 0.4.1
+
+Chuyển các nhóm Điều hành, Sản xuất, Phân phối, Kết quả, Hệ thống lên thanh ngang. Mỗi nhóm mở danh sách chức năng; chỉ mở một nhóm, đóng khi chọn chức năng, bấm ra ngoài hoặc Escape. Bỏ menu dọc, giữ nguyên route, dữ liệu và extension Bridge 0.4.0. Đã kiểm tra hiển thị dropdown và chuyển sang Bộ truyện bằng trình duyệt.
