@@ -5,7 +5,7 @@ Nhánh: integrate-xuong-truyen-v0.5.0. PR hiện có: #1.
 
 ## Kết quả tự động
 
-Lệnh: `node --test tests/*.test.cjs`.
+Lệnh: `node --test tests/*.test.cjs` — 34/34 PASS.
 
 - A: PASS với JSON mô phỏng: topic → concept → Bible → cast → volume/arc/chapter/scene, duyệt đúng thứ tự.
 - B: PASS với JSON mô phỏng: chia nguồn không mất ký tự → DNA từng phần → tổng hợp nhiều tầng → tác phẩm mới. Chặn tên riêng nhận diện, thay đổi nguồn khi đang chạy, schema thiếu trường. Kiểm tra khác biệt sáng tạo thực tế vẫn cần output ChatGPT thật và người duyệt.
