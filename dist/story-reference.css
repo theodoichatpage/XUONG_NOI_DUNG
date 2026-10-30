@@ -1,0 +1,47 @@
+/* Xưởng Truyện — approved 1:1 reference lock (2026-10-30).
+   Presentation-only overrides. Existing data, Bridge and story workflows remain unchanged. */
+@media (min-width:1100px){
+body.u-app:has(#main .u-workspace) #main{padding:16px 20px 14px;background:#f3f8f6}
+#main .u-workspace{grid-template-columns:265px minmax(0,1fr);gap:16px;max-width:none;margin:0 auto}
+#main .u-library{padding:16px 14px 12px;border-radius:6px;gap:12px}
+#main .u-library h2{font-size:18px;line-height:1.25;margin:6px 0 2px}
+#main .u-library>.primary{height:39px;min-height:39px;font-size:15px;font-weight:700;border-radius:5px}
+#main .u-library-item{min-height:62px;padding:10px 8px;margin-bottom:4px;border-radius:5px}
+#main .u-library-item strong{font-size:14px;line-height:1.25}
+#main .u-library-item small{font-size:12px;line-height:1.3}
+#main .u-studio>.u-page-heading{min-height:61px}
+#main .u-studio>.u-page-heading h1{font-size:30px;line-height:1.08;letter-spacing:-.8px}
+#main .u-studio>.u-page-heading p{font-size:15px;margin-top:4px}
+#main .u-tabs{height:42px;margin-bottom:10px}
+#main .u-tabs button{height:42px;min-height:42px;padding:0 17px;font-size:14px}
+#main .u-book-panel{padding:10px 12px 12px;gap:9px;border-radius:7px;grid-template-rows:30px 36px minmax(180px,.98fr) minmax(215px,1.16fr) minmax(164px,.9fr) auto}
+#main .u-book-panel>.u-card-head h2{font-size:23px;letter-spacing:-.4px}
+#main .u-steps{padding:0 8px;gap:14px}
+#main .u-steps span{font-size:14px}
+#main .u-steps b{width:28px;height:28px}
+#main .u-section{padding:10px 12px;border-radius:6px}
+#main .u-section h3{font-size:17px;margin-bottom:7px}
+#main .u-source-grid{grid-template-columns:1fr 1fr;gap:18px}
+#main .u-source-grid label{font-size:12px}
+#main .u-source-grid>label>textarea{height:76px}
+#main .u-source-grid textarea{font-size:13px;line-height:1.4}
+#main .u-detail-columns{grid-template-columns:1fr 1.08fr;gap:16px}
+#main .u-story-synopsis{max-height:62px;font-size:13px;line-height:1.4}
+#main .u-character{height:48px;min-height:48px;grid-template-columns:34px minmax(80px,.8fr) minmax(120px,1.35fr) 16px;padding:4px 8px;margin-top:3px}
+#main .u-character strong{font-size:12px}
+#main .u-character>small{font-size:11px}
+#main .u-initial{width:32px;height:32px}
+#main .u-alert{min-height:27px;padding:5px 10px}
+#main textarea,#main input,#main select{border-color:#cbded6}
+}
+@media (min-width:1450px){
+body.u-app #sidebar{height:52px;padding:0 35px;gap:95px}
+.u-brand{font-size:18px}
+.u-logo{width:34px;height:34px}
+.u-app #nav,.u-app #nav a{height:52px}
+.u-app #nav{gap:20px}
+.u-app #nav a{padding:0 18px;font-size:14px}
+.u-app .workspace{margin-top:52px;height:calc(100dvh - 52px)}
+body.u-app:has(#main .u-workspace) #main{padding:16px 20px 14px}
+#main .u-workspace{grid-template-columns:265px minmax(0,1fr);gap:16px}
+}
