@@ -1,5 +1,4 @@
-/* Xưởng Truyện — approved 1:1 reference lock (2026-10-30).
-   Presentation-only overrides. Existing data, Bridge and story workflows remain unchanged. */
+/* Xưởng Truyện — approved 1:1 reference lock. */
 @media (min-width:1100px){
 body.u-app:has(#main .u-workspace) #main{padding:16px 20px 14px;background:#f3f8f6}
 #main .u-workspace{grid-template-columns:265px minmax(0,1fr);gap:16px;max-width:none;margin:0 auto}
@@ -19,6 +18,7 @@ body.u-app:has(#main .u-workspace) #main{padding:16px 20px 14px;background:#f3f8
 #main .u-steps{padding:0 8px;gap:14px}
 #main .u-steps span{font-size:14px}
 #main .u-steps b{width:28px;height:28px}
+#main .u-steps>i{height:1px;background:#a8d7c5;flex:1;min-width:30px}
 #main .u-section{padding:10px 12px;border-radius:6px}
 #main .u-section h3{font-size:17px;margin-bottom:7px}
 #main .u-source-grid{grid-template-columns:1fr 1fr;gap:18px}
@@ -33,15 +33,14 @@ body.u-app:has(#main .u-workspace) #main{padding:16px 20px 14px;background:#f3f8
 #main .u-initial{width:32px;height:32px}
 #main .u-alert{min-height:27px;padding:5px 10px}
 #main textarea,#main input,#main select{border-color:#cbded6}
+#main .u-empty-library{padding:26px 8px;text-align:center;color:var(--u-muted);font-size:13px}
+#main .u-library-foot{margin-top:auto;padding:8px;text-align:center;color:var(--u-muted);font-size:12px}
+#main .u-empty-book-panel{grid-template-rows:30px 36px minmax(180px,.98fr) minmax(190px,1.08fr) minmax(150px,.82fr)}
+#main .u-empty-disabled{opacity:.78}
+#main .u-empty-characters{height:112px;border:1px solid var(--u-line);border-radius:6px;display:grid;place-items:center;text-align:center;padding:15px;color:var(--u-muted);font-size:12px;background:#fafcfb}
+#main .u-empty-batch{display:grid;grid-template-columns:180px minmax(260px,1fr) 280px;gap:16px;align-items:end;margin:8px 0}
+#main .u-empty-batch label,#main .u-empty-disabled>label{font-size:12px;display:flex;flex-direction:column;gap:4px}
 }
 @media (min-width:1450px){
-body.u-app #sidebar{height:52px;padding:0 35px;gap:95px}
-.u-brand{font-size:18px}
-.u-logo{width:34px;height:34px}
-.u-app #nav,.u-app #nav a{height:52px}
-.u-app #nav{gap:20px}
-.u-app #nav a{padding:0 18px;font-size:14px}
-.u-app .workspace{margin-top:52px;height:calc(100dvh - 52px)}
-body.u-app:has(#main .u-workspace) #main{padding:16px 20px 14px}
-#main .u-workspace{grid-template-columns:265px minmax(0,1fr);gap:16px}
+body.u-app #sidebar{height:52px;padding:0 35px;gap:95px}.u-brand{font-size:18px}.u-logo{width:34px;height:34px}.u-app #nav,.u-app #nav a{height:52px}.u-app #nav{gap:20px}.u-app #nav a{padding:0 18px;font-size:14px}.u-app .workspace{margin-top:52px;height:calc(100dvh - 52px)}body.u-app:has(#main .u-workspace) #main{padding:16px 20px 14px}#main .u-workspace{grid-template-columns:265px minmax(0,1fr);gap:16px}
 }
