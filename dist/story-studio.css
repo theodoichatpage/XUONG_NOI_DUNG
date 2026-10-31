@@ -175,3 +175,14 @@ html.dark .st-badge.green{background:#1e3229}html.dark .st-badge.amber{backgroun
 .u-review-vi div{white-space:pre-line;max-height:40vh;overflow:auto;margin-top:8px;font-size:14px;line-height:1.6}
 .st-lang{white-space:nowrap}
 @media (max-width:1100px){.st-title{flex-wrap:wrap;row-gap:8px}}
+.u-check .u-check-body{white-space:normal;max-height:32vh}
+.u-check-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 6px}
+.u-check-badge{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:11px;font-size:12.5px;font-weight:600}
+.u-check-badge.ok{background:#e2f3e9;color:#1f7a4f}.u-check-badge.warn{background:#fcefd2;color:#a8690f}.u-check-badge.error{background:#fde3e3;color:#c03434}
+.u-check-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.u-check-list li{display:flex;gap:8px;align-items:baseline}
+.u-check-list li>span{width:18px;height:18px;flex:none;border-radius:50%;display:inline-grid;place-items:center;font-size:11px;font-weight:700;color:#fff}
+.u-check-list li.ok>span{background:#2a9a5e}.u-check-list li.warn>span{background:#f0a92c}.u-check-list li.error>span{background:#d64545}
+.u-check-ai{margin-top:10px;padding-top:8px;border-top:1px solid var(--st-line,#d4e4dd);font-size:13px}
+.u-check-ai p{margin:4px 0}.u-check-ai ul{margin:2px 0 6px 18px;padding:0}
+.u-check-stale{color:#a8690f;font-weight:400}
