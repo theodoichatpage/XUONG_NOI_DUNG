@@ -6,7 +6,7 @@ function runtime(series=[]){
     esc:s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]),
     localStorage:{getItem:k=>store[k]??null,setItem:(k,v)=>store[k]=String(v)},uid:()=> 'id'+(++c.n),n:0,
     $:()=>null,location:{hash:'#series'},findWebnovelChannel:()=>c.db.channels[0],
-    lfData:s=>{s.story??={};s.story.characters??=[];s.story.plans??=[];s.story.pipeline??={source:{mode:'topic',topic:''},artifacts:{}};return s.story},
+    lfData:s=>{s.story??={};s.story.characters??=[];s.story.plans??=[];s.story.glossary??=[];s.story.pipeline??={source:{mode:'topic',topic:''},artifacts:{}};return s.story},
     lfPipeline:s=>c.lfData(s).pipeline,lfApproved:()=>false,lfChapters:()=>[],lfNextChapter:()=>1,uiPublishing:()=> '<section class="u-publishing"></section>',
     lfSetSource:(s,src)=>{c.lfData(s).pipeline.source=src},lfStoryLang:s=>s?.storyLanguage||'English',lfNeedsReview:()=>true,lfReviewFresh:()=>false});
   vm.runInContext(src.slice(0,src.indexOf('const uiBaseChoose=')),c);
