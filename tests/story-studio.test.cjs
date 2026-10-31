@@ -8,7 +8,7 @@ function runtime(series=[]){
     $:()=>null,location:{hash:'#series'},findWebnovelChannel:()=>c.db.channels[0],
     lfData:s=>{s.story??={};s.story.characters??=[];s.story.plans??=[];s.story.pipeline??={source:{mode:'topic',topic:''},artifacts:{}};return s.story},
     lfPipeline:s=>c.lfData(s).pipeline,lfApproved:()=>false,lfChapters:()=>[],lfNextChapter:()=>1,uiPublishing:()=> '<section class="u-publishing"></section>',
-    lfSetSource:(s,src)=>{c.lfData(s).pipeline.source=src}});
+    lfSetSource:(s,src)=>{c.lfData(s).pipeline.source=src},lfStoryLang:s=>s?.storyLanguage||'English',lfNeedsReview:()=>true,lfReviewFresh:()=>false});
   vm.runInContext(src.slice(0,src.indexOf('const uiBaseChoose=')),c);
   c.uiRender=()=>{c.rendered=(c.rendered||0)+1};
   return c}
