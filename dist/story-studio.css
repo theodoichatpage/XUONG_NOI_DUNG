@@ -186,3 +186,8 @@ html.dark .st-badge.green{background:#1e3229}html.dark .st-badge.amber{backgroun
 .u-check-ai{margin-top:10px;padding-top:8px;border-top:1px solid var(--st-line,#d4e4dd);font-size:13px}
 .u-check-ai p{margin:4px 0}.u-check-ai ul{margin:2px 0 6px 18px;padding:0}
 .u-check-stale{color:#a8690f;font-weight:400}
+/* Brand logo (inline SVG) */
+.u-logo,.u-app .u-logo{width:34px;height:34px;padding:0;border-radius:0;background:none;display:block;flex:none}
+.u-logo svg,.brand .mark svg{width:100%;height:100%;display:block}
+.brand .mark{background:none;padding:0;border-radius:0}
+@media (max-width:760px){.u-logo,.u-app .u-logo{width:30px;height:30px}}
