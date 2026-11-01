@@ -1,13 +1,13 @@
 {
-  "version": "0.4.0",
-  "filename": "Xuong_ChatGPT_Bridge_v0.4.0.zip",
+  "version": "0.4.1",
+  "filename": "Xuong_ChatGPT_Bridge_v0.4.1.zip",
   "folder": "Xuong_ChatGPT_Bridge",
-  "sha256": "3ec7b21d8d87963cccc31738bd60ce9209758fff539215cb406155c175b1b7bf",
+  "sha256": "c7354443202e555dc164c67fe29d034ec1399bc34158abca683f9cbf9eb6a2b1",
   "packagingRevision": 2,
   "files": [
-    "HUONG_DAN.md",
     "background.js",
     "chatgpt-content.js",
+    "HUONG_DAN.md",
     "manifest.json",
     "popup.html",
     "popup.js",

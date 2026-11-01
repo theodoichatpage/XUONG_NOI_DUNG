@@ -1,4 +1,4 @@
-# Xưởng ChatGPT Bridge 0.4.0
+# Xưởng ChatGPT Bridge 0.4.1
 
 ## Cài trên Chrome hoặc Microsoft Edge máy tính
 
@@ -57,4 +57,4 @@ Chưa kiểm thử end-to-end trên tài khoản ChatGPT thật với extension 
 3. Mở `chrome://extensions` hoặc `edge://extensions`, bấm **Tải lại** trên extension đã cài. Không cài thêm một bản thứ hai.
 4. F5 cả Xưởng và ChatGPT, chọn lại tab trong popup và kiểm tra trạng thái xanh trên Xưởng.
 
-Gói sửa cách đóng gói vẫn là Bridge 0.4.0, giao thức kết nối không thay đổi. Nếu popup ghi Xưởng Truyện 1.0.0 thì đó là Bridge khác.
+Bridge 0.4.1 cho phép extension chạy trên https://xuong-noi-dung-khaki.vercel.app và hiện rõ trạng thái kết nối trong popup. Giao thức kết nối không thay đổi. Nếu popup ghi Xưởng Truyện 1.0.0 thì đó là Bridge khác.
