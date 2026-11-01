@@ -233,3 +233,6 @@ html.dark .u-setup,html.dark .u-hint,html.dark .u-story-synopsis,html.dark .u-re
 html.dark .u-job{background:#1c1210}
 html.dark .u-app #nav a{color:#b8b8bd}
 html.dark .u-track{background:#26262a}
+.u-manual textarea{width:100%;font:12.5px/1.5 Consolas,monospace;resize:vertical}
+.u-manual p{margin:8px 0}.u-manual-row{display:flex;align-items:center;gap:12px}
+.u-manual{grid-column:1/-1;width:100%}
