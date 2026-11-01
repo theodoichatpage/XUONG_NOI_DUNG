@@ -1,8 +1,8 @@
 {
-  "version": "0.4.4",
-  "filename": "Xuong_ChatGPT_Bridge_v0.4.4.zip",
+  "version": "0.4.5",
+  "filename": "Xuong_ChatGPT_Bridge_v0.4.5.zip",
   "folder": "Xuong_ChatGPT_Bridge",
-  "sha256": "331fb5130daa2a9ac6d9c45949daf0b20cf451073ce1f7ff7ab26d0b283faf83",
+  "sha256": "59dd765ef60e7fd18c1d7adce64438dc474cf058ee0f7e4b9ca5f734adc8424b",
   "packagingRevision": 2,
   "files": [
     "background.js",
