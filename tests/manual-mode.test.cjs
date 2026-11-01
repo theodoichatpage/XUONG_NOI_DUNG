@@ -9,7 +9,7 @@ test('without a connected Bridge, a stage job becomes a manual job instead of fa
   let opened='';const {c,s}=fixture({bridgeCall:async()=>({ok:false}),uiManualJob:async id=>{opened=id}});
   c.lfSetSource(s,{mode:'topic',topic:'Cloud memories',genre:'Fantasy',chapters:2});await c.lfSend(s,'GENERATE_CONCEPT');
   const j=c.db.aiJobs[0];assert.equal(j.status,'manual');assert.equal(opened,j.id);assert.match(j.prompt,/GENERATE_CONCEPT/);
-  await assert.rejects(c.lfSend(s,'GENERATE_CONCEPT'),/dừng công việc trước/);
+  await assert.rejects(c.lfSend(s,'GENERATE_CONCEPT'),/đang có việc “Concept mới” chờ dán kết quả/);
   c.lfApplyTask(j,'Sure!\n'+JSON.stringify(concept));assert.equal(j.status,'applied');assert.equal(c.lfPipeline(s).artifacts.concept.value.title,'The Cloud Orchard')});
 test('a Bridge call that throws (no extension) also falls back to manual',async()=>{const {c,s}=fixture({bridgeCall:async()=>{throw Error('Chưa thấy extension')},uiManualJob:async()=>{}});c.lfSetSource(s,{mode:'topic',topic:'x',genre:'y',chapters:2});await c.lfSend(s,'GENERATE_CONCEPT');assert.equal(c.db.aiJobs[0].status,'manual')});
 test('manual mode setting skips the Bridge even when it is connected',async()=>{
