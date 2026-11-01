@@ -1,4 +1,4 @@
-# Xưởng ChatGPT Bridge 0.4.3
+# Xưởng ChatGPT Bridge 0.4.4
 
 ## Cài trên Chrome hoặc Microsoft Edge máy tính
 
@@ -14,7 +14,7 @@
 - Thêm kênh, tạo bộ truyện và chương trong Xưởng.
 - Điền dàn ý, nhân vật, giọng văn và yêu cầu viết.
 - Mở chương → **Viết bằng ChatGPT**. Xưởng lưu nội dung hiện tại trước khi chuyển.
-- Ở ChatGPT, kiểm tra câu lệnh rồi **tự bấm Gửi**. Không xóa mã `[XUONG_JOB:...]`.
+- Extension tự điền câu lệnh và **tự bấm Gửi** trong ChatGPT (tắt ở popup: "Tự động bấm Gửi trong ChatGPT"). Không xóa mã `[XUONG_JOB:...]`.
 - Extension chờ câu trả lời hoàn tất và gửi về Xưởng. Mở tab ChatGPT trong lúc xử lý.
 - Nếu bản nháp không thay đổi trong lúc chờ, kết quả vào bài và chuyển Chờ duyệt. Nếu đã chỉnh sửa hoặc bài đã duyệt/đã đăng, kết quả giữ riêng trong tab ChatGPT của Xưởng để bạn áp dụng.
 - Không tự xuất bản nội dung.
@@ -22,7 +22,7 @@
 ## Tạo ảnh
 
 - Xưởng → Hình ảnh → Chuẩn bị ảnh → nhập phong cách, nội dung và tỷ lệ.
-- Bấm **Tạo ảnh bằng ChatGPT**, kiểm tra rồi tự bấm Gửi trong tab ChatGPT.
+- Bấm **Tạo ảnh bằng ChatGPT**, extension tự điền và bấm Gửi trong tab ChatGPT.
 - Khi tìm được ảnh hoàn tất trong đúng câu trả lời, extension thử tải ảnh hiển thị về Xưởng, giữ bản gốc và tạo ảnh xem trước. Ảnh luôn Chưa duyệt.
 - Ảnh trên 5 MB, URL ảnh không hỗ trợ, blob, giới hạn tài khoản hoặc giao diện mới có thể không nhận tự động. Khi đó tải ảnh trong ChatGPT rồi nhập vào đúng yêu cầu ảnh trong Xưởng.
 
@@ -57,4 +57,4 @@ Chưa kiểm thử end-to-end trên tài khoản ChatGPT thật với extension 
 3. Mở `chrome://extensions` hoặc `edge://extensions`, bấm **Tải lại** trên extension đã cài. Không cài thêm một bản thứ hai.
 4. F5 cả Xưởng và ChatGPT, chọn lại tab trong popup và kiểm tra trạng thái xanh trên Xưởng.
 
-Bridge 0.4.3 nhận ra ô nhập kiểu mới của ChatGPT. Bridge 0.4.2 chạy trên https://xuong-noi-dung-khaki.vercel.app; popup hiện trạng thái ChatGPT và mục "Trang Xưởng" để tự chẩn đoán (bị chặn quyền / chưa nạp / đã nạp) kèm nút sửa nhanh. Giao thức kết nối không thay đổi. Nếu popup ghi Xưởng Truyện 1.0.0 thì đó là Bridge khác.
+Bridge 0.4.4 tự bấm Gửi trong ChatGPT (tắt được trong popup). Bridge 0.4.3 nhận ra ô nhập kiểu mới của ChatGPT. Bridge 0.4.2 chạy trên https://xuong-noi-dung-khaki.vercel.app; popup hiện trạng thái ChatGPT và mục "Trang Xưởng" để tự chẩn đoán (bị chặn quyền / chưa nạp / đã nạp) kèm nút sửa nhanh. Giao thức kết nối không thay đổi. Nếu popup ghi Xưởng Truyện 1.0.0 thì đó là Bridge khác.
