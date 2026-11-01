@@ -1,0 +1,24 @@
+/* Global typography and buttons — loaded last. */
+/* Font: Arial everywhere; body text 14px (headings keep their sizes). */
+body.u-app,body.u-app #sidebar,body.u-app #main,dialog{font-family:Arial,Helvetica,sans-serif}
+body.u-app #main :is(p,small,label,span,a,li,td,th,figcaption,input,select,textarea,button,b,strong,i,em,div),
+dialog :is(p,small,label,span,a,li,td,th,figcaption,input,select,textarea,button,b,strong,i,em,div),
+body.u-app #nav a{font-family:Arial,Helvetica,sans-serif!important;font-size:14px!important}
+/* Keep large display numbers and decorative initials. */
+body.u-app #main .u-kpi strong{font-size:22px!important}
+body.u-app #main .st-initial{font-size:16px!important}
+
+/* Buttons: 32px high, square corners (not library rows, thumbnails, text links or icon buttons). */
+body.u-app #main button:not(.st-item):not(.pr-item):not(.u-library-item):not(.st-link):not(.pr-link):not(.u-text):not(.st-icon-btn):not(.pr-ref-thumb):not(.pr-design-thumb):not(.pr-ref-check):not(.u-character):not(.u-reference):not(.u-design),
+body.u-app #main .u-button,
+dialog button,dialog .u-button{height:32px;min-height:32px;border-radius:0}
+body.u-app #main .u-segment,dialog .u-segment{border-radius:0}
+
+/* Tabs sit at the top now that the page heading is gone. */
+.st-tabs,.pr-tabs{margin-top:0}
+
+/* Former green/blue status labels: darker orange text on orange tints for readability. */
+body.u-app #main :is(.u-badge.green,.u-badge.blue,.pr-badge.green,.pr-badge.blue,.st-initial.c1,.st-initial.c2){color:#9c2f0e}
+body.u-app #main .u-blue{color:#a83210}
+html.dark body.u-app #main .u-blue{color:#ff9a78}
+html.dark body.u-app #main :is(.pr-badge.green,.pr-badge.blue){color:#ffb59c}

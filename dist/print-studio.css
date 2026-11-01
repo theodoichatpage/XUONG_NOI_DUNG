@@ -41,9 +41,9 @@
 .pr-title{display:flex;align-items:center;gap:12px}
 .pr-title h2{margin:0;font-size:26px;font-weight:700;letter-spacing:-.3px}
 .pr-badge{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:12px;font-size:12.5px;white-space:nowrap;background:var(--st-soft);color:var(--st-text)}
-.pr-badge.green{background:#e2f3e9;color:#1f7a4f}.pr-badge.blue{background:#e2edfa;color:#2b5fa6}.pr-badge.amber{background:#fcefd2;color:#a8690f}.pr-badge.red{background:#fde3e3;color:#c03434}
+.pr-badge.green{background:#fbe3da;color:#d83f15}.pr-badge.blue{background:#fce8e0;color:#e94e23}.pr-badge.amber{background:#fcefd2;color:#a8690f}.pr-badge.red{background:#fde3e3;color:#c03434}
 .pr-badge.gray{height:28px;padding:0 12px;border-radius:14px;background:#f1efee;color:var(--st-text);font-size:13px}
-html.dark .pr-badge.green{background:#1e3a2b;color:#8fd8ae}html.dark .pr-badge.blue{background:#1d2c42;color:#9cc0f0}html.dark .pr-badge.amber{background:#3a3018;color:#f0c46a}html.dark .pr-badge.red{background:#3f2222;color:#f2a0a0}html.dark .pr-badge.gray{background:#2e2926}
+html.dark .pr-badge.green{background:#39261f;color:#e8977f}html.dark .pr-badge.blue{background:#3e2921;color:#f0b09c}html.dark .pr-badge.amber{background:#3a3018;color:#f0c46a}html.dark .pr-badge.red{background:#3f2222;color:#f2a0a0}html.dark .pr-badge.gray{background:#2e2926}
 
 /* Stepper */
 .pr-steps{display:flex;align-items:center;justify-content:center;gap:22px;padding:0 4px 2px}
@@ -115,7 +115,7 @@ html.dark .pr-pill{background:#2e2926}
 .pr-status{display:inline-flex;align-items:center;gap:6px}
 .pr-status i{width:8px;height:8px;border-radius:50%;background:#ada9a7}
 .pr-status.amber{color:#c98a12}.pr-status.amber i{background:#f0a92c}
-.pr-status.green{color:#1f7a4f}.pr-status.green i{background:#2a9a5e}
+.pr-status.green{color:#d83f15}.pr-status.green i{background:#e9491c}
 .pr-status.muted{color:var(--st-muted)}
 .pr-batch{display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap}
 .pr-batch .pr-primary{height:42px;min-height:42px;padding:0 40px}
