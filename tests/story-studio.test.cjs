@@ -22,10 +22,13 @@ test('development directions cover continue, arcs and both endings',()=>{
   for(const v of['Tiếp tục câu chuyện','Phát triển Arc hiện tại','Mở Arc mới','Chuẩn bị kết mở','Chuẩn bị kết đóng'])assert.ok(values.includes(v),v)});
 test('creating from the inline idea stores the real source and starts the existing build workflow',async()=>{
   const c=runtime();c.uiStoryNewDraft().topic='Một người đánh đổi ký ức để cứu em gái.';c.uiStoryNewDraft().referenceLink='https://example.com';
-  c.uiBuildStory=async s=>{c.built=s.id};await c.uiCreateFromIdea();
+  c.uiBuildStory=async s=>{c.built=s.id};c.lfSend=async(s,kind)=>{c.sent=kind};await c.uiCreateFromIdea();
   assert.equal(c.db.series.length,1);const s=c.db.series[0];
   assert.equal(s.channelId,'wn');assert.equal(s.story.pipeline.source.topic,'Một người đánh đổi ký ức để cứu em gái.');assert.equal(s.story.pipeline.source.referenceLink,'https://example.com');
-  assert.equal(c.built,s.id);const st=vm.runInContext('uiState',c);assert.equal(st.book,s.id);assert.deepEqual({...st.newDraft},{})});
+  assert.equal(s.story.pipeline.source.mode,'reference');assert.equal(c.sent,'ANALYZE_REFERENCE_LINK');assert.equal(c.built,undefined);const st=vm.runInContext('uiState',c);assert.equal(st.book,s.id);assert.deepEqual({...st.newDraft},{})});
+test('an idea without a link goes straight to the concept build',async()=>{
+  const c=runtime();c.uiStoryNewDraft().topic='Trùng sinh vào ngôi làng nghèo';c.uiBuildStory=async s=>{c.built=s.id};c.lfSend=async(s,kind)=>{c.sent=kind};await c.uiCreateFromIdea();
+  const s=c.db.series[0];assert.equal(s.story.pipeline.source.mode,'topic');assert.equal(c.built,s.id);assert.equal(c.sent,undefined)});
 test('empty idea is rejected without touching data',async()=>{
   const c=runtime();await assert.rejects(c.uiCreateFromIdea(),/Nhập ý tưởng/);assert.equal(c.db.series.length,0)});
 test('selected story renders its title, status and character edit buttons',()=>{
