@@ -45,7 +45,9 @@ test('selected story renders its title, status and character edit buttons',()=>{
   const s={id:'s1',title:'Kẻ giữ ký ức',story:{characters:[{id:'c1',name:'Minh',role:'Nhân vật chính',personality:'Thông minh'}],plans:[],pipeline:{source:{mode:'topic',topic:'Ý tưởng'},artifacts:{bible:{value:{premise:'Minh khám phá thành phố.',mainThreads:'Twist A\nTwist B'}}}}}};
   const c=runtime([s]);c.uiCurrentStage=()=>['characters','Nhân vật','GENERATE_CHARACTERS'];c.uiStoryJob=()=> '';
   const html=c.uiStory();
-  for(const part of['Kẻ giữ ký ức','Minh khám phá thành phố.','Twist A','data-ui-character="c1"','data-ui-action="build-story"','data-ui-action="story-advanced"','Xây dựng: Nhân vật','aria-selected="true" data-ui-storystep="2"'])assert.ok(html.includes(part),part);
+  for(const part of['Kẻ giữ ký ức','Minh khám phá thành phố.','Twist A','data-ui-character="c1"','data-ui-action="build-story"','data-ui-action="story-advanced"','aria-selected="true" data-ui-storystep="2"','Tổng quan','Thế giới','Tuyến truyện','Nút thắt đang theo dõi','data-ui-plottab="threads"','Minh khám phá thành phố.'])assert.ok(html.includes(part),part);
+  assert.ok(!html.includes('Trợ lý Xưởng (AI)'),'step 2 has no AI assistant panel');assert.doesNotMatch(html,/data-ui-plottab="characters"/,'no duplicate characters tab');
+  vm.runInContext("uiState.plotTab='threads'",c);assert.ok(c.uiStory().includes('Twist B'));vm.runInContext("uiState.plotTab=''",c);
   vm.runInContext("uiState.storySteps={s1:{step:1,base:2}}",c);assert.match(c.uiStory(),/id="uStoryIdea"[^>]*>Ý tưởng</);
   vm.runInContext("uiState.storySteps={s1:{step:1,base:1}}",c);assert.doesNotMatch(c.uiStory(),/id="uStoryIdea"/,'an old manual step is dropped once the workflow moves on')});
 test('index.html loads a single Xưởng Truyện renderer',()=>{
