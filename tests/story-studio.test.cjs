@@ -180,3 +180,8 @@ test('publishing needs the story\'s account once accounts exist, and records it'
   const {c,s,chs}=produce();Object.assign(c,{crypto:globalThis.crypto});c.db.webnovelAccounts=[{id:'acc1',name:'Main',loginId:'me'}];c.db.content.push({id:'p1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'approved',body:'x',productionTask:'chapter'});
   c.uiState.chOpen={b:'p1'};await c.uiPublishAction(s,'one');c.uiState.pubPop.link='https://www.webnovel.com/c1';await assert.rejects(c.uiPublishAction(s,'mark'),/Gán tài khoản Webnovel/);
   s.webnovelAccountId='acc1';await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live');assert.equal(chs()[0].publishedAccountId,'acc1')});
+
+test('publishing tab shows the Webnovel listing with copy buttons and the cover actions',()=>{
+  const s={id:'L',title:'Ashen',webnovelListing:{bookName:'The Ashen Crown',leadingGender:'male',genre:'Historical',synopsis:'Hook.',tags:['Reincarnation'],abbreviation:'ASHEN',length:'long',warning:'none',coverPrompt:'c'},story:{characters:[],plans:[],glossary:[],pipeline:{source:{mode:'topic',topic:'x'},artifacts:{}}}};
+  const c=runtime([s]);c.lfApproved=()=>true;const html=c.uiListing(s);for(const x of['Hồ sơ truyện trên Webnovel','The Ashen Crown','Male oriented','data-ui-listcopy="synopsis"','Tạo ảnh bìa bằng ChatGPT','Soạn lại bằng ChatGPT'])assert.ok(html.includes(x),x);
+  c.db.assets=[{id:'img1',data:'data:image/jpeg;base64,AA'}];c.db.aiJobs.push({type:'image',coverFor:'L',status:'applied',targetId:'img1'});const h2=c.uiListing(s);assert.match(h2,/<img src="data:image\/jpeg;base64,AA"/);assert.match(h2,/Tải bìa 600×800/)});

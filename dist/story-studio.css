@@ -537,3 +537,25 @@ html.dark .st-steps>button.done b{color:#0b0b0c}
 .u-acct-menu button:hover,.u-acct-menu a:hover{background:var(--st-soft)!important;color:var(--st-ink)}
 .u-acct-menu .u-acct-del{color:#c03434}html.dark .u-acct-menu .u-acct-del{color:#ff8b8b}
 .u-acct-empty{margin:8px 0 0;color:var(--st-muted)}
+
+/* Webnovel listing + cover */
+.u-listing{margin:6px 0 18px;padding-top:14px;border-top:1px solid var(--st-line)}
+.u-listing-grid{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;align-items:start}
+.u-lf{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:4px 12px;align-items:start;padding:8px 0;border-bottom:1px solid var(--st-line)}
+.u-lf>span{color:var(--st-muted)}.u-lf p{margin:0;color:var(--st-ink)}
+.u-cover{display:flex;flex-direction:column;gap:8px}
+.u-cover-img{aspect-ratio:3/4;width:100%;border:1px solid var(--st-line);background:var(--st-soft);display:grid;place-items:center;overflow:hidden;color:var(--st-muted)}
+.u-cover-img img{width:100%;height:100%;object-fit:cover}
+.u-cover-img.busy{background:linear-gradient(90deg,var(--st-soft) 0%,var(--st-mint) 50%,var(--st-soft) 100%);background-size:200% 100%;animation:spShimmer 1.6s linear infinite}
+.u-cover small{color:var(--st-muted)}
+@media (max-width:900px){.u-listing-grid{grid-template-columns:1fr}.u-lf{grid-template-columns:1fr auto}.u-lf>span{grid-column:1/-1}}
+
+/* publishing layout: accounts on top of the Webnovel card, assignment card on the right */
+.u-acct-list{margin-top:8px;border-top:0;padding-top:0}
+.u-channel-actions{margin-top:12px;padding-top:12px;border-top:1px solid var(--st-line)}
+.u-assign-card{display:flex;flex-direction:column;gap:6px}
+.u-assign-card .u-acct-assign{flex-direction:column;align-items:stretch;margin:4px 0 0}
+.u-assign-card .u-acct-assign select{min-width:0;width:100%}
+.u-assign-title{margin:0;color:var(--st-ink);font-weight:700}
+.u-assign-ok{margin:4px 0 0;color:var(--st-green-ink)}
+.u-assign-warn{margin:4px 0 0;color:#c03434}html.dark .u-assign-warn{color:#ff8b8b}

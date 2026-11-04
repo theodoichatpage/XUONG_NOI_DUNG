@@ -13,3 +13,9 @@ test('a large story is compacted automatically instead of failing',()=>{const {c
 
 test('every chapter prompt carries the hook rules; chapter 1 gets the stricter opening rule',()=>{const {c,s}=fixture();bigStory(c,s,{chars:1,charSize:50});const one=c.lfContext(s,1,''),two=c.lfContext(s,2,'');
   assert.match(one,/QUY TẮC NHỊP ĐỌC/);assert.match(one,/CẤM mở bằng: nhân vật tỉnh dậy/);assert.match(one,/KHÔNG tiết lộ bí mật cốt lõi/);assert.match(one,/Xác nhận muộn/);assert.doesNotMatch(one,/300 chữ đầu phải thấy/);assert.match(one,/CHƯƠNG 1: câu đầu tiên/);assert.match(two,/QUY TẮC NHỊP ĐỌC/);assert.doesNotMatch(two,/CHƯƠNG 1: câu đầu tiên/)});
+
+test('Webnovel listing: prompt asks for the Inkstone fields; limits are enforced',()=>{const {c,s}=fixture();bigStory(c,s,{chars:1,charSize:50});
+  const p=c.lfListingPrompt(s,{x:1});for(const x of['JOB: GENERATE_WEBNOVEL_LISTING','bookName tối đa 70 ký tự','abbreviation tối đa 15','coverPrompt','3:4'])assert.ok(p.includes(x),x);
+  const ok={bookName:'The Ashen Crown',leadingGender:'male',genre:'Historical',synopsis:'S',tags:['Reincarnation','Reincarnation',' Kingdom Building '],abbreviation:'ASHEN',length:'huge',warning:'',coverPrompt:'c'};
+  const v=c.lfValidateListing({...ok});assert.deepEqual([...v.tags],['Reincarnation','Kingdom Building']);assert.equal(v.length,'medium');assert.equal(v.warning,'none');
+  assert.throws(()=>c.lfValidateListing({...ok,bookName:'x'.repeat(71)}),/70/);assert.throws(()=>c.lfValidateListing({...ok,abbreviation:'x'.repeat(16)}),/15/);assert.throws(()=>c.lfValidateListing({...ok,leadingGender:'both'}),/male hoặc female/)});
