@@ -147,3 +147,11 @@ test('the author request box is shown in the editor and sent with Viết lại',
   c.db.content.push({id:'q1',seriesId:'r',chapterNumber:1,title:'Chương 1 — R',status:'review',body:'Old text',productionTask:'chapter'});
   vm.runInContext("uiState.storySteps={r:{step:3,base:3}}",c);assert.match(c.uiStory(),/id="uChAsk"/);
   await c.uiChapterWrite(s,c.db.content[0],'rewrite',null,'Mở đầu bằng cảnh chủ nợ đến đòi nhà');assert.match(prompt,/VIẾT LẠI toàn bộ chương này theo hướng KHÁC RÕ RỆT/);assert.match(prompt,/ĐOẠN MỞ ĐẦU CỦA BẢN TRƯỚC[\s\S]*Old text/);assert.match(prompt,/YÊU CẦU CỦA TÁC GIẢ CHO LẦN VIẾT NÀY.*chủ nợ/)});
+
+test('a rewrite result replaces a chapter that is waiting for review; approved chapters stay locked',()=>{
+  const src=fs.readFileSync('dist/chatgpt-bridge.js','utf8'),ctx=vm.createContext({});vm.runInContext(src.slice(src.indexOf('function canAutoApply('),src.indexOf('function',src.indexOf('function canAutoApply(')+10)),ctx);
+  const j={baseUpdatedAt:'u1',baseBody:'Old'};assert.equal(ctx.canAutoApply(j,{status:'review',updatedAt:'u1',body:'Old'}),true);assert.equal(ctx.canAutoApply(j,{status:'approved',updatedAt:'u1',body:'Old'}),false);assert.equal(ctx.canAutoApply(j,{status:'review',updatedAt:'u2',body:'Edited'}),false)});
+test('waiting chapter results are applied automatically, newest only, never over the author\'s unsaved edits',()=>{
+  const c=runtime();let applied=[];Object.assign(c,{canAutoApply:()=>true,applyStory:(j,ch)=>{applied.push(j.id);j.status='applied'}});
+  c.db.content.push({id:'x1',status:'review'},{id:'x2',status:'review'});c.db.aiJobs.push({id:'old',storyTask:'WRITE_CHAPTER',targetId:'x1',status:'ready'},{id:'new',storyTask:'WRITE_CHAPTER',targetId:'x1',status:'ready'},{id:'mine',storyTask:'WRITE_CHAPTER',targetId:'x2',status:'ready'});
+  vm.runInContext("uiState.chDraft={x2:{body:'typing'}}",c);assert.equal(c.uiApplyReadyChapters(),1);assert.deepEqual(applied,['new'])});
