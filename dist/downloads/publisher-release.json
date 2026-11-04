@@ -1,0 +1,15 @@
+{
+  "version": "0.1.0",
+  "filename": "Xuong_Webnovel_Publisher_v0.1.0.zip",
+  "folder": "Xuong_Webnovel_Publisher",
+  "sha256": "83ec1518dea1659081a478dd9647522c7e3d5cdb7bfefd39cfe0ce871489db4e",
+  "files": [
+    "background.js",
+    "HUONG_DAN.md",
+    "inkstone-content.js",
+    "manifest.json",
+    "popup.html",
+    "popup.js",
+    "studio-content.js"
+  ]
+}

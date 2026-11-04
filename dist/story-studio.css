@@ -559,3 +559,5 @@ html.dark .st-steps>button.done b{color:#0b0b0c}
 .u-assign-title{margin:0;color:var(--st-ink);font-weight:700}
 .u-assign-ok{margin:4px 0 0;color:var(--st-green-ink)}
 .u-assign-warn{margin:4px 0 0;color:#c03434}html.dark .u-assign-warn{color:#ff8b8b}
+
+.u-xp-note{margin:10px 0 0;color:var(--st-muted)}

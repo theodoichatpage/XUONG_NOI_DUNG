@@ -1,0 +1,4 @@
+'use strict';
+(async()=>{const state=document.getElementById('state'),report=document.getElementById('report');try{const r=await chrome.runtime.sendMessage({kind:'XP_POPUP_STATE'});if(!r?.ok)throw Error(r?.error||'Không đọc được trạng thái');
+ state.textContent=r.pending?'Đang chờ điền: “'+r.pending.listing.bookName+'” — mở trang tạo truyện Inkstone (đã đăng nhập).':'Sẵn sàng. Trong Xưởng bấm “Điền lên Inkstone”.';
+ if(r.lastReport){const h=document.createElement('p');h.textContent='Lần điền gần nhất ('+new Date(r.lastReport.at).toLocaleString('vi-VN')+'):';report.append(h);for(const it of r.lastReport.items){const d=document.createElement('div');d.textContent=(it.ok?'✓ ':'✗ ')+it.field+(it.note?' — '+it.note:'');if(!it.ok)d.className='bad';report.append(d)}}}catch(e){state.textContent=e.message}})();
