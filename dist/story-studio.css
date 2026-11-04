@@ -518,3 +518,22 @@ html.dark .st-steps>button.done b{color:#0b0b0c}
 .u-acct-assign small{width:100%;color:var(--st-muted)}
 .u-secret{font-family:Consolas,monospace;font-size:15px!important;padding:2px 6px;background:var(--st-soft)}
 .sp-warn{color:#c03434}html.dark .sp-warn{color:#ff8b8b}
+
+/* accounts inside the Webnovel channel card */
+.u-channel-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.u-acct-add{width:32px!important;padding:0!important;font-size:18px!important;line-height:1;color:var(--st-green-ink)}
+.u-acct-list{margin-top:12px;border-top:1px solid var(--st-line);padding-top:8px}
+.u-acct-bar{display:flex;align-items:center;justify-content:space-between;color:var(--st-muted);margin-bottom:4px}
+.u-acct-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0 8px 8px;border-left:2px solid transparent;border-bottom:1px solid var(--st-line)}
+.u-acct-row:last-child{border-bottom:0}
+.u-acct-row.current{border-left-color:var(--st-check)}
+.u-acct-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.u-acct-info strong{color:var(--st-ink)}.u-acct-info small{color:var(--st-muted);overflow:hidden;text-overflow:ellipsis}
+.u-acct-more{position:relative;flex:none}
+.u-acct-dots{width:32px!important;padding:0!important;border:0!important;background:none!important;font-size:18px!important;color:var(--st-text)}
+.u-acct-dots:hover,.u-acct-dots[aria-expanded=true]{background:var(--st-soft)!important}
+.u-acct-menu{position:absolute;right:0;top:34px;z-index:20;min-width:230px;background:var(--st-card);border:1px solid var(--st-field);box-shadow:0 14px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;padding:4px 0}
+.u-acct-menu button,.u-acct-menu a{display:block;width:100%;height:32px;line-height:32px;padding:0 12px!important;border:0!important;background:none!important;text-align:left;color:var(--st-text);text-decoration:none;white-space:nowrap}
+.u-acct-menu button:hover,.u-acct-menu a:hover{background:var(--st-soft)!important;color:var(--st-ink)}
+.u-acct-menu .u-acct-del{color:#c03434}html.dark .u-acct-menu .u-acct-del{color:#ff8b8b}
+.u-acct-empty{margin:8px 0 0;color:var(--st-muted)}
