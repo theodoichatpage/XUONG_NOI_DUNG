@@ -146,4 +146,4 @@ test('the author request box is shown in the editor and sent with Viết lại',
   const c=runtime([s]);let prompt='';Object.assign(c,{lfApproved:()=>true,lfChapters:()=>c.db.content,lfNextChapter:()=>2,lfPlans:()=>[],jobState:j=>j.status,uiCurrentStage:()=>['ready','',''],uiStoryJob:()=>'',lfContext:(s,n,intent)=>intent,xnDispatchText:async(job,p)=>{prompt=p;c.db.aiJobs.push(job);return job}});
   c.db.content.push({id:'q1',seriesId:'r',chapterNumber:1,title:'Chương 1 — R',status:'review',body:'Old text',productionTask:'chapter'});
   vm.runInContext("uiState.storySteps={r:{step:3,base:3}}",c);assert.match(c.uiStory(),/id="uChAsk"/);
-  await c.uiChapterWrite(s,c.db.content[0],'rewrite',null,'Mở đầu bằng cảnh chủ nợ đến đòi nhà');assert.match(prompt,/VIẾT LẠI/);assert.match(prompt,/YÊU CẦU CỦA TÁC GIẢ CHO LẦN VIẾT NÀY.*chủ nợ/)});
+  await c.uiChapterWrite(s,c.db.content[0],'rewrite',null,'Mở đầu bằng cảnh chủ nợ đến đòi nhà');assert.match(prompt,/VIẾT LẠI toàn bộ chương này theo hướng KHÁC RÕ RỆT/);assert.match(prompt,/ĐOẠN MỞ ĐẦU CỦA BẢN TRƯỚC[\s\S]*Old text/);assert.match(prompt,/YÊU CẦU CỦA TÁC GIẢ CHO LẦN VIẾT NÀY.*chủ nợ/)});
