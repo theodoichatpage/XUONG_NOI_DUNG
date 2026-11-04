@@ -93,3 +93,10 @@ test('editing a chapter saves body and keeps history; approved chapters are lock
   c.uiChapterApprove('c1');c.uiState.chDraft={c1:{title:'T',body:'Changed'}};assert.throws(()=>c.uiChapterSave('c1'),/khóa/)});
 test('chat bridge builds the chapter prompt in one place for the editor and the batch',()=>{
   const src=fs.readFileSync('dist/chatgpt-bridge.js','utf8');assert.match(src,/function xnTextPrompt\(prompt,job\)/);assert.match(src,/const textPrompt=type==='text'\?xnTextPrompt\(prompt,job\):prompt;/);assert.match(src,/async function xnDispatchText\(job,prompt\)/)});
+
+test('Duyệt và tiếp tục approves the stage and sends the next one to ChatGPT',async()=>{
+  const s={id:'k',title:'K',story:{characters:[],plans:[],glossary:[],pipeline:{source:{mode:'topic',topic:'x'},artifacts:{concept:{value:{}}}}}};
+  const c=runtime([s]);const order=['concept','bible'],approved=new Set;let built=0;
+  Object.assign(c,{lfApprove:(x,k)=>approved.add(k),uiCurrentStage:()=>{const k=order.find(k=>!approved.has(k))||'ready';return [k,{concept:'Concept',bible:'Cốt truyện tổng quan'}[k]||'']},uiBuildStory:async()=>{built++}});
+  await c.uiApproveAndContinue(s);assert.ok(approved.has('concept'));assert.equal(built,1);assert.match(c.toasted,/Đã gửi “Cốt truyện tổng quan”/);
+  s.story.pipeline.artifacts.bible={value:{}};await c.uiApproveAndContinue(s);assert.equal(built,1,'nothing more to send once everything is approved');assert.match(c.toasted,/Sang bước 3/)});
