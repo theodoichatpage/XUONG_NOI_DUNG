@@ -155,3 +155,9 @@ test('waiting chapter results are applied automatically, newest only, never over
   const c=runtime();let applied=[];Object.assign(c,{canAutoApply:()=>true,applyStory:(j,ch)=>{applied.push(j.id);j.status='applied'}});
   c.db.content.push({id:'x1',status:'review'},{id:'x2',status:'review'});c.db.aiJobs.push({id:'old',storyTask:'WRITE_CHAPTER',targetId:'x1',status:'ready'},{id:'new',storyTask:'WRITE_CHAPTER',targetId:'x1',status:'ready'},{id:'mine',storyTask:'WRITE_CHAPTER',targetId:'x2',status:'ready'});
   vm.runInContext("uiState.chDraft={x2:{body:'typing'}}",c);assert.equal(c.uiApplyReadyChapters(),1);assert.deepEqual(applied,['new'])});
+
+test('a finished batch that still carries an old error is closed, so production can continue',async()=>{
+  const {c,s,chs}=produce();c.db.content.push({id:'d1',seriesId:'b',chapterNumber:1,title:'Chương 1 — Plan 1',status:'approved',body:'Text',productionTask:'chapter'});
+  s.uiBatch={id:'old',start:1,end:1,count:1,current:1,status:'error',error:'Context vượt giới hạn.'};
+  vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const html=c.uiStory();assert.equal(s.uiBatch.status,'done');assert.doesNotMatch(html,/Context vượt giới hạn/);
+  assert.match(html,/data-ui-action="batch-one"[^>]*>Viết chương tiếp theo \(2\)/);await c.uiBatchStart(s,1);assert.equal(s.uiBatch.start,2);assert.equal(c.sent.length,1)});
