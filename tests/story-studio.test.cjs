@@ -100,3 +100,14 @@ test('Duyệt và tiếp tục approves the stage and sends the next one to Chat
   Object.assign(c,{lfApprove:(x,k)=>approved.add(k),uiCurrentStage:()=>{const k=order.find(k=>!approved.has(k))||'ready';return [k,{concept:'Concept',bible:'Cốt truyện tổng quan'}[k]||'']},uiBuildStory:async()=>{built++}});
   await c.uiApproveAndContinue(s);assert.ok(approved.has('concept'));assert.equal(built,1);assert.match(c.toasted,/Đã gửi “Cốt truyện tổng quan”/);
   s.story.pipeline.artifacts.bible={value:{}};await c.uiApproveAndContinue(s);assert.equal(built,1,'nothing more to send once everything is approved');assert.match(c.toasted,/Sang bước 3/)});
+
+test('after the outline is approved ChatGPT drafts the glossary and style guide automatically, once',async()=>{
+  const s={id:'g',title:'G',story:{characters:[],plans:[],glossary:[],styleGuide:'',pipeline:{source:{mode:'topic',topic:'x'},artifacts:{}}}};
+  const c=runtime([s]);const sent=[];let stage='outline';
+  Object.assign(c,{lfApprove:()=>{stage='ready'},uiCurrentStage:()=>[stage,stage==='ready'?'':'Dàn ý chương'],lfSend:async(x,kind)=>{sent.push(kind)},lfJobKinds:{}});
+  await c.uiApproveAndContinue(s);assert.deepEqual(sent,['GENERATE_STYLE_GLOSSARY']);assert.match(c.toasted,/Thuật ngữ & văn phong/);
+  stage='outline';s.story.glossary.push({term:'Shang'});await c.uiApproveAndContinue(s);assert.equal(sent.length,1,'an existing glossary is not regenerated')});
+test('chapter production waits while another ChatGPT step of the same book is running',async()=>{
+  const s={id:'w',title:'W',story:{characters:[],plans:[],glossary:[],pipeline:{source:{mode:'topic',topic:'x'},artifacts:{}}}};
+  const c=runtime([s]);c.lfApproved=()=>true;c.db.aiJobs.push({id:'x',seriesId:'w',storyTask:'GENERATE_STYLE_GLOSSARY',status:'waiting_send'});c.lfJobKinds={GENERATE_STYLE_GLOSSARY:'Thuật ngữ & văn phong'};
+  await assert.rejects(c.uiBatchStart(s),/Thuật ngữ & văn phong/)});
