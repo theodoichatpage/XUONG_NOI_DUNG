@@ -17,14 +17,14 @@ test('no story yet: full workspace with idea fields instead of the old blank sta
   assert.doesNotMatch(html,/Bắt đầu bộ truyện đầu tiên/);
   for(const part of['Bộ truyện của tôi','Tạo truyện mới','Xưởng Truyện','ChatGPT: Đã kết nối','Ý tưởng & nguồn','Cốt truyện & nhân vật','Sản xuất chương','Tạo từ chủ đề','Sáng tạo từ kịch bản mẫu','Chủ đề / Ý tưởng chính','0/2000','Thể loại','Quy mô','Văn phong cá nhân','Yêu cầu bổ sung','data-ui-action="reset-source"','data-ui-action="create-from-idea"','Xây dựng truyện bằng AI','Trợ lý Xưởng (AI)','Tác vụ','Hội thoại','Kết quả','Chọn tác vụ AI','Tiến trình','Đã gửi yêu cầu đến ChatGPT','ChatGPT đang xử lý','Nhận kết quả &amp; hiển thị'.replace('&amp;','&'),'Chờ bạn duyệt áp dụng'])assert.ok(html.includes(part),part);
   for(const gone of['Cấu trúc bộ truyện','Gợi ý nhanh','Ý tưởng mẫu','<h3>Ý tưởng & nguồn','Bộ truyện:'])assert.ok(!html.includes(gone),gone);
-  vm.runInContext("uiState.storySteps={new:{step:3,base:1}}",c);assert.match(c.uiStory(),/id="uBatchButton"[^>]*disabled/)});
+  vm.runInContext("uiState.storySteps={new:{step:3,base:1}}",c);assert.match(c.uiStory(),/Tạo truyện ở bước 1/)});
 test('the source tab switches between topic and reference fields',()=>{
   const c=runtime();assert.doesNotMatch(c.uiStory(),/id="uStoryLink"/);
   vm.runInContext("uiState.srcTab='reference';uiState.srcTabFor='new'",c);const html=c.uiStory();
   assert.match(html,/id="uStoryLink"/);assert.ok(html.includes('Ý tưởng của bạn (tùy chọn)'));assert.ok(html.includes('Phân tích &amp; xây dựng bằng AI')||html.includes('Phân tích & xây dựng bằng AI'))});
 test('development directions cover continue, arcs and both endings',()=>{
   const c=runtime(),values=vm.runInContext('uiStoryDirections',c).map(d=>d[1]);
-  for(const v of['Tiếp tục câu chuyện','Phát triển Arc hiện tại','Mở Arc mới','Chuẩn bị kết mở','Chuẩn bị kết đóng'])assert.ok(values.includes(v),v)});
+  for(const v of['Tiếp tục tuyến hiện tại','Theo kế hoạch đã duyệt','Mở Arc mới','Đẩy nhanh xung đột','Chuẩn bị cao trào','Chuẩn bị kết Arc','Chuẩn bị kết mở','Chuẩn bị kết đóng'])assert.ok(values.includes(v),v)});
 test('creating from the inline idea stores the real source and starts the existing build workflow',async()=>{
   const c=runtime();vm.runInContext("uiState.srcTab='reference';uiState.srcTabFor='new'",c);c.uiStoryNewDraft().topic='Một người đánh đổi ký ức để cứu em gái.';Object.assign(c.uiStoryNewDraft(),{genre:'Fantasy',chapters:12,chapterLength:'2200',extra:'Kết mở'});c.uiStoryNewDraft().referenceLink='https://example.com';
   c.uiBuildStory=async s=>{c.built=s.id};c.lfSend=async(s,kind)=>{c.sent=kind};await c.uiCreateFromIdea();
@@ -55,3 +55,41 @@ test('index.html loads a single Xưởng Truyện renderer',()=>{
   assert.doesNotMatch(html,/story-empty-reference\.js/);
   assert.ok(!fs.existsSync('dist/story-empty-reference.js'));
   for(const f of html.match(/src="[^"]+\.js"/g).map(x=>x.slice(5,-1))){const code=fs.readFileSync('dist/'+f,'utf8');if(f!=='studio-ui.js')assert.doesNotMatch(code,/series:\s*uiStory|u-story-empty/,f)}});
+
+function produce(){
+  const s={id:'b',title:'Book',channelId:'wn',story:{characters:[],plans:[],glossary:[],memories:[],pipeline:{source:{mode:'topic',topic:'x',chapters:20},artifacts:{}}}};
+  const c=runtime([s]);c.db.channels[0].name='Webnovel – Book';
+  const chs=()=>c.db.content.filter(x=>x.seriesId==='b').sort((a,b)=>a.chapterNumber-b.chapterNumber);
+  Object.assign(c,{lfApproved:()=>true,lfChapters:chs,lfNextChapter:()=>Math.max(0,...chs().map(x=>x.chapterNumber))+1,lfPlans:(s,n)=>[{kind:'chapter',title:'Plan '+n,startChapter:n,endChapter:n}],
+    lfChapterDefaults:()=>{const n=c.lfNextChapter();return{title:'Chương '+n+' — Book',channelId:'wn',seriesId:'b',status:'draft',chapterNumber:n,productionTask:'chapter',body:'',prompt:'Viết đúng kế hoạch'}},
+    lfContext:(s,n,intent)=>'CTX '+n+'\n'+intent,lfCurrentStage:()=>['ready'],uiCurrentStage:()=>['ready','Sẵn sàng',''],jobState:j=>j.status,uiStoryJob:()=>'',
+    sent:[],xnDispatchText:async(job,prompt)=>{c.sent.push({job,prompt});c.db.aiJobs.push(job);job.status='waiting_send';return job}});
+  c.uiState=vm.runInContext('uiState',c);return {c,s,chs}}
+test('step 3 shows chapter list, editor and production panel without fake chapters',()=>{
+  const {c,s}=produce();vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const html=c.uiStory();
+  for(const part of['Chương','Tất cả','Bản nháp','Đã duyệt','Đã đăng','Chọn nhiều','Chưa có chương. Chọn số chương','Sản xuất tiếp','Hướng phát triển','Yêu cầu bổ sung','Sản xuất 10 chương','Xưởng <b>→</b> ChatGPT','Trợ lý Xưởng (AI)'])assert.ok(html.includes(part),part);
+  assert.doesNotMatch(html,/data-ui-chapter=/)});
+test('batch writes chapters one by one and only moves on after the previous one is saved',async()=>{
+  const {c,s,chs}=produce();vm.runInContext("uiState.batchDrafts={b:{count:3,ending:'faster',options:'Giữ nhịp nhanh'}}",c);
+  await c.uiBatchStart(s);assert.equal(s.uiBatch.status,'running');assert.equal(c.sent.length,1);assert.equal(chs()[0].title,'Chương 1 — Plan 1');
+  assert.match(c.sent[0].prompt,/Đẩy nhanh xung đột/);assert.match(c.sent[0].prompt,/Giữ nhịp nhanh/);
+  await c.uiBatchTick();assert.equal(c.sent.length,1,'no next chapter while ChatGPT is still writing');
+  const j1=c.sent[0].job;chs()[0].body='Body 1';chs()[0].status='review';j1.status='applied';await c.uiBatchTick();
+  assert.equal(c.sent.length,2);assert.equal(s.uiBatch.current,2);assert.match(c.sent[1].prompt,/CHƯƠNG TRƯỚC \(bản nháp chưa duyệt/);
+  c.sent[1].job.status='error';c.sent[1].job.error='Không gửi được';await c.uiBatchTick();assert.equal(s.uiBatch.status,'error');
+  await c.uiBatchControl(s,'retry');assert.equal(c.sent.length,3);assert.equal(c.sent[2].job.targetId,chs()[1].id,'retry resends the failed chapter, not the finished one');
+  await c.uiBatchControl(s,'pause');chs()[1].body='Body 2';c.sent[2].job.status='applied';await c.uiBatchTick();assert.equal(c.sent.length,3,'paused batch waits');
+  await c.uiBatchControl(s,'resume');assert.equal(c.sent.length,4);chs()[2].body='Body 3';c.sent[3].job.status='applied';await c.uiBatchTick();assert.equal(s.uiBatch.status,'done');assert.equal(chs().every(x=>x.status!=='approved'),true,'nothing is approved automatically')});
+test('approve, then publish needs a real link; schedule spaces chapters 24h apart',async()=>{
+  const {c,s,chs}=produce();for(const n of[1,2])c.db.content.push({id:'c'+n,seriesId:'b',chapterNumber:n,title:'Chương '+n+' — T'+n,status:'review',body:'Text '+n,productionTask:'chapter'});
+  await assert.rejects(c.uiPublishAction(s,'one'),/Duyệt chương trước khi đăng/);
+  c.uiChapterApprove('c1');c.uiChapterApprove('c2');assert.equal(chs()[0].status,'approved');
+  c.uiState.chOpen={b:'c1'};await c.uiPublishAction(s,'one');await assert.rejects(c.uiPublishAction(s,'mark'),/Dán link chương đã đăng/);assert.equal(chs()[0].status,'approved');
+  c.uiState.pubPop.link='https://www.webnovel.com/c1';await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live');assert.equal(chs()[0].link,'https://www.webnovel.com/c1');
+  c.uiState.chSel=new Set(['c2']);await c.uiPublishAction(s,'schedule');Object.assign(c.uiState.pubPop,{date:'2026-11-05',time:'20:00'});await c.uiPublishAction(s,'save-schedule');assert.equal(chs()[1].scheduledAt,'2026-11-05T20:00');assert.equal(chs()[1].status,'approved','scheduling does not mark as published')});
+test('editing a chapter saves body and keeps history; approved chapters are locked',()=>{
+  const {c,chs}=produce();c.db.content.push({id:'c1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'review',body:'Old',productionTask:'chapter'});
+  c.uiState.chDraft={c1:{title:'T',body:'New'}};assert.equal(c.uiChapterSave('c1'),true);assert.equal(chs()[0].body,'New');assert.equal(chs()[0].history.at(-1).body,'Old');
+  c.uiChapterApprove('c1');c.uiState.chDraft={c1:{title:'T',body:'Changed'}};assert.throws(()=>c.uiChapterSave('c1'),/khóa/)});
+test('chat bridge builds the chapter prompt in one place for the editor and the batch',()=>{
+  const src=fs.readFileSync('dist/chatgpt-bridge.js','utf8');assert.match(src,/function xnTextPrompt\(prompt,job\)/);assert.match(src,/const textPrompt=type==='text'\?xnTextPrompt\(prompt,job\):prompt;/);assert.match(src,/async function xnDispatchText\(job,prompt\)/)});
