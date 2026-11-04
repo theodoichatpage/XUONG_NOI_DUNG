@@ -140,3 +140,10 @@ test('a chapter being written shows the moving "writing" state in the list and t
 test('Bridge returns to the Xưởng tab once the prompt is sent, and only then',()=>{
   const bg=fs.readFileSync('extension/background.js','utf8'),cs=fs.readFileSync('extension/chatgpt-content.js','utf8');
   assert.match(cs,/kind:'XN_CHAT_SENT',jobId:j\.id,sent/);assert.match(bg,/m\.kind==='XN_CHAT_SENT'/);assert.match(bg,/if\(m\.sent&&j\.studioTabId\)/)});
+
+test('the author request box is shown in the editor and sent with Viết lại',async()=>{
+  const s={id:'r',title:'R',story:{characters:[],plans:[],glossary:[],memories:[],pipeline:{source:{mode:'topic',topic:'x',chapters:20},artifacts:{}}}};
+  const c=runtime([s]);let prompt='';Object.assign(c,{lfApproved:()=>true,lfChapters:()=>c.db.content,lfNextChapter:()=>2,lfPlans:()=>[],jobState:j=>j.status,uiCurrentStage:()=>['ready','',''],uiStoryJob:()=>'',lfContext:(s,n,intent)=>intent,xnDispatchText:async(job,p)=>{prompt=p;c.db.aiJobs.push(job);return job}});
+  c.db.content.push({id:'q1',seriesId:'r',chapterNumber:1,title:'Chương 1 — R',status:'review',body:'Old text',productionTask:'chapter'});
+  vm.runInContext("uiState.storySteps={r:{step:3,base:3}}",c);assert.match(c.uiStory(),/id="uChAsk"/);
+  await c.uiChapterWrite(s,c.db.content[0],'rewrite',null,'Mở đầu bằng cảnh chủ nợ đến đòi nhà');assert.match(prompt,/VIẾT LẠI/);assert.match(prompt,/YÊU CẦU CỦA TÁC GIẢ CHO LẦN VIẾT NÀY.*chủ nợ/)});

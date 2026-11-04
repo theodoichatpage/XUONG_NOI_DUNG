@@ -501,3 +501,7 @@ html.dark .st-steps>button.done b{color:#0b0b0c}
 .sp-skel i{display:block;height:11px;background:linear-gradient(90deg,var(--st-soft) 0%,var(--st-mint) 50%,var(--st-soft) 100%);background-size:200% 100%;animation:spShimmer 1.6s linear infinite}
 .sp-skel i:nth-of-type(2){width:94%}.sp-skel i:nth-of-type(3){width:88%}.sp-skel i:nth-of-type(4){width:96%}.sp-skel i:nth-of-type(5){width:72%}.sp-skel i:nth-of-type(6){width:84%}
 @media (prefers-reduced-motion:reduce){.sp-row.writing,.sp-skel i,.sp-row.writing .sp-st.run,.sp-prog li.run>b{animation:none}}
+
+.sp-ask{padding:0 20px 10px}
+.sp-ask input{width:100%;height:32px;border:1px solid var(--st-field);background:var(--st-card);color:var(--st-ink);padding:0 10px}
+.sp-ask input:focus{outline:1px solid var(--st-check);border-color:var(--st-check)}
