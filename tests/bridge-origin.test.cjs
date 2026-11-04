@@ -10,5 +10,5 @@ test('web, background and popup expect the same Bridge version as the manifest',
   const v=manifest.version;
   assert.match(fs.readFileSync('extension/background.js','utf8'),new RegExp("version:'"+v.replace(/\./g,'\\.')+"'"));
   assert.match(fs.readFileSync('extension/popup.html','utf8'),new RegExp('Bridge '+v.replace(/\./g,'\\.')));
-  const web=fs.readFileSync('dist/chatgpt-bridge.js','utf8');assert.match(web,new RegExp("r\\.version==='"+v.replace(/\./g,'\\.')+"'"));
+  const web=fs.readFileSync('dist/chatgpt-bridge.js','utf8');assert.match(web,/xnBridgeOK\(r\.version\)/);assert.match(web,new RegExp('Bridge '+v.replace(/\./g,'\\.')));
   assert.match(web,new RegExp('Xuong_ChatGPT_Bridge_v'+v.replace(/\./g,'\\.')+'\\.zip'))});
