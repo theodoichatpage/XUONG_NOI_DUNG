@@ -128,3 +128,5 @@ test('auto-approve stops on an invalid result and does not retry the same result
   Object.assign(c,{uiCurrentStage:()=>['bible','Cốt truyện tổng quan'],uiApproveAndContinue:async()=>{tries++;throw Error('Thiếu premise.')}});
   await c.uiAutoApproveTick();await c.uiAutoApproveTick();assert.equal(tries,1);assert.match(c.toasted,/Không tự duyệt được Cốt truyện tổng quan: Thiếu premise/)});
 test('settings show the auto-approve switch',()=>{const c=runtime();c.db.uiSettings={autoApprove:true};Object.assign(c,{bridgeStatus:{ok:false},document:{documentElement:{classList:{contains:()=>true}}}});const html=vm.runInContext('uiSettings()',c);assert.match(html,/Tự duyệt các bước dựng truyện/);assert.match(html,/data-ui-autoapprove="on" class="selected"/)});
+
+test('stepper marks finished steps and keeps the viewed one active',()=>{const c=runtime();const html=c.uiStorySteps(1,2);assert.match(html,/data-ui-storystep="1" class="active done"/);assert.match(html,/data-ui-storystep="2" class="done"/);assert.match(html,/data-ui-storystep="3" class=""/);assert.equal((html.match(/class="hot"/g)||[]).length,2)});

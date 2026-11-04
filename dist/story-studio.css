@@ -479,3 +479,13 @@ html.dark .sp-prog li.err{color:#ff8b8b}html.dark .sp-prog li.done>b{color:#0b0b
 .pl-track li.wait{color:var(--st-ink);font-weight:700}.pl-track li.wait>b{border-color:var(--st-check)}.pl-track li.wait small{color:var(--st-green-ink);font-weight:400}
 .pl-track li.run{color:var(--st-ink);font-weight:700}.pl-track li.run>b{border-color:var(--st-check);background:var(--st-check);box-shadow:inset 0 0 0 3px var(--st-card)}.pl-track li.run small{color:var(--st-green-ink);font-weight:400}
 html.dark .pl-track li.ok>b{color:#0b0b0c}
+
+/* Stepper: compact, finished steps in orange */
+.st-studio>.st-steps{justify-content:flex-start;gap:6px}
+.st-studio>.st-steps>i{flex:0 0 48px;max-width:48px;min-width:24px}
+.st-studio>.st-steps>i.hot{background:var(--st-check)}
+.st-steps>button.done{color:var(--st-ink)}
+.st-steps>button.done b{background:var(--st-check);border-color:var(--st-check);color:#fff}
+.st-steps>button b .st-ico{width:13px;height:13px;stroke-width:3}
+.st-steps>button.active:not(.done) b{background:none;color:var(--st-green-ink);border-color:var(--st-check)}
+html.dark .st-steps>button.done b{color:#0b0b0c}
