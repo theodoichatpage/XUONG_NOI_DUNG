@@ -505,3 +505,16 @@ html.dark .st-steps>button.done b{color:#0b0b0c}
 .sp-ask{padding:0 20px 10px}
 .sp-ask input{width:100%;height:32px;border:1px solid var(--st-field);background:var(--st-card);color:var(--st-ink);padding:0 10px}
 .sp-ask input:focus{outline:1px solid var(--st-check);border-color:var(--st-check)}
+
+/* Webnovel accounts */
+.u-acct-vault{margin-left:auto;color:var(--st-muted)}
+.u-acct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:14px}
+.u-acct p{margin:6px 0}.u-acct small{color:var(--st-muted)}
+.u-acct.current{border-color:var(--st-check)}
+.u-acct-head{display:flex;align-items:center;gap:8px}
+.u-acct-tag{font-size:12px!important;padding:1px 7px;background:var(--st-mint);color:var(--st-green-ink)}
+.u-acct-assign{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 16px;color:var(--st-text)}
+.u-acct-assign select{height:32px;min-width:280px;border:1px solid var(--st-field);background:var(--st-card);color:var(--st-ink);padding:0 10px}
+.u-acct-assign small{width:100%;color:var(--st-muted)}
+.u-secret{font-family:Consolas,monospace;font-size:15px!important;padding:2px 6px;background:var(--st-soft)}
+.sp-warn{color:#c03434}html.dark .sp-warn{color:#ff8b8b}

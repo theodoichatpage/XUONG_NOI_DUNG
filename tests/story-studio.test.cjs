@@ -161,3 +161,21 @@ test('a finished batch that still carries an old error is closed, so production 
   s.uiBatch={id:'old',start:1,end:1,count:1,current:1,status:'error',error:'Context vượt giới hạn.'};
   vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const html=c.uiStory();assert.equal(s.uiBatch.status,'done');assert.doesNotMatch(html,/Context vượt giới hạn/);
   assert.match(html,/data-ui-action="batch-one"[^>]*>Viết chương tiếp theo \(2\)/);await c.uiBatchStart(s,1);assert.equal(s.uiBatch.start,2);assert.equal(c.sent.length,1)});
+
+function vaultRuntime(series=[]){const c=runtime(series);Object.assign(c,{crypto:globalThis.crypto,TextEncoder,TextDecoder,atob,btoa,setTimeout:()=>0,clearTimeout:()=>{},safeLink:(u,l)=>'<a>'+l+'</a>',uiBadge:t=>t});const answers=[];c.choose=async()=>answers.shift()??null;return {c,answers}}
+test('Webnovel passwords are stored only encrypted and open again with the master password (new device = same backup + master password)',async()=>{
+  const {c,answers}=vaultRuntime();answers.push({name:'Main',loginId:'me@mail.com',password:'Secret#123',penName:'Ash',profileUrl:'https://inkstone.webnovel.com/'},{p1:'master-pass',p2:'master-pass'});
+  assert.equal(await c.uiAccountEdit(''),true);const saved=JSON.stringify(c.db);assert.doesNotMatch(saved,/Secret#123/);assert.doesNotMatch(saved,/master-pass/);assert.ok(c.db.vault.check.ct);
+  const backup=JSON.parse(saved);
+  // another device: same data, vault locked
+  const other=vaultRuntime();Object.assign(other.c.db,backup);other.answers.push({p:'wrong-pass'});await assert.rejects(other.c.uiAccountSecret(backup.webnovelAccounts[0].id),/Mật khẩu chủ không đúng/);
+  other.answers.push({p:'master-pass'});assert.equal(await other.c.uiAccountSecret(backup.webnovelAccounts[0].id),'Secret#123')});
+test('the same Webnovel login cannot be added twice, and every story belongs to one account',async()=>{
+  const s={id:'s9',title:'Ashen',story:{characters:[],plans:[],glossary:[],pipeline:{source:{mode:'topic',topic:'x'},artifacts:{}}}};
+  const {c,answers}=vaultRuntime([s]);answers.push({name:'A',loginId:'a@mail.com',password:'',penName:'',profileUrl:''});await c.uiAccountEdit('');
+  answers.push({name:'B',loginId:'A@mail.com',password:'',penName:'',profileUrl:''});await assert.rejects(c.uiAccountEdit(''),/đã có trong danh sách/);
+  s.webnovelAccountId=c.db.webnovelAccounts[0].id;assert.equal(c.uiAccountOf(s).name,'A');const html=c.uiAccounts(s);assert.match(html,/Truyện quản lý: <b>Ashen<\/b>/);assert.match(html,/id="uStoryAccount"/);assert.doesNotMatch(html,/a@mail\.com.*password/i)});
+test('publishing needs the story\'s account once accounts exist, and records it',async()=>{
+  const {c,s,chs}=produce();Object.assign(c,{crypto:globalThis.crypto});c.db.webnovelAccounts=[{id:'acc1',name:'Main',loginId:'me'}];c.db.content.push({id:'p1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'approved',body:'x',productionTask:'chapter'});
+  c.uiState.chOpen={b:'p1'};await c.uiPublishAction(s,'one');c.uiState.pubPop.link='https://www.webnovel.com/c1';await assert.rejects(c.uiPublishAction(s,'mark'),/Gán tài khoản Webnovel/);
+  s.webnovelAccountId='acc1';await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live');assert.equal(chs()[0].publishedAccountId,'acc1')});
