@@ -111,3 +111,20 @@ test('chapter production waits while another ChatGPT step of the same book is ru
   const s={id:'w',title:'W',story:{characters:[],plans:[],glossary:[],pipeline:{source:{mode:'topic',topic:'x'},artifacts:{}}}};
   const c=runtime([s]);c.lfApproved=()=>true;c.db.aiJobs.push({id:'x',seriesId:'w',storyTask:'GENERATE_STYLE_GLOSSARY',status:'waiting_send'});c.lfJobKinds={GENERATE_STYLE_GLOSSARY:'Thuật ngữ & văn phong'};
   await assert.rejects(c.uiBatchStart(s),/Thuật ngữ & văn phong/)});
+
+test('auto-approve: valid stage results are approved and the next stage is sent, only when switched on',async()=>{
+  const s={id:'a',title:'A',story:{characters:[],plans:[],glossary:[],styleGuide:'x',pipeline:{source:{mode:'topic',topic:'x'},artifacts:{bible:{value:{premise:'p'},createdAt:'t1'}}}}};
+  const c=runtime([s]);const approved=[],sent=[];let order=['bible','characters','outline'];
+  Object.assign(c,{lfApprove:(x,k)=>{approved.push(k)},uiCurrentStage:()=>{const k=order.find(k=>!approved.includes(k))||'ready';return [k,k]},uiBuildStory:async()=>{sent.push(uiCur())}});
+  const uiCur=()=>c.uiCurrentStage()[0];
+  await c.uiAutoApproveTick();assert.deepEqual(approved,[],'off by default');
+  c.db.uiSettings={autoApprove:true};await c.uiAutoApproveTick();assert.deepEqual(approved,['bible']);assert.deepEqual(sent,['characters'],'next stage sent to ChatGPT');
+  await c.uiAutoApproveTick();assert.deepEqual(approved,['bible'],'nothing to approve until the characters arrive');
+  s.story.pipeline.artifacts.characters={value:{characters:[]},createdAt:'t2'};c.db.aiJobs.push({seriesId:'a',storyTask:'GENERATE_OUTLINE',status:'running'});await c.uiAutoApproveTick();assert.deepEqual(approved,['bible'],'waits while ChatGPT is busy');
+  c.db.aiJobs[0].status='applied';await c.uiAutoApproveTick();assert.deepEqual(approved,['bible','characters'])});
+test('auto-approve stops on an invalid result and does not retry the same result',async()=>{
+  const s={id:'b',title:'B',story:{characters:[],plans:[],glossary:[],pipeline:{source:{mode:'topic',topic:'x'},artifacts:{bible:{value:{},createdAt:'t'}}}}};
+  const c=runtime([s]);let tries=0;c.db.uiSettings={autoApprove:true};
+  Object.assign(c,{uiCurrentStage:()=>['bible','Cốt truyện tổng quan'],uiApproveAndContinue:async()=>{tries++;throw Error('Thiếu premise.')}});
+  await c.uiAutoApproveTick();await c.uiAutoApproveTick();assert.equal(tries,1);assert.match(c.toasted,/Không tự duyệt được Cốt truyện tổng quan: Thiếu premise/)});
+test('settings show the auto-approve switch',()=>{const c=runtime();c.db.uiSettings={autoApprove:true};Object.assign(c,{bridgeStatus:{ok:false},document:{documentElement:{classList:{contains:()=>true}}}});const html=vm.runInContext('uiSettings()',c);assert.match(html,/Tự duyệt các bước dựng truyện/);assert.match(html,/data-ui-autoapprove="on" class="selected"/)});
