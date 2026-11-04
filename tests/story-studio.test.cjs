@@ -130,3 +130,13 @@ test('auto-approve stops on an invalid result and does not retry the same result
 test('settings show the auto-approve switch',()=>{const c=runtime();c.db.uiSettings={autoApprove:true};Object.assign(c,{bridgeStatus:{ok:false},document:{documentElement:{classList:{contains:()=>true}}}});const html=vm.runInContext('uiSettings()',c);assert.match(html,/Tự duyệt các bước dựng truyện/);assert.match(html,/data-ui-autoapprove="on" class="selected"/)});
 
 test('stepper marks finished steps and keeps the viewed one active',()=>{const c=runtime();const html=c.uiStorySteps(1,2);assert.match(html,/data-ui-storystep="1" class="active done"/);assert.match(html,/data-ui-storystep="2" class="done"/);assert.match(html,/data-ui-storystep="3" class=""/);assert.equal((html.match(/class="hot"/g)||[]).length,2)});
+
+test('a chapter being written shows the moving "writing" state in the list and the editor',()=>{
+  const s={id:'w2',title:'W',story:{characters:[],plans:[],glossary:[],memories:[],pipeline:{source:{mode:'topic',topic:'x',chapters:20},artifacts:{}}}};
+  const c=runtime([s]);Object.assign(c,{lfApproved:()=>true,lfChapters:()=>c.db.content,lfNextChapter:()=>2,lfPlans:()=>[],jobState:j=>j.status,uiCurrentStage:()=>['ready','',''],uiStoryJob:()=>''});
+  c.db.content.push({id:'k1',seriesId:'w2',chapterNumber:1,title:'Chương 1 — W',status:'draft',body:'',productionTask:'chapter'});c.db.aiJobs.push({id:'j',storyTask:'WRITE_CHAPTER',targetId:'k1',seriesId:'w2',status:'waiting_send'});
+  vm.runInContext("uiState.storySteps={w2:{step:3,base:3}}",c);const html=c.uiStory();
+  assert.match(html,/class="sp-row active writing"/);assert.match(html,/class="sp-skel"/);assert.match(html,/ChatGPT đang viết Chương 1/)});
+test('Bridge returns to the Xưởng tab once the prompt is sent, and only then',()=>{
+  const bg=fs.readFileSync('extension/background.js','utf8'),cs=fs.readFileSync('extension/chatgpt-content.js','utf8');
+  assert.match(cs,/kind:'XN_CHAT_SENT',jobId:j\.id,sent/);assert.match(bg,/m\.kind==='XN_CHAT_SENT'/);assert.match(bg,/if\(m\.sent&&j\.studioTabId\)/)});

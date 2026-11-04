@@ -1,4 +1,4 @@
-# Xưởng ChatGPT Bridge 0.4.10
+# Xưởng ChatGPT Bridge 0.4.11
 
 ## Cài trên Chrome hoặc Microsoft Edge máy tính
 
@@ -57,7 +57,7 @@ Chưa kiểm thử end-to-end trên tài khoản ChatGPT thật với extension 
 3. Mở `chrome://extensions` hoặc `edge://extensions`, bấm **Tải lại** trên extension đã cài. Không cài thêm một bản thứ hai.
 4. F5 cả Xưởng và ChatGPT, chọn lại tab trong popup và kiểm tra trạng thái xanh trên Xưởng.
 
-Bridge 0.4.10 tự tải lại khi file trong thư mục extension được thay bằng bản mới (dùng cùng trình tự cập nhật bên dưới). Bridge 0.4.9 nhận kết quả cả khi ChatGPT đổi địa chỉ hội thoại (ví dụ chuyển vào Project) và giữ việc đang chạy khi cập nhật extension. Bridge 0.4.8 đọc câu trả lời trên mọi kiểu giao diện ChatGPT (kể cả ResponseRoot, không có thuộc tính vai trò) và coi là xong khi JSON đã hoàn chỉnh. Bridge 0.4.7 tự nhận câu trả lời mới của ChatGPT kể cả khi tin nhắn dài bị thu gọn. Bridge 0.4.6 nhận được câu trả lời trên giao diện ChatGPT khi đã đăng nhập (dò theo mã việc [XUONG_JOB]). Bridge 0.4.5 khi cài hoặc tải lại sẽ tự xóa việc bị kẹt và tải lại các tab Xưởng và ChatGPT. Bridge 0.4.4 tự bấm Gửi trong ChatGPT (tắt được trong popup). Bridge 0.4.3 nhận ra ô nhập kiểu mới của ChatGPT. Bridge 0.4.2 chạy trên https://xuong-noi-dung-khaki.vercel.app; popup hiện trạng thái ChatGPT và mục "Trang Xưởng" để tự chẩn đoán (bị chặn quyền / chưa nạp / đã nạp) kèm nút sửa nhanh. Giao thức kết nối không thay đổi. Nếu popup ghi Xưởng Truyện 1.0.0 thì đó là Bridge khác.
+Bridge 0.4.11 mở tab ChatGPT chỉ trong lúc gửi, gửi xong tự quay về tab Xưởng (nếu tắt tự gửi thì giữ tab ChatGPT để bạn bấm Gửi). Bridge 0.4.10 tự tải lại khi file trong thư mục extension được thay bằng bản mới (dùng cùng trình tự cập nhật bên dưới). Bridge 0.4.9 nhận kết quả cả khi ChatGPT đổi địa chỉ hội thoại (ví dụ chuyển vào Project) và giữ việc đang chạy khi cập nhật extension. Bridge 0.4.8 đọc câu trả lời trên mọi kiểu giao diện ChatGPT (kể cả ResponseRoot, không có thuộc tính vai trò) và coi là xong khi JSON đã hoàn chỉnh. Bridge 0.4.7 tự nhận câu trả lời mới của ChatGPT kể cả khi tin nhắn dài bị thu gọn. Bridge 0.4.6 nhận được câu trả lời trên giao diện ChatGPT khi đã đăng nhập (dò theo mã việc [XUONG_JOB]). Bridge 0.4.5 khi cài hoặc tải lại sẽ tự xóa việc bị kẹt và tải lại các tab Xưởng và ChatGPT. Bridge 0.4.4 tự bấm Gửi trong ChatGPT (tắt được trong popup). Bridge 0.4.3 nhận ra ô nhập kiểu mới của ChatGPT. Bridge 0.4.2 chạy trên https://xuong-noi-dung-khaki.vercel.app; popup hiện trạng thái ChatGPT và mục "Trang Xưởng" để tự chẩn đoán (bị chặn quyền / chưa nạp / đã nạp) kèm nút sửa nhanh. Giao thức kết nối không thay đổi. Nếu popup ghi Xưởng Truyện 1.0.0 thì đó là Bridge khác.
 
 ## Tự cập nhật (Windows)
 

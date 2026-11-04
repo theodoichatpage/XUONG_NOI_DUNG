@@ -489,3 +489,15 @@ html.dark .pl-track li.ok>b{color:#0b0b0c}
 .st-steps>button b .st-ico{width:13px;height:13px;stroke-width:3}
 .st-steps>button.active:not(.done) b{background:none;color:var(--st-green-ink);border-color:var(--st-check)}
 html.dark .st-steps>button.done b{color:#0b0b0c}
+
+/* "ChatGPT đang viết" shimmer */
+@keyframes spShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes spPulse{50%{opacity:.55}}
+.sp-row.writing{background-image:linear-gradient(90deg,transparent 0%,rgba(255,90,31,.08) 35%,rgba(255,90,31,.24) 50%,rgba(255,90,31,.08) 65%,transparent 100%);background-size:200% 100%;animation:spShimmer 1.8s linear infinite}
+.sp-row.writing .sp-st.run,.sp-prog li.run>b{animation:spPulse 1.2s ease-in-out infinite}
+.sp-doc{position:relative}
+.sp-skel{position:absolute;top:24px;left:max(24px,calc((100% - 720px)/2));right:max(24px,calc((100% - 720px)/2));display:flex;flex-direction:column;gap:14px;pointer-events:none}
+.sp-skel b{font-weight:400;color:var(--st-green-ink);margin-bottom:4px}
+.sp-skel i{display:block;height:11px;background:linear-gradient(90deg,var(--st-soft) 0%,var(--st-mint) 50%,var(--st-soft) 100%);background-size:200% 100%;animation:spShimmer 1.6s linear infinite}
+.sp-skel i:nth-of-type(2){width:94%}.sp-skel i:nth-of-type(3){width:88%}.sp-skel i:nth-of-type(4){width:96%}.sp-skel i:nth-of-type(5){width:72%}.sp-skel i:nth-of-type(6){width:84%}
+@media (prefers-reduced-motion:reduce){.sp-row.writing,.sp-skel i,.sp-row.writing .sp-st.run,.sp-prog li.run>b{animation:none}}
