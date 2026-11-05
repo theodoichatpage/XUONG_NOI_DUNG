@@ -1,4 +1,4 @@
-# Xưởng Publisher 0.3.2 (Webnovel + Sudowrite)
+# Xưởng Publisher 0.3.3 (Webnovel + Sudowrite)
 
 Extension riêng, chạy cạnh Xưởng ChatGPT Bridge. Nhiệm vụ: điền **hồ sơ truyện** từ Xưởng vào form tạo truyện của Inkstone.
 
