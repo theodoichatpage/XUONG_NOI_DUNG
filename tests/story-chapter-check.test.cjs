@@ -28,11 +28,12 @@ test('repeated sentence openings, repeated phrases and misspelled glossary names
 test('ChatGPT chapter review stores a verdict without touching the body and goes stale after edits',()=>{
   const {c,s}=fixture();const ch={id:'ch1',seriesId:s.id,title:'Chapter 1',body:'Mira opened the gate.',status:'review',bodyRevision:2,chapterNumber:1};c.db.content.push(ch);
   const p=c.lfTaskPrompt(s,'REVIEW_CHAPTER',{chapterId:'ch1'});assert.match(p,/Mira opened the gate/);assert.match(p,/contradictions/);
-  const review={verdict:'revise',hook:{score:2,note:'Mở chậm'},ending:{score:4,note:'Tốt'},planCoverage:'Đủ',contradictions:[{issue:'Mira đã mất chìa khóa ở chương trước',evidence:'Mira opened the gate.'}],styleIssues:[],summaryVi:'Cần sửa phần mở.'};
+  const review={rubric:{plot:{score:16,why:'Ý tưởng rõ',fix:''},hook:{score:11,why:'Mở chậm',fix:'Cắt đoạn tả cổng'},characters:{score:11,why:'',fix:''},style:{score:13,why:'',fix:''},world:{score:8,why:'',fix:''},pacing:{score:5,why:'Kết bằng tóm tắt',fix:'Kết bằng tiếng gõ cửa'},genre:{score:6,why:'',fix:''}},contradictions:[{issue:'Mira đã mất chìa khóa ở chương trước',evidence:'Mira opened the gate.'}],fixes:[{where:'Mira opened the gate.',problem:'Mâu thuẫn',suggestion:'Cho Mira phá khóa'}],summaryVi:'Cần sửa phần mở.'};
   const j={seriesId:s.id,storyTask:'REVIEW_CHAPTER',scope:{chapterId:'ch1'},inputSignature:c.lfHash(c.lfTaskInput(s,'REVIEW_CHAPTER',{chapterId:'ch1'})),targetSignature:c.lfHash(null)};
   c.lfApplyTask(j,JSON.stringify(review));
-  assert.equal(ch.body,'Mira opened the gate.');assert.equal(ch.status,'review');assert.equal(ch.aiReview.value.verdict,'revise');assert.equal(c.lfAIReviewFresh(ch),true);
+  assert.equal(ch.body,'Mira opened the gate.');assert.equal(ch.status,'review');assert.equal(ch.aiReview.value.verdict,'revise');assert.equal(ch.aiReview.value.total,70);assert.equal(ch.aiReview.value.v,2);assert.match(p,/Mở đầu và sức hút/);assert.match(p,/85\+ chỉ khi chương đăng được ngay/);assert.equal(c.lfAIReviewFresh(ch),true);
   ch.bodyRevision=3;assert.equal(c.lfAIReviewFresh(ch),false)});
 test('malformed chapter review is rejected',()=>{
-  const {c,s}=fixture();assert.throws(()=>c.lfValidateOutput(s,'REVIEW_CHAPTER',{verdict:'maybe'}),/verdict/);
-  assert.throws(()=>c.lfValidateOutput(s,'REVIEW_CHAPTER',{verdict:'ok',hook:{score:9,note:''},ending:{score:3,note:''},planCoverage:'x',contradictions:[],styleIssues:[],summaryVi:'x'}),/hook/)});
+  const {c,s}=fixture();assert.throws(()=>c.lfValidateOutput(s,'REVIEW_CHAPTER',{verdict:'ok'}),/rubric/);
+  const r=k=>({plot:{score:30},hook:{score:5},characters:{score:5},style:{score:5},world:{score:5},pacing:{score:5},genre:{score:5}});assert.throws(()=>c.lfValidateOutput(s,'REVIEW_CHAPTER',{rubric:{plot:{score:10}},summaryVi:'x'}),/hook/);
+  const v=c.lfValidateOutput(s,'REVIEW_CHAPTER',{rubric:r(),contradictions:[],fixes:[],summaryVi:'x'});assert.equal(v.rubric.plot.score,20,'scores are capped at the criterion maximum');assert.equal(v.total,50);assert.equal(v.verdict,'revise')});

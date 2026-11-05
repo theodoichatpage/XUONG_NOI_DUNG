@@ -67,7 +67,7 @@ function produce(){
   c.uiState=vm.runInContext('uiState',c);return {c,s,chs}}
 test('step 3 shows chapter list, editor and production panel without fake chapters',()=>{
   const {c,s}=produce();vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const html=c.uiStory();
-  for(const part of['Chương','Tất cả','Bản nháp','Đã duyệt','Đã đăng','Chọn nhiều','Chưa có chương. Chọn số chương','Sản xuất tiếp','Hướng phát triển','Yêu cầu bổ sung','Sản xuất 10 chương','Xưởng <b>→</b> ChatGPT','Trợ lý Xưởng (AI)'])assert.ok(html.includes(part),part);
+  for(const part of['Chương','Tất cả','Bản nháp','Đã duyệt','Đã đăng','Chưa có chương. Chọn số chương','Sản xuất tiếp','Hướng phát triển','Yêu cầu bổ sung','Sản xuất 10 chương','Xưởng <b>→</b> ChatGPT','Trợ lý Xưởng (AI)'])assert.ok(html.includes(part),part);
   assert.doesNotMatch(html,/data-ui-chapter=/)});
 test('batch writes chapters one by one and only moves on after the previous one is saved',async()=>{
   const {c,s,chs}=produce();vm.runInContext("uiState.batchDrafts={b:{count:3,ending:'faster',options:'Giữ nhịp nhanh'}}",c);
@@ -216,11 +216,24 @@ test('"Sửa theo góp ý" turns the review into a rewrite request',()=>{const c
 test('publishing a chapter below the score asks first; declining keeps it unpublished',async()=>{const {c,s,chs}=produce();let asked='';c.uiConfirm=async m=>{asked=m;return false};c.lfChapterCheck=()=>({items:[]});c.lfAIReviewFresh=()=>false;
   c.db.content.push({id:'g1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'approved',body:'x',productionTask:'chapter'});c.uiState.chOpen={b:'g1'};await c.uiPublishAction(s,'one');c.uiState.pubPop.link='https://www.webnovel.com/c1';
   await c.uiPublishAction(s,'mark');assert.match(asked,/Chương 1: chưa chấm bằng ChatGPT/);assert.equal(chs()[0].status,'approved');c.uiConfirm=async()=>true;await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live')});
-test('auto-scoring (off by default) reviews drafts one at a time after the batch',async()=>{const {c,s}=produce();const sent=[];c.lfSend=async(x,k,sc)=>{sent.push(sc.chapterId)};c.lfAIReviewFresh=x=>!!x.aiReview;c.lfVersion=()=>1;
-  c.db.content.push({id:'d1',seriesId:'b',chapterNumber:1,status:'review',body:'a',productionTask:'chapter'},{id:'d2',seriesId:'b',chapterNumber:2,status:'review',body:'b',productionTask:'chapter'});
-  assert.equal(await c.uiReviewTick(),false);c.db.uiSettings={autoReview:true};assert.equal(await c.uiReviewTick(),true);assert.deepEqual(sent,['d1']);
-  s.uiBatch={status:'running'};assert.equal(await c.uiReviewTick(),false,'not while a batch runs');s.uiBatch.status='done';await c.uiReviewTick();assert.deepEqual(sent,['d1','d2'])});
-
+test('quality loop: score → fix below target → score again; passes at the target, stops after N rounds',async()=>{const {c,s}=produce();const sent=[];let ver=1;
+  const rv=total=>({v:2,total,rubric:Object.fromEntries([['plot',20],['hook',20],['characters',15],['style',15],['world',10],['pacing',10],['genre',10]].map(([k,m])=>[k,{score:Math.round(m*total/100),why:'w',fix:'f'}])),contradictions:[],fixes:[{where:'x',problem:'p',suggestion:'s'}],summaryVi:'s'});
+  Object.assign(c,{LF_RUBRIC:[['plot','a',20],['hook','b',20],['characters','c',15],['style','d',15],['world','e',10],['pacing','f',10],['genre','g',10]],lfRubricLabel:(s,k)=>k,lfChapterCheck:()=>({items:[]}),lfVersion:()=>ver,lfAIReviewFresh:x=>!!x.aiReview&&x.aiReview.revision===ver,lfSend:async(x,k,sc)=>{sent.push('review:'+sc.chapterId)},uiChapterWrite:async(x,ch,mode,b,ask)=>{sent.push(mode+':'+ch.id);assert.match(ask,/Sửa chương theo góp ý/)}});
+  
+  c.db.content.push({id:'q1',seriesId:'b',chapterNumber:1,status:'review',body:'a',productionTask:'chapter'});
+  assert.equal(await c.uiQaTick(),false,'off by default');c.db.uiSettings={qaLoop:true,qaTarget:85,qaMaxRounds:2};
+  await c.uiQaTick();assert.deepEqual(sent,['review:q1']);
+  c.db.content[0].aiReview={revision:ver,value:rv(70)};await c.uiQaTick();assert.deepEqual(sent,['review:q1','fix:q1']);assert.equal(c.db.content[0].qa.round,1);
+  ver=2;await c.uiQaTick();assert.equal(sent.at(-1),'review:q1','the fixed chapter is scored again');
+  c.db.content[0].aiReview={revision:ver,value:rv(80)};await c.uiQaTick();assert.equal(sent.at(-1),'fix:q1');assert.equal(c.db.content[0].qa.round,2);
+  ver=3;c.db.content[0].aiReview={revision:ver,value:rv(82)};await c.uiQaTick();assert.equal(c.db.content[0].qa.status,'needs-human','stops after the maximum rounds');assert.deepEqual([...c.db.content[0].qa.scores],[70,80,82]);
+  ver=4;c.db.content[0].qa.status='fixing';c.db.content[0].aiReview={revision:ver,value:rv(90)};await c.uiQaTick();assert.equal(c.db.content[0].qa.status,'passed')});
+test('step 4 shows the 7 criteria with why/where to fix, and publishing lives there (not in step 3)',()=>{const {c,s}=produce();c.LF_RUBRIC=[['plot','Cốt truyện và ý tưởng',20],['hook','Mở đầu và sức hút',20],['characters','Xây dựng nhân vật',15],['style','Văn phong',15],['world','Bối cảnh',10],['pacing','Nhịp',10],['genre','Phù hợp',10]];c.lfRubricLabel=(s,k)=>c.LF_RUBRIC.find(x=>x[0]===k)[1];c.lfChapterCheck=()=>({items:[]});c.lfAIReviewFresh=()=>true;
+  const value={v:2,total:70,verdict:'revise',rubric:{plot:{score:16,why:'Ý tưởng rõ',fix:''},hook:{score:11,why:'Mở chậm',fix:'Cắt đoạn tả mái nhà'},characters:{score:11,why:'',fix:''},style:{score:13,why:'',fix:''},world:{score:8,why:'',fix:''},pacing:{score:5,why:'',fix:'Kết bằng tiếng gõ cửa'},genre:{score:6,why:'',fix:''}},contradictions:[],fixes:[{where:'The roof was not his.',problem:'Mở bằng tả',suggestion:'Mở bằng chủ nợ'}],summaryVi:'Tiềm năng tốt.'};
+  c.db.content.push({id:'v1',seriesId:'b',chapterNumber:1,title:'Chương 1 — A House Full of Debt',status:'review',body:'x',productionTask:'chapter',aiReview:{revision:1,value}});c.uiState.chOpen={b:'v1'};
+  vm.runInContext("uiState.storySteps={b:{step:4,base:3}}",c);const html=c.uiStory();
+  for(const x of['ĐÁNH GIÁ BIÊN TẬP','70/100','Mở đầu và sức hút','11/20','Vì sao:','Sửa ở đâu:','Cắt đoạn tả mái nhà','Cần sửa ở đâu (1)','Mở bằng chủ nợ','Điều phối chất lượng','Sửa theo góp ý','data-ui-publish="one"','Chọn nhiều'])assert.ok(html.includes(x),x);
+  vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const s3=c.uiStory();assert.doesNotMatch(s3,/data-ui-publish=/);assert.match(s3,/Đánh giá & đăng ›/)});
 test('scoring shows "sending" at once and keeps an error visible in the score row',async()=>{const {c,s}=produce();Object.assign(c,{lfChapterCheck:()=>({items:[]}),lfAIReviewFresh:()=>false});c.db.content.push({id:'z1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'review',body:'Text',productionTask:'chapter'});c.uiState.chOpen={b:'z1'};
   let seen='';c.lfSend=async()=>{seen=c.uiScoreRow(s,c.db.content[0],'Text',false);throw Error('Bộ truyện đang có việc khác')};c.uiRender=()=>{};
   await assert.rejects(c.uiScoreAction(s,'review'),/việc khác/);assert.match(seen,/Đang gửi yêu cầu chấm sang ChatGPT/);assert.match(c.uiScoreRow(s,c.db.content[0],'Text',false),/sp-score-err">Bộ truyện đang có việc khác/);
