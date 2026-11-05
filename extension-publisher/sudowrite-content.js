@@ -30,7 +30,11 @@ async function fillOutline(list,overwrite){list=(Array.isArray(list)?list:[]).fi
  for(let i=0;i<list.length;i++){const x=list[i],name=String(x.name).trim(),text=String(x.text||'').trim();let row=outlineRows().find(r=>!used.has(r)&&norm(rowParts(r).name?.value)===norm(name));if(!row)row=outlineRows().find(r=>{const p=rowParts(r);return !used.has(r)&&/^(chapter\s*\d*)?$/i.test(String(p.name?.value||'').trim())&&!richText(p.summary)});if(!row){const btn=buttonByText(sec,/^\s*add chapter\s*$/i);if(!btn){failed++;continue}const before=new Set(outlineRows());await press(btn);row=await until(()=>outlineRows().find(r=>!before.has(r)),3500);if(row)added++}if(!row){failed++;continue}used.add(row);await wait(200);const p=rowParts(row);if(!p.name||!p.summary){failed++;continue}
   if(richText(p.summary)&&!overwrite&&norm(p.name.value)===norm(name)){kept++;continue}if(norm(p.name.value)!==norm(name)){p.name.focus();setNative(p.name,name)}if(text)await setRich(p.summary,text);filled++;await wait(150)}
  const note=[filled&&'đã điền '+filled+' chương',added&&'tạo mới '+added,kept&&'giữ nguyên '+kept,failed&&failed+' chương chưa điền được'].filter(Boolean).join(', ');return {field:'Outline',ok:!failed,note:note||'không có gì thay đổi'}}
+// Card filling (Characters, Worldbuilding, Outline) is off: on the live site new rows kept the default
+// name and piled up as blank cards. Only the plain text fields are filled until that is fixed.
+const CARDS_ON=false;
 async function fillBible(kit,overwrite,progress){const items=fillText(kit,overwrite);progress(items);
+ if(!CARDS_ON){for(const label of['Characters','Worldbuilding','Outline','Style'])items.push({field:label,ok:false,note:'dán tay: Xưởng → bước 2 → tab Sudowrite → Sao chép'});progress(items);return items}
  for(const [kind,key] of [['characters','characterList'],['worldbuilding','worldList']]){items.push({field:ENTITY[kind].label,ok:true,note:'đang điền…'});progress(items);items[items.length-1]=await fillEntities(kind,kit?.[key],overwrite);progress(items)}
  items.push({field:'Outline',ok:true,note:'đang điền…'});progress(items);items[items.length-1]=await fillOutline(kit?.outlineList,overwrite);
  items.push({field:'Style',ok:false,note:'dán tay: Style → Custom, nội dung lấy từ nút Sao chép trong Xưởng'});progress(items);return items}
