@@ -24,7 +24,7 @@ Date: 2026-11-05.
 
 ## Tests
 
-- Xưởng repo: `node --test tests/*.cjs` → 191 pass (Adapter 18, contracts 6).
+- Xưởng repo: `node --test tests/*.cjs` → 186 pass, 0 fail (Adapter 18, contracts 6).
 - AI_MANAGER: `tests.test_story_orders` → 6 pass. Full suite: 253 tests; the same 4 failures as before this phase (`test_startup_port`, 2× `test_work_orchestration`, `test_windows_api_contract`), none in story code.
 - **Real browser + real Manager** (Playwright Chromium loading the real extension; Manager from this code on a test port with a temporary data folder): pairing → "Đã kết nối"; a new order appears in the popup; a progress event reaches Manager; Manager stopped → "Mất kết nối", event kept; Manager back → event delivered, outbox empty; revoke → "Chưa ghép đôi".
   - Found and fixed during this run: Chrome sends no `Origin` header on the extension's GET requests. Manager now requires the token always, checks `Origin` when present, and refuses origin-less cross-site requests.
