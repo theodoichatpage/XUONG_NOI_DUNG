@@ -1,8 +1,8 @@
 {
  "manifest_version": 3,
  "name": "Xưởng Nội Dung — Publisher (Webnovel + Sudowrite)",
- "version": "0.2.0",
- "description": "Điền hồ sơ truyện vào Inkstone, điền Story Bible vào Sudowrite và lấy chương từ Sudowrite về Xưởng. Không tự bấm Create/Generate, không lưu mật khẩu.",
+ "version": "0.3.0",
+ "description": "Điền hồ sơ truyện vào Inkstone, điền Story Bible (kể cả nhân vật, thế giới, dàn ý) vào Sudowrite và lấy chương từ Sudowrite về Xưởng. Không bấm Create/Generate, không lưu mật khẩu.",
  "permissions": [
   "storage",
   "tabs"

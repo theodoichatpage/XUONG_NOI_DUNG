@@ -7,7 +7,9 @@ function err(e){return {ok:false,error:String(e?.message||e)}}
 function fromStudio(sender){try{return STUDIO_ORIGINS.has(new URL(sender.url).origin)}catch{return false}}
 function fromSudowrite(sender){try{return new URL(sender.url).origin==='https://editor.sudowrite.com'}catch{return false}}
 const SUDO_KEYS=['braindump','genre','style','synopsis','characters','worldbuilding','outline'];
-function cleanKit(k){if(!k||typeof k!=='object')throw Error('Thiếu gói Story Bible');return Object.fromEntries(SUDO_KEYS.map(x=>[x,String(k[x]??'').slice(0,30000)]))}
+const SUDO_LISTS={characterList:20,worldList:20,outlineList:80};
+function cleanList(v,max){return (Array.isArray(v)?v:[]).slice(0,max).map(x=>({name:String(x?.name??'').slice(0,120).trim(),text:String(x?.text??'').slice(0,6000)})).filter(x=>x.name)}
+function cleanKit(k){if(!k||typeof k!=='object')throw Error('Thiếu gói Story Bible');return {...Object.fromEntries(SUDO_KEYS.map(x=>[x,String(k[x]??'').slice(0,30000)])),...Object.fromEntries(Object.entries(SUDO_LISTS).map(([x,max])=>[x,cleanList(k[x],max)]))}}
 async function sudoTabs(){const tabs=await chrome.tabs.query({url:'https://editor.sudowrite.com/*'});return tabs.sort((a,b)=>(b.active-a.active)||((b.lastAccessed||0)-(a.lastAccessed||0)))}
 function fromInkstone(sender){try{return new URL(sender.url).origin==='https://inkstone.webnovel.com'}catch{return false}}
 function cleanListing(l){const s=(v,max)=>String(v??'').slice(0,max);if(!l||typeof l!=='object')throw Error('Thiếu hồ sơ truyện');const out={bookName:s(l.bookName,70).trim(),type:'novel',leadingGender:l.leadingGender==='female'?'female':'male',genre:s(l.genre,80),synopsis:s(l.synopsis,5000),tags:(Array.isArray(l.tags)?l.tags:[]).map(t=>s(t,40)).filter(Boolean).slice(0,10),abbreviation:s(l.abbreviation,15).trim(),length:['short','medium','long'].includes(l.length)?l.length:'medium',warning:s(l.warning||'none',80)};if(!out.bookName)throw Error('Thiếu tên truyện');return out}
