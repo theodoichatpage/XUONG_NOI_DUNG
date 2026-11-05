@@ -617,3 +617,13 @@ html.dark .rv-list li.error{color:#ff8b8b}html.dark .rv-list li.warn{color:#f0c3
 .rv-stats b{font-size:20px!important;color:var(--st-ink)}.rv-stats span{color:var(--st-muted);font-size:12.5px!important}
 .rv-stats .ok b{color:var(--st-green-ink)}.rv-stats .err b{color:#c03434}html.dark .rv-stats .err b{color:#ff8b8b}
 .rv-now{margin:0;color:var(--st-text)}
+
+/* Sudowrite kit */
+.sw-kit{display:flex;flex-direction:column;gap:12px}
+.sw-intro{margin:0;color:var(--st-text)}
+.sw-sec{border:1px solid var(--st-line);padding:10px 12px}
+.sw-sec-h{display:flex;align-items:center;gap:10px}.sw-sec-h b{color:var(--st-ink)}.sw-sec-h small{color:var(--st-muted)}
+.sw-pre{margin:6px 0 0;white-space:pre-wrap;max-height:120px;overflow:auto;color:var(--st-text);font:13px/1.5 Arial,sans-serif;background:var(--st-soft);padding:8px}
+.sw-chars{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.sw-char{height:26px!important;min-height:26px!important;padding:0 10px;font-size:12.5px!important}
+.sw-kit>.primary{align-self:flex-start}
