@@ -629,3 +629,5 @@ html.dark .rv-list li.error{color:#ff8b8b}html.dark .rv-list li.warn{color:#f0c3
 .sw-kit>.primary{align-self:flex-start}
 
 .sw-auto{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.sw-auto small{width:100%;color:var(--st-muted)}
+
+.rv-crit-err{color:#f87171}.rv-critical li{color:#ffb59c}.rv-sw{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.rv-sw{grid-template-columns:1fr}}

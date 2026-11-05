@@ -1,4 +1,4 @@
-# Sudowrite Adapter 0.5.0 (Xưởng × Sudowrite × Webnovel)
+# Sudowrite Adapter 0.6.0 (Xưởng × Sudowrite × Webnovel)
 
 Trước đây tên là "Xưởng Webnovel Publisher". Nếu đã cài bản cũ: giải nén đè vào đúng thư mục cũ rồi bấm Tải lại, hoặc gỡ bản cũ rồi cài thư mục mới.
 
@@ -27,3 +27,9 @@ Extension không đọc và không lưu mật khẩu. Hồ sơ chờ điền t�
 2. Bấm biểu tượng Sudowrite Adapter → nhập mã 6 số → **Ghép đôi**.
 3. Popup hiện trạng thái AI Manager, Xưởng, Sudowrite, Inkstone. Adapter hỏi Manager mỗi 30 giây; lệnh sản xuất mới hiện trong mục "Lệnh từ Manager".
 4. Thu hồi: trong Manager bấm **Thu hồi kết nối** (hoặc Ngắt ghép đôi trong popup).
+
+## Viết chương trên Sudowrite (từ 0.6.0, bán tự động)
+1. Xưởng → bước 3 → chọn chương → **Viết trên Sudowrite**. Adapter mở dự án Sudowrite và hiện bảng ở góc phải dưới: dàn ý chương, cuối chương trước, lưu ý canon, số chữ mục tiêu.
+2. Bạn viết bằng các nút của Sudowrite (New, First Draft, Write…). Adapter không bấm các nút tốn credit.
+3. Xong bấm **Gửi chương về Xưởng** trên bảng. Chương thay bản nháp trong Xưởng (bản cũ giữ trong lịch sử). Nếu tab Xưởng đang đóng, chương được giữ lại và tự về khi mở Xưởng.
+4. Bước 4: ChatGPT chấm 7 tiêu chí. Chưa đạt → **Sửa trên Sudowrite** gửi danh sách việc cần sửa sang bảng Sudowrite (nội dung chương hiện tại được chép sẵn vào bộ nhớ tạm).

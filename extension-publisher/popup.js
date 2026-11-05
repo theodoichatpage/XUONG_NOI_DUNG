@@ -3,6 +3,16 @@ const $ = (id) => document.getElementById(id);
 const MGR = { connected: ['ok', 'Đã kết nối'], busy: ['busy', 'Đang chạy lệnh'], disconnected: ['err', 'Mất kết nối'], error: ['err', 'Lỗi'], unpaired: ['', 'Chưa ghép đôi'] };
 const ORDER = { queued: 'chờ Xưởng nhận', accepted: 'Xưởng đã nhận', running: 'đang chạy' };
 function line(name, cls, text) { const d = document.createElement('div'); const dot = document.createElement('i'); dot.className = 'dot ' + cls; const b = document.createElement('b'); b.textContent = name; const s = document.createElement('span'); s.textContent = text; d.append(dot, b, s); return d; }
+// Sudowrite: open project, page health (missing parts named), active brief, chapters waiting for Xưởng.
+const PART = { editor: 'trình soạn', title: 'ô tên tài liệu', storyBibleNav: 'mục Story Bible' };
+function sudoMissing(r) { const s = r.sudoHealth?.selectors; return s ? Object.keys(PART).filter(k => !s[k]).map(k => PART[k]) : []; }
+function sudoCls(r) { if (!r.tabs.sudo) return ''; if (r.sudoHealth && r.sudoHealth.ok === false || sudoMissing(r).length) return 'err'; return r.sudoBrief ? 'busy' : 'ok'; }
+function sudoText(r) {
+  if (!r.tabs.sudo) return r.lastSudoProject ? 'Chưa mở (nhớ dự án gần nhất)' : 'Chưa mở dự án';
+  if (r.sudoHealth && r.sudoHealth.ok === false) return r.sudoHealth.error;
+  const miss = sudoMissing(r), extra = [r.sudoBrief ? (r.sudoBrief.mode === 'revise' ? 'đang sửa' : 'đang viết') + ' Ch.' + r.sudoBrief.chapter_no : '', r.sudoWaiting ? r.sudoWaiting + ' chương chờ về Xưởng' : ''].filter(Boolean).join(' · ');
+  return (miss.length ? 'Không thấy ' + miss.join(', ') : 'Đang mở dự án') + (extra ? ' · ' + extra : '');
+}
 function ago(t) { if (!t) return ''; const s = Math.round((Date.now() - t) / 1000); return s < 60 ? s + ' giây trước' : Math.round(s / 60) + ' phút trước'; }
 
 async function render() {
@@ -13,7 +23,7 @@ async function render() {
   const conn = $('conn'); conn.replaceChildren(
     line('AI Manager', cls, label + (m.checkedAt ? ' · ' + ago(m.checkedAt) : '')),
     line('Xưởng', r.tabs.studio ? 'ok' : '', r.tabs.studio ? 'Đang mở' : 'Chưa mở tab Xưởng'),
-    line('Sudowrite', r.tabs.sudo ? 'ok' : '', r.tabs.sudo ? 'Đang mở dự án' : (r.lastSudoProject ? 'Chưa mở (nhớ dự án gần nhất)' : 'Chưa mở dự án')),
+    line('Sudowrite', sudoCls(r), sudoText(r)),
     line('Inkstone', r.tabs.ink ? 'ok' : '', r.tabs.ink ? 'Đang mở' : 'Chưa mở'));
   $('msg').textContent = m.error && m.state !== 'connected' && m.state !== 'busy' ? m.error : (r.outbox ? r.outbox + ' cập nhật đang chờ gửi về Manager' : '');
   const box = $('pairbox'); box.replaceChildren();
