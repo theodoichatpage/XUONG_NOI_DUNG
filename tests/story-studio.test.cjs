@@ -8,7 +8,7 @@ function runtime(series=[]){
     $:()=>null,location:{hash:'#series'},findWebnovelChannel:()=>c.db.channels[0],
     lfData:s=>{s.story??={};s.story.characters??=[];s.story.plans??=[];s.story.glossary??=[];s.story.pipeline??={source:{mode:'topic',topic:''},artifacts:{}};return s.story},
     lfPipeline:s=>c.lfData(s).pipeline,lfApproved:()=>false,lfChapters:()=>[],lfNextChapter:()=>1,uiPublishing:()=> '<section class="u-publishing"></section>',
-    lfSetSource:(s,src)=>{c.lfData(s).pipeline.source=src},bridgeConnectionState:()=>({tone:'connected',label:'Đã kết nối ChatGPT',help:''}),jobState:j=>j.status,lfJobKinds:{},lfStoryLang:s=>s?.storyLanguage||'English',lfNeedsReview:()=>true,lfReviewFresh:()=>false});
+    lfSetSource:(s,src)=>{c.lfData(s).pipeline.source=src},bridgeConnectionState:()=>({tone:'connected',label:'Đã kết nối ChatGPT',help:''}),jobState:j=>j.status,lfJobKinds:{},lfStoryLang:s=>s?.storyLanguage||'English',lfNeedsReview:()=>true,lfReviewFresh:()=>false,lfChapterCheck:()=>({items:[]}),lfAIReviewFresh:()=>false,lfVersion:()=>1});
   vm.runInContext(src.slice(0,src.indexOf('const uiBaseChoose=')),c);
   c.uiRender=()=>{c.rendered=(c.rendered||0)+1};
   return c}
@@ -204,3 +204,19 @@ test('copy for Inkstone puts only the chapter body on the clipboard; the title h
   const {c,s}=produce();let clip='',opened=[];Object.assign(c,{navigator:{clipboard:{writeText:async x=>{clip=x}}},window:{open:(u,n)=>opened.push(n)}});c.db.content.push({id:'q1',seriesId:'b',chapterNumber:1,title:'Chương 1 — A House Full of Debt',status:'approved',body:'Put the account book on the table.',productionTask:'chapter'});
   c.uiState.chOpen={b:'q1'};await c.uiPublishAction(s,'one');await c.uiPublishAction(s,'copy');assert.equal(clip,'Put the account book on the table.');assert.deepEqual(opened,['xuong-inkstone']);
   await c.uiPublishAction(s,'copy-title');assert.equal(clip,'A House Full of Debt')});
+
+test('chapter score: ChatGPT review + automatic checks give 0–100; a pass needs ≥70, verdict ok and no errors',()=>{const c=runtime();
+  const clean={items:[]},ai={verdict:'ok',hook:{score:5,note:''},ending:{score:4,note:''},planCoverage:'ok',contradictions:[],styleIssues:['x'],summaryVi:'s'};
+  const a=c.uiChapterScore(clean,ai);assert.equal(a.score,25+20+20+12+15);assert.equal(a.pass,true);
+  const b=c.uiChapterScore(clean,{...ai,verdict:'revise',hook:{score:2,note:'flat'},contradictions:[{issue:'i'}]});assert.equal(b.pass,false);assert.ok(b.score<70);
+  const d=c.uiChapterScore({items:[{level:'error',title:'Thiếu chữ'}]},ai);assert.equal(d.pass,false,'automatic errors block a pass');
+  const e=c.uiChapterScore(clean,null);assert.equal(e.ai,false);assert.equal(e.pass,false);assert.match(e.label,/Chưa chấm/)});
+test('"Sửa theo góp ý" turns the review into a rewrite request',()=>{const c=runtime();const ask=c.uiScoreFixAsk({verdict:'revise',hook:{score:2,note:'Opens on weather'},ending:{score:5,note:'good'},planCoverage:'',contradictions:[{issue:'Linh biết tên cha Minh quá sớm'}],styleIssues:['Lặp "suddenly"'],summaryVi:'Tăng xung đột.'});
+  assert.match(ask,/Mở đầu: Opens on weather/);assert.doesNotMatch(ask,/Kết chương/);assert.match(ask,/Sửa mâu thuẫn: Linh biết/);assert.match(ask,/Văn phong: Lặp/)});
+test('publishing a chapter below the score asks first; declining keeps it unpublished',async()=>{const {c,s,chs}=produce();let asked='';c.uiConfirm=async m=>{asked=m;return false};c.lfChapterCheck=()=>({items:[]});c.lfAIReviewFresh=()=>false;
+  c.db.content.push({id:'g1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'approved',body:'x',productionTask:'chapter'});c.uiState.chOpen={b:'g1'};await c.uiPublishAction(s,'one');c.uiState.pubPop.link='https://www.webnovel.com/c1';
+  await c.uiPublishAction(s,'mark');assert.match(asked,/Chương 1: chưa chấm bằng ChatGPT/);assert.equal(chs()[0].status,'approved');c.uiConfirm=async()=>true;await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live')});
+test('auto-scoring (off by default) reviews drafts one at a time after the batch',async()=>{const {c,s}=produce();const sent=[];c.lfSend=async(x,k,sc)=>{sent.push(sc.chapterId)};c.lfAIReviewFresh=x=>!!x.aiReview;c.lfVersion=()=>1;
+  c.db.content.push({id:'d1',seriesId:'b',chapterNumber:1,status:'review',body:'a',productionTask:'chapter'},{id:'d2',seriesId:'b',chapterNumber:2,status:'review',body:'b',productionTask:'chapter'});
+  assert.equal(await c.uiReviewTick(),false);c.db.uiSettings={autoReview:true};assert.equal(await c.uiReviewTick(),true);assert.deepEqual(sent,['d1']);
+  s.uiBatch={status:'running'};assert.equal(await c.uiReviewTick(),false,'not while a batch runs');s.uiBatch.status='done';await c.uiReviewTick();assert.deepEqual(sent,['d1','d2'])});

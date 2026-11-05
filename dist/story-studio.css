@@ -561,3 +561,18 @@ html.dark .st-steps>button.done b{color:#0b0b0c}
 .u-assign-warn{margin:4px 0 0;color:#c03434}html.dark .u-assign-warn{color:#ff8b8b}
 
 .u-xp-note{margin:10px 0 0;color:var(--st-muted)}
+
+/* chapter score */
+.sp-score{width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px;padding:8px 12px;border:1px solid var(--st-line);border-left:3px solid var(--st-field);background:var(--st-soft)}
+.sp-score.ok{border-left-color:var(--st-check)}.sp-score.warn{border-left-color:var(--st-amber)}.sp-score.bad{border-left-color:#c03434}
+.sp-score-num{font-size:20px!important;font-weight:700;color:var(--st-ink);min-width:28px}
+.sp-score.ok .sp-score-num{color:var(--st-green-ink)}.sp-score.bad .sp-score-num{color:#c03434}html.dark .sp-score.bad .sp-score-num{color:#ff8b8b}
+.sp-score-lbl{color:var(--st-text)}
+.sp-score-detail{width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--st-line);display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
+.sp-sd-row{display:grid;grid-template-columns:140px minmax(0,1fr);gap:4px 12px}
+.sp-sd-row b{color:var(--st-ink)}.sp-sd-row ul{margin:0;padding-left:18px}.sp-sd-row li{margin:2px 0}.sp-sd-row li.error{color:#c03434}.sp-sd-row li.warn{color:#9a6300}
+html.dark .sp-sd-row li.error{color:#ff8b8b}html.dark .sp-sd-row li.warn{color:#f0c35a}
+.sp-sd-row q{color:var(--st-muted);font-style:italic}
+.sp-chip{flex:none;min-width:26px;text-align:center;font-size:11.5px!important;font-weight:700;padding:1px 5px;border:1px solid var(--st-line)}
+.sp-chip.ok{color:var(--st-green-ink);border-color:var(--st-mint-line)}.sp-chip.warn{color:#9a6300}.sp-chip.bad{color:#c03434}
+html.dark .sp-chip.warn{color:#f0c35a}html.dark .sp-chip.bad{color:#ff8b8b}
