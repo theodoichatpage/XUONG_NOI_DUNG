@@ -57,3 +57,10 @@ Date: 2026-11-05. Scope: what exists today in Xưởng Nội Dung, AI Manager an
 5. Stack: rebuild only the **extension** in TypeScript + Vite + Zod, keep Xưởng as is.
 
 Sources: https://docs.sudowrite.com/ · https://www.sudowrite.com/features/plugins · https://docs.sudowrite.com/using-sudowrite/1ow1qkGqof9rtcyGnrWUBS/how-do-i-build-plugins/a3iVxJb4UZLKfSxf8BG3mY · https://www.sudowrite.com/terms-and-conditions
+
+## 7. Decisions (user, 2026-11-05)
+
+1. Sudowrite writing: **semi-automatic**. The user presses Write / First Draft in Sudowrite; the Adapter prepares inputs and pulls results back. The Adapter never presses credit-spending buttons.
+2. Reviewer: **ChatGPT Plus via the Bridge** (existing step 4 rubric and quality loop). No OpenAI API backend.
+3. AI Manager: **may be modified** to add a story module that sends production orders.
+4. Backend: **none for now**. Xưởng in the browser stays the single source of truth.
