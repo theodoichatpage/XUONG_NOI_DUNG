@@ -56,7 +56,11 @@ Earlier failure explained: the old Adapter wrote to cards before their editors h
 | Write (continue at cursor) | place the caret at the end of the editor; `button[aria-label="Write"]` | a new `.card-set` appears first in `#card-sets` (right panel History); the Write button text becomes "Loading … Write" | the Write button text no longer contains "Loading" **and** the card text lengths stop changing (2 checks in a row) | nothing on screen if no credits / error: needs a timeout (no card-set within 30 s → failed) | Live ×2 | PARTIAL |
 | Write results | `#card-sets .card-set` (newest first) → `.cards .card` (2 alternatives per run, ~150–170 words each); card text = card `innerText` minus its `.bottom_menu` | — | see above | — | Live | SUPPORTED (read) |
 | Insert a result | card `.bottom_menu a.insert` | — | text appears in the editor at the caret | **quirk:** joins the first paragraph to the caret's paragraph with no space ("…believe it.The yellowed…") | Live | PARTIAL |
-| Rewrite / Describe / Brainstorm / First Draft / Generate a Rough Draft / Generate 3 Openings / Canvas | buttons with those labels | — | — | — | Seen only | Not tested |
+| Outline → chapter document | outline row button "Start" | — | a new document named after the outline chapter appears in the documents list, opens (`#doc=` changes), shows "Linked to <chapter> in your Outline"; **no credits used** | — | Live | SUPPORTED |
+| Rough Draft wizard | in the linked document: `button[aria-label="Generate a Rough Draft"]` opens a generator panel (`[class*=GeneratePanel__InnerContainer]`): POV, length (Auto), tense, Prose Mode, "Plan Draft · All Scenes" | — | — | — | Live | SUPPORTED (opens) |
+| Generate Scenes | draft panel button "Generate Scenes" (uses the outline summary + Story Bible) | button disabled with progress text: "Checking Characters…", "Checking Worldbuilding…", "Checking Style and Genre…", "Checking Synopsis and Outline…", "Reviewing Scenes Best Practices…", "Ensuring Perfect Formatting…" | scene text appears under "Scenes" and the panel returns to "Plan Draft · All Scenes" (~50 s) | — | Live (credits) | SUPPORTED |
+| Plan Draft → Review Plan → Generate Draft | "Plan Draft · All Scenes", then "Generate Draft" | "Checking scenes…" | — | without scenes: "There was an error estimating credits for this chapter…" (Retry / Cancel). Out of credits: **"0 credits left, sign up for a plan to keep using Sudowrite."** | Live: blocked by 0 credits | UNSUPPORTED until the account has credits |
+| Rewrite / Describe / Brainstorm / First Draft / Generate 3 Openings / Canvas | buttons with those labels | — | — | — | Seen only | Not tested |
 
 Measured run (Write #2): card-set appeared at 0.4 s with a `.loading` element; text streamed from 4.4 s to 7.6 s; the Insert link and bottom menu were **already present while streaming**; "Loading" left the Write button at 10.8 s. So:
 
@@ -75,7 +79,14 @@ Measured run (Write #2): card-set appeared at 0.4 s with a `.loading` element; t
 | Document title + text in/out | SUPPORTED |
 | Write + reading results | PARTIAL (works; spends credits; needs the done signal above) |
 | Insert result into document | PARTIAL (spacing quirk; build the chapter text in Xưởng instead) |
-| Rewrite, First Draft, Outline Start, Rough Draft, Export | Not tested |
+| Outline Start → linked chapter document | SUPPORTED (no credits) |
+| Rough Draft: Generate Scenes | SUPPORTED (credits) |
+| Rough Draft: Generate Draft (full chapter) | **Blocked: the account has 0 credits** |
+| Rewrite, First Draft, Export | Not tested |
+
+**Credits (2026-11-05):** after 2 Write runs and 1 Generate Scenes, Sudowrite reports "0 credits left, sign up for a plan". Any automated writing needs a paid plan. The Adapter must detect this message and stop the task as `out_of_credits` (never retry).
+
+**Recommended chapter path:** Outline chapter (name + summary from Xưởng) → Start (linked document) → Generate a Rough Draft → Generate Scenes → Plan Draft → Generate Draft → wait for the done signal → read the document → Xưởng. Fallback with fewer credits: Write in a loop from a seeded opening until the word target.
 
 ## 6. When Sudowrite changes its UI
 
