@@ -627,3 +627,5 @@ html.dark .rv-list li.error{color:#ff8b8b}html.dark .rv-list li.warn{color:#f0c3
 .sw-chars{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .sw-char{height:26px!important;min-height:26px!important;padding:0 10px;font-size:12.5px!important}
 .sw-kit>.primary{align-self:flex-start}
+
+.sw-auto{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.sw-auto small{width:100%;color:var(--st-muted)}

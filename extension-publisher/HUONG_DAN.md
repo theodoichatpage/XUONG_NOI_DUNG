@@ -1,4 +1,4 @@
-# Xưởng Webnovel Publisher 0.1.0
+# Xưởng Publisher 0.2.0 (Webnovel + Sudowrite)
 
 Extension riêng, chạy cạnh Xưởng ChatGPT Bridge. Nhiệm vụ: điền **hồ sơ truyện** từ Xưởng vào form tạo truyện của Inkstone.
 
@@ -15,3 +15,7 @@ Extension riêng, chạy cạnh Xưởng ChatGPT Bridge. Nhiệm vụ: điền *
 5. Kiểm tra lại rồi **tự bấm CREATE**. Extension không bao giờ tự tạo truyện hay đăng chương.
 
 Extension không đọc và không lưu mật khẩu. Hồ sơ chờ điền tự hết hạn sau 15 phút.
+
+## Sudowrite (từ 0.2.0)
+- Xưởng → bước 2 → tab **Sudowrite** → **Điền vào Sudowrite**: mở tab Sudowrite (dự án đang mở) và điền **Braindump, Genre, Synopsis** vào Story Bible. Ô đã có nội dung được giữ nguyên, trừ khi bấm **Điền & ghi đè**. Style, Characters, Worldbuilding, Outline: dùng nút Sao chép trong Xưởng rồi dán.
+- Xưởng → bước 3 → **Lấy từ Sudowrite**: đọc tài liệu đang mở trên Sudowrite và đưa vào chương đang chọn (bản cũ giữ trong lịch sử). Extension không bấm Write/Generate, không tiêu credit Sudowrite.

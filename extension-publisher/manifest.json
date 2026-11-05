@@ -1,11 +1,53 @@
 {
- "manifest_version":3,"name":"Xưởng Nội Dung — Webnovel Publisher","version":"0.1.0","description":"Điền hồ sơ truyện từ Xưởng vào form tạo truyện trên Inkstone. Không tự bấm Create, không lưu mật khẩu.",
- "permissions":["storage","tabs"],
- "host_permissions":["https://inkstone.webnovel.com/*","https://xuong-noi-dung-khaki.vercel.app/*"],
- "background":{"service_worker":"background.js"},
- "action":{"default_popup":"popup.html","default_title":"Xưởng Webnovel Publisher"},
- "content_scripts":[
- {"matches":["https://xuong-noi-dung-khaki.vercel.app/*","http://localhost:8080/*","http://127.0.0.1:8080/*"],"js":["studio-content.js"],"run_at":"document_idle"},
- {"matches":["https://inkstone.webnovel.com/*"],"js":["inkstone-content.js"],"run_at":"document_idle"}
+ "manifest_version": 3,
+ "name": "Xưởng Nội Dung — Publisher (Webnovel + Sudowrite)",
+ "version": "0.2.0",
+ "description": "Điền hồ sơ truyện vào Inkstone, điền Story Bible vào Sudowrite và lấy chương từ Sudowrite về Xưởng. Không tự bấm Create/Generate, không lưu mật khẩu.",
+ "permissions": [
+  "storage",
+  "tabs"
+ ],
+ "host_permissions": [
+  "https://inkstone.webnovel.com/*",
+  "https://xuong-noi-dung-khaki.vercel.app/*",
+  "https://editor.sudowrite.com/*"
+ ],
+ "background": {
+  "service_worker": "background.js"
+ },
+ "action": {
+  "default_popup": "popup.html",
+  "default_title": "Xưởng Webnovel Publisher"
+ },
+ "content_scripts": [
+  {
+   "matches": [
+    "https://xuong-noi-dung-khaki.vercel.app/*",
+    "http://localhost:8080/*",
+    "http://127.0.0.1:8080/*"
+   ],
+   "js": [
+    "studio-content.js"
+   ],
+   "run_at": "document_idle"
+  },
+  {
+   "matches": [
+    "https://inkstone.webnovel.com/*"
+   ],
+   "js": [
+    "inkstone-content.js"
+   ],
+   "run_at": "document_idle"
+  },
+  {
+   "matches": [
+    "https://editor.sudowrite.com/*"
+   ],
+   "js": [
+    "sudowrite-content.js"
+   ],
+   "run_at": "document_idle"
+  }
  ]
 }
