@@ -195,3 +195,12 @@ test('when the Bridge lost a job, Xưởng sends the newest one again by itself,
   assert.equal(await c.uiAutoResendTick(),true);assert.deepEqual(sent,['GENERATE_STORY_BIBLE']);assert.equal(c.db.aiJobs[0].status,'stopped');
   c.db.aiJobs[0].status='error';assert.equal(await c.uiAutoResendTick(),false,'not again for the same job');assert.equal(sent.length,1);
   c.bridgeStatus.connected=false;c.db.aiJobs.push({id:'new',seriesId:'R1',storyTask:'GENERATE_STORY_BIBLE',status:'error',error:'Bridge đã tải lại nên không còn theo dõi việc này.',createdAt:new Date().toISOString(),scope:{}});assert.equal(await c.uiAutoResendTick(),false,'waits until ChatGPT is connected')});
+
+test('a batch whose current chapter never got a job (page reloaded mid-send) sends it on the next tick',async()=>{
+  const {c,s,chs}=produce();c.db.content.push({id:'k5',seriesId:'b',chapterNumber:5,title:'Chương 5 — Plan 5',status:'draft',body:'',productionTask:'chapter'});for(const n of[1,2,3,4])c.db.content.push({id:'k'+n,seriesId:'b',chapterNumber:n,title:'Chương '+n,status:'review',body:'B'+n,productionTask:'chapter'});
+  s.uiBatch={id:'bb',start:3,end:6,count:4,current:5,status:'running',ending:'continue'};await c.uiBatchTick();assert.equal(c.sent.length,1);assert.equal(c.sent[0].job.targetId,'k5');assert.equal(c.sent[0].job.batchId,'bb');
+  await c.uiBatchTick();assert.equal(c.sent.length,1,'no duplicate while the chapter is being written')});
+test('copy for Inkstone puts only the chapter body on the clipboard; the title has its own button',async()=>{
+  const {c,s}=produce();let clip='',opened=[];Object.assign(c,{navigator:{clipboard:{writeText:async x=>{clip=x}}},window:{open:(u,n)=>opened.push(n)}});c.db.content.push({id:'q1',seriesId:'b',chapterNumber:1,title:'Chương 1 — A House Full of Debt',status:'approved',body:'Put the account book on the table.',productionTask:'chapter'});
+  c.uiState.chOpen={b:'q1'};await c.uiPublishAction(s,'one');await c.uiPublishAction(s,'copy');assert.equal(clip,'Put the account book on the table.');assert.deepEqual(opened,['xuong-inkstone']);
+  await c.uiPublishAction(s,'copy-title');assert.equal(clip,'A House Full of Debt')});
