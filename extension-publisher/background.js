@@ -1,5 +1,5 @@
 'use strict';
-// Xưởng Webnovel Publisher: Xưởng hands over a listing; this opens Inkstone's create page where the content script fills it.
+// Sudowrite Adapter (formerly Xưởng Webnovel Publisher): Xưởng hands over a listing; this opens Inkstone's create page where the content script fills it.
 const STUDIO_ORIGINS=new Set(['https://xuong-noi-dung-khaki.vercel.app','http://localhost:8080','http://127.0.0.1:8080']);
 const CREATE_URL='https://inkstone.webnovel.com/novels/create';
 const VERSION=chrome.runtime.getManifest().version;

@@ -1,9 +1,11 @@
-# Xưởng Publisher 0.3.3 (Webnovel + Sudowrite)
+# Sudowrite Adapter 0.4.0 (Xưởng × Sudowrite × Webnovel)
 
-Extension riêng, chạy cạnh Xưởng ChatGPT Bridge. Nhiệm vụ: điền **hồ sơ truyện** từ Xưởng vào form tạo truyện của Inkstone.
+Trước đây tên là "Xưởng Webnovel Publisher". Nếu đã cài bản cũ: giải nén đè vào đúng thư mục cũ rồi bấm Tải lại, hoặc gỡ bản cũ rồi cài thư mục mới.
+
+Extension riêng, chạy cạnh Xưởng ChatGPT Bridge. Nhiệm vụ: nối Xưởng với **Sudowrite** (Story Bible, lấy chương) và điền **hồ sơ truyện** vào form tạo truyện của Inkstone.
 
 ## Cài đặt (Chrome / Edge / Cốc Cốc)
-1. Tải ZIP từ trang Tải của Xưởng, giải nén vào một thư mục cố định (ví dụ `Downloads\Xuong_Webnovel_Publisher`).
+1. Tải ZIP từ trang Tải của Xưởng, giải nén vào một thư mục cố định (ví dụ `Downloads\Xuong_Sudowrite_Adapter`).
 2. Mở trang quản lý tiện ích, bật Chế độ nhà phát triển, bấm **Tải tiện ích đã giải nén**, chọn thư mục có `manifest.json`.
 3. Tải lại (F5) trang Xưởng.
 

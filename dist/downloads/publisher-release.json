@@ -1,8 +1,8 @@
 {
-  "version": "0.3.3",
-  "filename": "Xuong_Webnovel_Publisher_v0.3.3.zip",
-  "folder": "Xuong_Webnovel_Publisher",
-  "sha256": "efc90a768d1c9e3ed7c33050ed473b84268759ad7840a5b474e474f8a4bd1a18",
+  "version": "0.4.0",
+  "filename": "Xuong_Sudowrite_Adapter_v0.4.0.zip",
+  "folder": "Xuong_Sudowrite_Adapter",
+  "sha256": "e6ff7d6a401570fd35658ce6069b335f9dceab937a0a13573478cd3327494809",
   "files": [
     "background.js",
     "HUONG_DAN.md",

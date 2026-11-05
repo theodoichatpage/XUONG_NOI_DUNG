@@ -1,8 +1,8 @@
 {
  "manifest_version": 3,
- "name": "Xưởng Nội Dung — Publisher (Webnovel + Sudowrite)",
- "version": "0.3.3",
- "description": "Điền hồ sơ truyện vào Inkstone, điền Story Bible (Braindump, Genre, Synopsis) vào Sudowrite và lấy chương từ Sudowrite về Xưởng. Không bấm Create/Generate, không lưu mật khẩu.",
+ "name": "Sudowrite Adapter — Xưởng Nội Dung",
+ "version": "0.4.0",
+ "description": "Sudowrite Adapter của Xưởng: điền Story Bible vào Sudowrite, lấy chương từ Sudowrite về Xưởng, điền hồ sơ truyện vào Inkstone. Không bấm Create/Generate, không lưu mật khẩu.",
  "permissions": [
   "storage",
   "tabs"
@@ -17,7 +17,7 @@
  },
  "action": {
   "default_popup": "popup.html",
-  "default_title": "Xưởng Webnovel Publisher"
+  "default_title": "Sudowrite Adapter"
  },
  "content_scripts": [
   {
