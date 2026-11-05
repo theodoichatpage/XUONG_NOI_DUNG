@@ -1,1 +1,23 @@
-<!doctype html><html lang="vi"><meta charset="utf-8"><title>Sudowrite Adapter</title><style>body{width:320px;margin:0;padding:16px;font:13px/1.5 Arial,sans-serif;background:#0b0b0c;color:#f2f2f2}h1{font-size:15px;margin:0 0 4px}small{color:#8b8b90}p{margin:8px 0}#report div{padding:3px 0;border-bottom:1px solid #26262a}.bad{color:#ffb59c}a{color:#ff7a45}</style><h1>Sudowrite Adapter</h1><small>Xưởng × Sudowrite × Webnovel · 0.4.0 / không lưu mật khẩu, không tự bấm Create hay Generate</small><p id="state">Đang kiểm tra…</p><div id="report"></div><p><a href="https://inkstone.webnovel.com/novels/create" target="_blank">Mở trang tạo truyện Inkstone</a></p><script src="popup.js"></script></html>
+<!doctype html><html lang="vi"><meta charset="utf-8"><title>Sudowrite Adapter</title>
+<style>
+body{width:340px;margin:0;padding:14px;font:13px/1.5 Arial,sans-serif;background:#0b0b0c;color:#f2f2f2}
+h1{font-size:15px;margin:0}small,.muted{color:#8b8b90}p{margin:6px 0}a{color:#ff7a45}
+h2{font-size:12px;color:#8b8b90;font-weight:400;text-transform:uppercase;letter-spacing:.04em;margin:14px 0 6px}
+.conn div{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #26262a}.conn b{font-weight:400;flex:1}
+.dot{width:8px;height:8px;border-radius:50%;background:#55555a;flex:none}.dot.ok{background:#4ade80}.dot.busy{background:#ff7a45}.dot.err{background:#f87171}
+.conn span{color:#8b8b90;font-size:12px;text-align:right}
+button{height:30px;padding:0 10px;background:#1d1d20;color:#f2f2f2;border:1px solid #26262a;cursor:pointer;font:inherit}button.primary{background:#ff5a1f;border-color:#ff5a1f;color:#0b0b0c;font-weight:700}
+input{width:110px;height:30px;background:#0f0f11;color:#f2f2f2;border:1px solid #26262a;padding:0 8px;font:16px monospace;letter-spacing:3px}
+.row{display:flex;gap:6px;align-items:center;margin-top:6px}#msg{color:#ffb59c;min-height:18px}
+#report div,#orders div{padding:3px 0;border-bottom:1px solid #26262a}.bad{color:#ffb59c}
+</style>
+<h1>Sudowrite Adapter</h1><small id="ver">Xưởng × Sudowrite × Webnovel</small>
+<h2>Kết nối</h2><div class="conn" id="conn"></div>
+<div id="pairbox"></div>
+<p id="msg"></p>
+<div class="row"><button id="test">Kiểm tra kết nối</button><a href="http://127.0.0.1:8765/story" target="_blank">Mở Sản xuất truyện (Manager)</a></div>
+<h2>Lệnh từ Manager</h2><div id="orders" class="muted">—</div>
+<h2>Inkstone / Sudowrite</h2><p id="state" class="muted">Đang kiểm tra…</p><div id="report"></div>
+<p><a href="https://inkstone.webnovel.com/novels/create" target="_blank">Mở trang tạo truyện Inkstone</a></p>
+<small>Không lưu mật khẩu, không tự bấm Write, Generate, Create hay Đăng.</small>
+<script src="popup.js"></script></html>

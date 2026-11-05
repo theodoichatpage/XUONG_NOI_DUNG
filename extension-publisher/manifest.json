@@ -1,16 +1,18 @@
 {
  "manifest_version": 3,
  "name": "Sudowrite Adapter — Xưởng Nội Dung",
- "version": "0.4.0",
+ "version": "0.5.0",
  "description": "Sudowrite Adapter của Xưởng: điền Story Bible vào Sudowrite, lấy chương từ Sudowrite về Xưởng, điền hồ sơ truyện vào Inkstone. Không bấm Create/Generate, không lưu mật khẩu.",
  "permissions": [
   "storage",
-  "tabs"
+  "tabs",
+  "alarms"
  ],
  "host_permissions": [
   "https://inkstone.webnovel.com/*",
   "https://xuong-noi-dung-khaki.vercel.app/*",
-  "https://editor.sudowrite.com/*"
+  "https://editor.sudowrite.com/*",
+  "http://127.0.0.1:8765/*"
  ],
  "background": {
   "service_worker": "background.js"

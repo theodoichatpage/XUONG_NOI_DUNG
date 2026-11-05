@@ -1,4 +1,4 @@
-# Sudowrite Adapter 0.4.0 (Xưởng × Sudowrite × Webnovel)
+# Sudowrite Adapter 0.5.0 (Xưởng × Sudowrite × Webnovel)
 
 Trước đây tên là "Xưởng Webnovel Publisher". Nếu đã cài bản cũ: giải nén đè vào đúng thư mục cũ rồi bấm Tải lại, hoặc gỡ bản cũ rồi cài thư mục mới.
 
@@ -21,3 +21,9 @@ Extension không đọc và không lưu mật khẩu. Hồ sơ chờ điền t�
 ## Sudowrite (từ 0.2.0)
 - Xưởng → bước 2 → tab **Sudowrite** → **Điền vào Sudowrite**: mở dự án Sudowrite gần nhất, tự mở Story Bible và điền **Braindump, Genre, Synopsis**. Ô đã có nội dung được giữ nguyên, trừ khi bấm **Điền & ghi đè**. Style, Characters, Worldbuilding, Outline: dùng nút Sao chép trong Xưởng rồi dán (tự tạo thẻ đang tắt vì chưa ổn định).
 - Xưởng → bước 3 → **Lấy từ Sudowrite**: đọc tài liệu đang mở trên Sudowrite và đưa vào chương đang chọn (bản cũ giữ trong lịch sử). Extension không bấm Write/Generate, không tiêu credit Sudowrite.
+
+## Kết nối AI Manager (từ 0.5.0)
+1. Mở AI Manager (MO_AI_MANAGER.bat), vào http://127.0.0.1:8765/story → **Tạo mã ghép đôi**.
+2. Bấm biểu tượng Sudowrite Adapter → nhập mã 6 số → **Ghép đôi**.
+3. Popup hiện trạng thái AI Manager, Xưởng, Sudowrite, Inkstone. Adapter hỏi Manager mỗi 30 giây; lệnh sản xuất mới hiện trong mục "Lệnh từ Manager".
+4. Thu hồi: trong Manager bấm **Thu hồi kết nối** (hoặc Ngắt ghép đôi trong popup).

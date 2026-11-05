@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 const bg=fs.readFileSync('extension-publisher/background.js','utf8'),ink=fs.readFileSync('extension-publisher/inkstone-content.js','utf8');
-function fixture(){let receiver;const storage={},opened=[],sent=[];const chrome={runtime:{id:'xp',getManifest:()=>({version:'0.4.0'}),onMessage:{addListener(fn){receiver=fn}}},storage:{local:{async get(keys){return Object.fromEntries(keys.map(k=>[k,storage[k]]))},async set(o){Object.assign(storage,structuredClone(o))},async remove(k){delete storage[k]}}},tabs:{async query(q){return /sudowrite/.test(q?.url||'')?(globalThis.__sudoTabs||[]):[]},async update(){},async create(t){opened.push(t.url)},async sendMessage(id,msg){sent.push([id,msg.kind]);return {ok:true,title:'Ch 3',body:'Text',words:1}}},windows:{async update(){}}};
- vm.runInContext(bg,vm.createContext({chrome,URL,Date}));const send=(m,s)=>new Promise(r=>receiver(m,{id:'xp',...s},r));return {send,storage,opened,sent}}
+function fixture(){let receiver;const storage={},opened=[],sent=[];const chrome={runtime:{id:'xp',getManifest:()=>({version:'0.4.0'}),onMessage:{addListener(fn){receiver=fn}}},storage:{local:{async get(keys){return Object.fromEntries(keys.map(k=>[k,storage[k]]))},async set(o){Object.assign(storage,structuredClone(o))},async remove(k){delete storage[k]}}},tabs:{async query(q){return /sudowrite/.test(q?.url||'')?(globalThis.__sudoTabs||[]):[]},async update(){},async create(t){opened.push(t.url)},async sendMessage(id,msg){sent.push([id,msg.kind]);return {ok:true,title:'Ch 3',body:'Text',words:1}}},windows:{async update(){}},alarms:{create(){},onAlarm:{addListener(){}}}};
+ const ctx=vm.createContext({chrome,URL,Date,AbortController,setTimeout,clearTimeout,fetch:(...x)=>globalThis.__fetch(...x),importScripts:(...files)=>files.forEach(n=>vm.runInContext(fs.readFileSync('extension-publisher/'+n,'utf8'),ctx))});vm.runInContext(bg,ctx);const send=(m,s)=>new Promise(r=>receiver(m,{id:'xp',...s},r));return {send,storage,opened,sent,ctx}}
 const studio={url:'https://xuong-noi-dung-khaki.vercel.app/#series',tab:{id:1}},inkstone={url:'https://inkstone.webnovel.com/novels/create',tab:{id:2}};
 const listing={bookName:'The Ashen Crown',leadingGender:'male',genre:'Historical',synopsis:'S',tags:['Reincarnation'],abbreviation:'ASHEN',length:'long',warning:'none',password:'never-forwarded'};
 test('only Xưởng can hand over a listing; Inkstone opens on the create page',async()=>{const f=fixture();assert.equal((await f.send({kind:'XP_FILL_LISTING',listing},{url:'https://evil.example/',tab:{id:9}})).ok,false);assert.equal((await f.send({kind:'XP_FILL_LISTING',listing},studio)).ok,true);assert.deepEqual(f.opened,['https://inkstone.webnovel.com/novels/create']);assert.equal(f.storage.pending.listing.bookName,'The Ashen Crown');assert.equal(f.storage.pending.listing.password,undefined,'only listing fields are kept')});
@@ -13,7 +13,7 @@ test('option matching picks the closest genre, length bucket and "no warning"',(
  assert.equal(c.lengthMatch('long')(['Short (under 100 chapters)','Medium (100-300 chapters)','Long (over 300 chapters)']),2);assert.equal(c.lengthMatch('medium')(['A','B','C']),1);
  assert.equal(c.warningMatch('none')(['Violence','No warning']),1);assert.equal(c.warningMatch('violence, gore')(['None','Violence and gore']),1)});
 test('the extension never presses Create',()=>{assert.doesNotMatch(ink,/postcreate|create'\)\.click|\.click\(\)\s*;?\s*\/\/\s*create/i);assert.match(ink,/tự bấm CREATE/)});
-test('Xưởng hands the listing to the Publisher and requires the story account first',()=>{const ui=fs.readFileSync('dist/studio-ui.js','utf8');assert.match(ui,/data-ui-listing=\\?"inkstone\\?"/);assert.match(ui,/xpCall\('XP_FILL_LISTING'/);assert.match(ui,/Gán tài khoản Webnovel cho truyện này trước \(ô bên phải thẻ Webnovel\)/);assert.match(ui,/\/downloads\/Xuong_Sudowrite_Adapter_v0\.4\.0\.zip\?sha=[0-9a-f]{16}/)});
+test('Xưởng hands the listing to the Publisher and requires the story account first',()=>{const ui=fs.readFileSync('dist/studio-ui.js','utf8');assert.match(ui,/data-ui-listing=\\?"inkstone\\?"/);assert.match(ui,/xpCall\('XP_FILL_LISTING'/);assert.match(ui,/Gán tài khoản Webnovel cho truyện này trước \(ô bên phải thẻ Webnovel\)/);assert.match(ui,/\/downloads\/Xuong_Sudowrite_Adapter_v0\.5\.0\.zip\?sha=[0-9a-f]{16}/)});
 
 const sudo={url:'https://editor.sudowrite.com/app/project/abc',tab:{id:7}};
 test('Story Bible kit goes from Xưởng to Sudowrite once; only Sudowrite can take it',async()=>{const f=fixture();globalThis.__sudoTabs=[];const kit={braindump:'B',genre:'G',synopsis:'S',style:'',characters:'',worldbuilding:'',outline:'',secret:'x'};
@@ -26,3 +26,37 @@ test('Sudowrite remembers the last project and Xưởng opens it next time',asyn
   const r=await f.send({kind:'XP_SUDO_FILL',kit:{}},studio);assert.equal(r.project,true);assert.deepEqual(f.opened,['https://editor.sudowrite.com/app/project/Fhaum']);assert.equal((await f.send({kind:'XP_SUDO_PEEK'},sudo)).pending,true);assert.equal((await f.send({kind:'XP_SUDO_PEEK'},studio)).ok,false)});
 test('card creation in Sudowrite stays off until it is reliable',()=>{assert.match(fs.readFileSync('extension-publisher/sudowrite-content.js','utf8'),/const CARDS_ON=false;/)});
 test('Story Bible text is trimmed to Sudowrite word limits and saved on blur',()=>{const sw=fs.readFileSync('extension-publisher/sudowrite-content.js','utf8');const c=vm.createContext({});vm.runInContext(sw.slice(sw.indexOf('function fitWords('),sw.indexOf('function fillText(')),c);const g=c.fitWords(Array.from({length:60},(_,i)=>'w'+i).join(', '),40);assert.ok(g.split(/\s+/).length<=40);assert.doesNotMatch(g,/,$/);assert.equal(c.fitWords('short text',40),'short text');assert.match(sw,/el\.blur\(\)/);assert.match(sw,/genre:40/)});
+
+// ---- AI Manager client (manager.js)
+const popup={url:'chrome-extension://xp/popup.html'};
+function fakeManager(){const calls=[];let fail=null;const orders=[{order_id:'ord_aaaaaaaa',project_id:'s1',project_title:'Ashen',chapter_start:8,chapter_count:2,writer:'sudowrite',status:'queued'}];
+ globalThis.__fetch=async(url,opt={})=>{const path=url.replace('http://127.0.0.1:8765/api/story/','');calls.push([opt.method||'GET',path,opt.headers?.Authorization||'',opt.body?JSON.parse(opt.body):null]);
+  if(fail==='offline')throw new TypeError('Failed to fetch');const res=(status,body)=>({ok:status<400,status,json:async()=>body});
+  if(fail==='revoked'&&path!=='pair')return res(401,{ok:false,error:'unauthorized',message:'Token bị thu hồi'});
+  if(path==='pair')return opt.body&&JSON.parse(opt.body).code==='123456'?res(200,{ok:true,token:'T'.repeat(43)}):res(403,{ok:false,error:'bad_code',message:'Mã ghép đôi sai'});
+  if(path==='health')return res(200,{ok:true,manager_version:'0.2.23'});if(path.startsWith('orders?'))return res(200,{ok:true,orders});if(path.startsWith('controls'))return res(200,{ok:true,controls:[],next:0});
+  if(path==='events'){if(fail==='events')return res(500,{ok:false,error:'http_500'});if(fail==='invalid')return res(400,{ok:false,error:'invalid_event',message:'x'});return res(200,{ok:true,accepted:1,duplicates:0})}return res(404,{ok:false,error:'not_found'})};
+ return {calls,setFail:x=>{fail=x}}}
+const evt=(n)=>({event_id:'evt_0000000'+n,order_id:'ord_aaaaaaaa',job_key:'ord_aaaaaaaa:8',chapter_no:8,state:'reviewing',score:80,secret:'x'});
+
+test('pairing: only the popup can pair, a wrong code fails, the token is then sent as Bearer',async()=>{const f=fixture(),m=fakeManager();
+ assert.equal((await f.send({kind:'XP_MGR_PAIR',code:'123456'},studio)).ok,false,'a web page cannot pair');
+ assert.match((await f.send({kind:'XP_MGR_PAIR',code:'12'},popup)).error,/6 chữ số/);
+ assert.match((await f.send({kind:'XP_MGR_PAIR',code:'654321'},popup)).error,/Mã ghép đôi sai/);
+ assert.equal((await f.send({kind:'XP_MGR_PAIR',code:'123456'},popup)).ok,true);
+ assert.equal(f.storage.mgr.token,'T'.repeat(43));assert.equal(f.storage.mgr.state,'connected');assert.equal(f.storage.mgr.orders[0].project_title,'Ashen');
+ assert.ok(m.calls.filter(c=>c[1]!=='pair').every(c=>c[2]==='Bearer '+'T'.repeat(43)));
+ const st=await f.send({kind:'XP_POPUP_STATE'},popup);assert.equal(st.mgr.state,'connected');assert.equal(st.outbox,0)});
+test('Manager offline shows "disconnected"; a revoked token unpairs the Adapter',async()=>{const f=fixture(),m=fakeManager();await f.send({kind:'XP_MGR_PAIR',code:'123456'},popup);
+ m.setFail('offline');assert.equal((await f.send({kind:'XP_MGR_TEST'},popup)).mgr.state,'disconnected');
+ m.setFail('revoked');const r=await f.send({kind:'XP_MGR_TEST'},popup);assert.equal(r.mgr.state,'unpaired');assert.equal(f.storage.mgr.token,null)});
+test('events wait in the outbox with backoff while Manager is down and go out once it is back',async()=>{const f=fixture(),m=fakeManager();await f.send({kind:'XP_MGR_PAIR',code:'123456'},popup);
+ assert.equal((await f.send({kind:'XP_JOB_EVENT',event:evt(1)},inkstone)).ok,false,'only Xưởng can report progress');
+ assert.equal((await f.send({kind:'XP_JOB_EVENT',event:{...evt(1),job_key:'ord_aaaaaaaa:9'}},studio)).ok,false,'job key must match order:chapter');
+ m.setFail('events');assert.equal((await f.send({kind:'XP_JOB_EVENT',event:evt(1)},studio)).ok,true);assert.equal((await f.send({kind:'XP_JOB_EVENT',event:evt(1)},studio)).duplicate,true);
+ await f.send({kind:'XP_MGR_TEST'},popup);let box=f.storage.outbox;assert.equal(box.length,1);assert.equal(box[0].tries,1);assert.ok(box[0].next>Date.now()+4000,'retry is delayed');assert.equal(box[0].event.secret,undefined,'unknown fields are stripped');
+ m.setFail(null);box[0].next=0;await f.send({kind:'XP_MGR_TEST'},popup);assert.equal(f.storage.outbox.length,0);
+ const sent=m.calls.filter(c=>c[1]==='events').pop()[3].events[0];assert.equal(sent.score,80)});
+test('an event Manager rejects as invalid is dropped instead of retried forever',async()=>{const f=fixture(),m=fakeManager();await f.send({kind:'XP_MGR_PAIR',code:'123456'},popup);
+ m.setFail('invalid');await f.send({kind:'XP_JOB_EVENT',event:evt(2)},studio);await f.send({kind:'XP_MGR_TEST'},popup);assert.equal(f.storage.outbox.length,0)});
+test('the backoff grows and is capped at 5 minutes',()=>{const f=fixture(),b=n=>vm.runInContext('backoff('+n+')',f.ctx);assert.equal(b(0),5000);assert.equal(b(3),40000);assert.equal(b(20),300000)});

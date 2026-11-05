@@ -1,12 +1,13 @@
 {
-  "version": "0.4.0",
-  "filename": "Xuong_Sudowrite_Adapter_v0.4.0.zip",
+  "version": "0.5.0",
+  "filename": "Xuong_Sudowrite_Adapter_v0.5.0.zip",
   "folder": "Xuong_Sudowrite_Adapter",
-  "sha256": "e6ff7d6a401570fd35658ce6069b335f9dceab937a0a13573478cd3327494809",
+  "sha256": "4adcc984ac425529c3807cf22b4b06b621ae377af16e8abbcafb88c8d277e3cf",
   "files": [
     "background.js",
     "HUONG_DAN.md",
     "inkstone-content.js",
+    "manager.js",
     "manifest.json",
     "popup.html",
     "popup.js",
