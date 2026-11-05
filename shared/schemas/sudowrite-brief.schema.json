@@ -1,0 +1,75 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/sudowrite-brief.schema.json",
+ "title": "Semi-automatic Sudowrite task shown in the banner",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "job_key",
+  "mode",
+  "chapter_no",
+  "title",
+  "instructions",
+  "target_word_count"
+ ],
+ "properties": {
+  "schema": {
+   "const": 1
+  },
+  "job_key": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_-]{8,64}:[0-9]{1,5}$"
+  },
+  "mode": {
+   "enum": [
+    "write",
+    "revise"
+   ]
+  },
+  "chapter_no": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "title": {
+   "type": "string",
+   "maxLength": 200
+  },
+  "beats": {
+   "type": "string",
+   "maxLength": 12000,
+   "description": "Chapter outline / beats (fits Sudowrite Outline 1700 words)"
+  },
+  "previous_ending": {
+   "type": "string",
+   "maxLength": 4000
+  },
+  "canon_notes": {
+   "type": "string",
+   "maxLength": 6000
+  },
+  "instructions": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 8000
+  },
+  "revision_instructions": {
+   "type": "array",
+   "maxItems": 12,
+   "items": {
+    "type": "string",
+    "maxLength": 600
+   }
+  },
+  "target_word_count": {
+   "type": "integer",
+   "minimum": 300,
+   "maximum": 10000
+  },
+  "round": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 3
+  }
+ }
+}

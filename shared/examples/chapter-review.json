@@ -1,0 +1,46 @@
+{
+ "rubric": {
+  "plot": {
+   "score": 17,
+   "why": "Clear goal",
+   "fix": ""
+  },
+  "hook": {
+   "score": 13,
+   "why": "Slow start",
+   "fix": "Open on the ledger"
+  },
+  "characters": {
+   "score": 13
+  },
+  "style": {
+   "score": 13
+  },
+  "world": {
+   "score": 9
+  },
+  "pacing": {
+   "score": 8
+  },
+  "genre": {
+   "score": 9
+  }
+ },
+ "strengths": [
+  "Concrete economics"
+ ],
+ "weaknesses": [
+  "Opening recap"
+ ],
+ "contradictions": [],
+ "critical_errors": [],
+ "revision_instructions": [
+  "Cut the first two paragraphs of recap"
+ ],
+ "fixes": [
+  {
+   "suggestion": "Start with the ledger"
+  }
+ ],
+ "summaryVi": "Chương ổn, mở đầu còn chậm."
+}

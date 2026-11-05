@@ -1,0 +1,139 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/chapter-review.schema.json",
+ "title": "Chapter review v3 (7 criteria)",
+ "type": "object",
+ "required": [
+  "rubric",
+  "summaryVi"
+ ],
+ "$defs": {
+  "criterion": {
+   "type": "object",
+   "required": [
+    "score"
+   ],
+   "properties": {
+    "score": {
+     "type": "number",
+     "minimum": 0,
+     "maximum": 20
+    },
+    "why": {
+     "type": "string"
+    },
+    "fix": {
+     "type": "string"
+    }
+   }
+  },
+  "issue": {
+   "type": "object",
+   "required": [
+    "issue"
+   ],
+   "properties": {
+    "issue": {
+     "type": "string",
+     "minLength": 1
+    },
+    "where": {
+     "type": "string"
+    }
+   }
+  }
+ },
+ "properties": {
+  "rubric": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "plot",
+    "hook",
+    "characters",
+    "style",
+    "world",
+    "pacing",
+    "genre"
+   ],
+   "properties": {
+    "plot": {
+     "$ref": "#/$defs/criterion"
+    },
+    "hook": {
+     "$ref": "#/$defs/criterion"
+    },
+    "characters": {
+     "$ref": "#/$defs/criterion"
+    },
+    "style": {
+     "$ref": "#/$defs/criterion"
+    },
+    "world": {
+     "$ref": "#/$defs/criterion"
+    },
+    "pacing": {
+     "$ref": "#/$defs/criterion"
+    },
+    "genre": {
+     "$ref": "#/$defs/criterion"
+    }
+   }
+  },
+  "strengths": {
+   "type": "array",
+   "maxItems": 10,
+   "items": {
+    "type": "string"
+   }
+  },
+  "weaknesses": {
+   "type": "array",
+   "maxItems": 10,
+   "items": {
+    "type": "string"
+   }
+  },
+  "contradictions": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/issue"
+   }
+  },
+  "critical_errors": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/issue"
+   }
+  },
+  "revision_instructions": {
+   "type": "array",
+   "maxItems": 12,
+   "items": {
+    "type": "string"
+   }
+  },
+  "fixes": {
+   "type": "array",
+   "maxItems": 8,
+   "items": {
+    "type": "object",
+    "required": [
+     "suggestion"
+    ],
+    "properties": {
+     "suggestion": {
+      "type": "string"
+     },
+     "where": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "summaryVi": {
+   "type": "string",
+   "minLength": 1
+  }
+ }
+}

@@ -1,0 +1,58 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/adapter-message.schema.json",
+ "title": "window.postMessage envelope between Xưởng and the Adapter",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "source",
+  "kind"
+ ],
+ "properties": {
+  "source": {
+   "enum": [
+    "XP_STUDIO_V1",
+    "XP_EXTENSION_V1"
+   ]
+  },
+  "requestId": {
+   "type": "string",
+   "maxLength": 64
+  },
+  "kind": {
+   "enum": [
+    "XP_PING",
+    "XP_FILL_LISTING",
+    "XP_SUDO_FILL",
+    "XP_SUDO_PULL",
+    "XP_ORDER",
+    "XP_ORDER_CONTROL",
+    "XP_ORDER_STATUS",
+    "XP_JOB_EVENT",
+    "XP_SUDO_BRIEF",
+    "XP_SUDO_RESULT"
+   ]
+  },
+  "payload": {
+   "type": "object"
+  },
+  "result": {
+   "type": "object"
+  },
+  "notice": {
+   "type": "string"
+  },
+  "version": {
+   "type": "string"
+  },
+  "listing": {
+   "type": "object"
+  },
+  "kit": {
+   "type": "object"
+  },
+  "overwrite": {
+   "type": "boolean"
+  }
+ }
+}

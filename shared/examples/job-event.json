@@ -1,0 +1,14 @@
+{
+ "schema": 1,
+ "event_id": "evt_a81kQ2zP",
+ "order_id": "ord_7Kq2mX9a",
+ "job_key": "ord_7Kq2mX9a:8",
+ "chapter_no": 8,
+ "state": "revising",
+ "round": 1,
+ "score": 78,
+ "version": 3,
+ "words": 2310,
+ "message": "Hook 13/20: mở đầu chậm",
+ "at": "2026-11-05T10:00:00Z"
+}

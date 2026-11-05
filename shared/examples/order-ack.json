@@ -1,0 +1,16 @@
+{
+ "schema": 1,
+ "order_id": "ord_7Kq2mX9a",
+ "result": "accepted",
+ "chapters": [
+  {
+   "chapter_no": 8,
+   "state": "queued"
+  },
+  {
+   "chapter_no": 7,
+   "state": "skipped_existing"
+  }
+ ],
+ "at": "2026-11-05T10:00:00Z"
+}

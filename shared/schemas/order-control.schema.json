@@ -1,0 +1,38 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/order-control.schema.json",
+ "title": "Pause / resume / cancel an order",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "seq",
+  "order_id",
+  "action",
+  "at"
+ ],
+ "properties": {
+  "schema": {
+   "const": 1
+  },
+  "seq": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "order_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_-]{8,64}$"
+  },
+  "action": {
+   "enum": [
+    "pause",
+    "resume",
+    "cancel"
+   ]
+  },
+  "at": {
+   "type": "string",
+   "format": "date-time"
+  }
+ }
+}

@@ -1,0 +1,82 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/order-ack.schema.json",
+ "title": "Xưởng reply to an order",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "order_id",
+  "result",
+  "at"
+ ],
+ "properties": {
+  "schema": {
+   "const": 1
+  },
+  "order_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_-]{8,64}$"
+  },
+  "result": {
+   "enum": [
+    "accepted",
+    "rejected"
+   ]
+  },
+  "reason": {
+   "enum": [
+    "bible_version_conflict",
+    "project_not_found",
+    "invalid_order",
+    "chapters_locked",
+    "duplicate"
+   ]
+  },
+  "message": {
+   "type": "string",
+   "maxLength": 500
+  },
+  "chapters": {
+   "type": "array",
+   "maxItems": 50,
+   "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+     "chapter_no",
+     "state"
+    ],
+    "properties": {
+     "chapter_no": {
+      "type": "integer",
+      "minimum": 1
+     },
+     "state": {
+      "enum": [
+       "queued",
+       "writing",
+       "waiting_user",
+       "reviewing",
+       "revising",
+       "review_passed",
+       "human_review",
+       "approved",
+       "ready_to_publish",
+       "published",
+       "publish_failed",
+       "failed",
+       "paused",
+       "cancelled",
+       "skipped_existing"
+      ]
+     }
+    }
+   }
+  },
+  "at": {
+   "type": "string",
+   "format": "date-time"
+  }
+ }
+}

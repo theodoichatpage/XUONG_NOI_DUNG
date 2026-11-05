@@ -1,0 +1,89 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/job-event.schema.json",
+ "title": "Chapter job progress (Xưởng → Adapter → Manager)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "event_id",
+  "order_id",
+  "job_key",
+  "chapter_no",
+  "state",
+  "at"
+ ],
+ "properties": {
+  "schema": {
+   "const": 1
+  },
+  "event_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_-]{8,64}$"
+  },
+  "order_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_-]{8,64}$"
+  },
+  "job_key": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_-]{8,64}:[0-9]{1,5}$"
+  },
+  "chapter_no": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "state": {
+   "enum": [
+    "queued",
+    "writing",
+    "waiting_user",
+    "reviewing",
+    "revising",
+    "review_passed",
+    "human_review",
+    "approved",
+    "ready_to_publish",
+    "published",
+    "publish_failed",
+    "failed",
+    "paused",
+    "cancelled",
+    "skipped_existing"
+   ]
+  },
+  "round": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 3
+  },
+  "score": {
+   "type": [
+    "integer",
+    "null"
+   ],
+   "minimum": 0,
+   "maximum": 100
+  },
+  "version": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "words": {
+   "type": "integer",
+   "minimum": 0
+  },
+  "message": {
+   "type": "string",
+   "maxLength": 500
+  },
+  "link": {
+   "type": "string",
+   "pattern": "^https://"
+  },
+  "at": {
+   "type": "string",
+   "format": "date-time"
+  }
+ }
+}

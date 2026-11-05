@@ -1,0 +1,111 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/production-order.schema.json",
+ "title": "Production order (Manager → Adapter → Xưởng)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema",
+  "order_id",
+  "idempotency_key",
+  "project_id",
+  "chapter_start",
+  "chapter_count",
+  "story_bible_version",
+  "target_word_count",
+  "writing_language",
+  "writer",
+  "reviser",
+  "approval_threshold",
+  "max_revision_rounds",
+  "created_at"
+ ],
+ "properties": {
+  "schema": {
+   "const": 1
+  },
+  "order_id": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_-]{8,64}$"
+  },
+  "idempotency_key": {
+   "type": "string",
+   "minLength": 8,
+   "maxLength": 128
+  },
+  "project_id": {
+   "type": "string",
+   "minLength": 1,
+   "maxLength": 80,
+   "description": "Xưởng series id"
+  },
+  "project_title": {
+   "type": "string",
+   "maxLength": 200
+  },
+  "chapter_start": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 10000
+  },
+  "chapter_count": {
+   "type": "integer",
+   "minimum": 1,
+   "maximum": 50
+  },
+  "story_bible_version": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "target_word_count": {
+   "type": "integer",
+   "minimum": 300,
+   "maximum": 10000
+  },
+  "writing_language": {
+   "type": "string",
+   "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+  },
+  "writing_style": {
+   "type": "string",
+   "maxLength": 2000
+  },
+  "writer": {
+   "enum": [
+    "chatgpt",
+    "sudowrite"
+   ]
+  },
+  "reviser": {
+   "enum": [
+    "chatgpt",
+    "sudowrite"
+   ]
+  },
+  "approval_threshold": {
+   "type": "integer",
+   "minimum": 50,
+   "maximum": 100
+  },
+  "max_revision_rounds": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 3
+  },
+  "status": {
+   "enum": [
+    "queued",
+    "accepted",
+    "running",
+    "done",
+    "partially_done",
+    "cancelled",
+    "rejected"
+   ]
+  },
+  "created_at": {
+   "type": "string",
+   "format": "date-time"
+  }
+ }
+}

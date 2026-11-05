@@ -1,0 +1,8 @@
+{
+ "source": "XP_EXTENSION_V1",
+ "requestId": "r_1",
+ "kind": "XP_ORDER",
+ "payload": {
+  "order_id": "ord_7Kq2mX9a"
+ }
+}
