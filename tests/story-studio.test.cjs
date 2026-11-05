@@ -220,3 +220,8 @@ test('auto-scoring (off by default) reviews drafts one at a time after the batch
   c.db.content.push({id:'d1',seriesId:'b',chapterNumber:1,status:'review',body:'a',productionTask:'chapter'},{id:'d2',seriesId:'b',chapterNumber:2,status:'review',body:'b',productionTask:'chapter'});
   assert.equal(await c.uiReviewTick(),false);c.db.uiSettings={autoReview:true};assert.equal(await c.uiReviewTick(),true);assert.deepEqual(sent,['d1']);
   s.uiBatch={status:'running'};assert.equal(await c.uiReviewTick(),false,'not while a batch runs');s.uiBatch.status='done';await c.uiReviewTick();assert.deepEqual(sent,['d1','d2'])});
+
+test('scoring shows "sending" at once and keeps an error visible in the score row',async()=>{const {c,s}=produce();Object.assign(c,{lfChapterCheck:()=>({items:[]}),lfAIReviewFresh:()=>false});c.db.content.push({id:'z1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'review',body:'Text',productionTask:'chapter'});c.uiState.chOpen={b:'z1'};
+  let seen='';c.lfSend=async()=>{seen=c.uiScoreRow(s,c.db.content[0],'Text',false);throw Error('Bộ truyện đang có việc khác')};c.uiRender=()=>{};
+  await assert.rejects(c.uiScoreAction(s,'review'),/việc khác/);assert.match(seen,/Đang gửi yêu cầu chấm sang ChatGPT/);assert.match(c.uiScoreRow(s,c.db.content[0],'Text',false),/sp-score-err">Bộ truyện đang có việc khác/);
+  c.uiState.chDraft={z1:{body:'typing'}};assert.doesNotMatch(c.uiScoreRow(s,c.db.content[0],'typing',false),/data-ui-score="review" disabled/,'unsaved text no longer disables the button')});
