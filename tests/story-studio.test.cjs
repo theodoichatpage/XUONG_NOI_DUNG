@@ -187,3 +187,11 @@ test('publishing tab shows the Webnovel listing with copy buttons and the cover 
   c.db.assets=[{id:'img1',data:'data:image/jpeg;base64,AA'}];c.db.aiJobs.push({type:'image',coverFor:'L',status:'applied',targetId:'img1'});const h2=c.uiListing(s);assert.match(h2,/<img src="data:image\/jpeg;base64,AA"/);assert.match(h2,/Tải bìa 600×800/)});
 
 test('"Điền lên Inkstone" is always visible; disabled until the listing exists',()=>{const s={id:'N',title:'N',story:{characters:[],plans:[],glossary:[],pipeline:{source:{mode:'topic',topic:'x'},artifacts:{}}}};const c=runtime([s]);c.lfApproved=()=>true;assert.match(c.uiListing(s),/data-ui-listing="inkstone" disabled/)});
+
+test('when the Bridge lost a job, Xưởng sends the newest one again by itself, only once',async()=>{
+  const s={id:'R1',title:'R',story:{characters:[],plans:[],glossary:[],pipeline:{source:{mode:'topic',topic:'x'},artifacts:{}}}};
+  const c=runtime([s]);const sent=[];Object.assign(c,{bridgeStatus:{ok:true,connected:true,activeJob:null},bridgeCall:async()=>({ok:true}),lfSend:async(x,kind)=>{sent.push(kind)},lfJobKinds:{GENERATE_STORY_BIBLE:'Story Bible'}});
+  c.db.aiJobs.push({id:'old',seriesId:'R1',storyTask:'GENERATE_STORY_BIBLE',status:'error',error:'Bridge đã tải lại nên không còn theo dõi việc này.',createdAt:new Date().toISOString(),scope:{}});
+  assert.equal(await c.uiAutoResendTick(),true);assert.deepEqual(sent,['GENERATE_STORY_BIBLE']);assert.equal(c.db.aiJobs[0].status,'stopped');
+  c.db.aiJobs[0].status='error';assert.equal(await c.uiAutoResendTick(),false,'not again for the same job');assert.equal(sent.length,1);
+  c.bridgeStatus.connected=false;c.db.aiJobs.push({id:'new',seriesId:'R1',storyTask:'GENERATE_STORY_BIBLE',status:'error',error:'Bridge đã tải lại nên không còn theo dõi việc này.',createdAt:new Date().toISOString(),scope:{}});assert.equal(await c.uiAutoResendTick(),false,'waits until ChatGPT is connected')});
