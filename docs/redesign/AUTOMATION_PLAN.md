@@ -17,8 +17,8 @@ Mục tiêu: bạn chỉ nhập nguồn, duyệt Story Bible một lần, bật 
 
 ## Còn thiếu — theo thứ tự nên làm
 
-1. **Tách trạng thái chất lượng / xuất bản** (Bước 1 khảo sát đã chỉ lỗi Chương 3 = 78 vẫn "Đã duyệt"). Cổng duyệt cứng: ≥ 85, không lỗi nghiêm trọng, chấm đúng phiên bản. Đây là điều kiện để cho máy tự duyệt và tự đăng an toàn.
-2. **Chế độ Tự động cho từng truyện (Autopilot)**: chọn số chương mỗi đợt (vd. 2), giữ sẵn N chương đạt chuẩn trong kho (vd. 4); Xưởng tự viết → chấm → sửa → duyệt khi đạt; chương không đạt sau 3 vòng vào "Cần bạn xem" và đợt vẫn chạy tiếp chương sau (không chặn cả truyện).
+1. ✅ **Xong 06/11 (8c9c201)** — **Tách trạng thái chất lượng / xuất bản** (Bước 1 khảo sát đã chỉ lỗi Chương 3 = 78 vẫn "Đã duyệt"). Cổng duyệt cứng: ≥ 85, không lỗi nghiêm trọng, chấm đúng phiên bản. Đây là điều kiện để cho máy tự duyệt và tự đăng an toàn.
+2. ✅ **Xong 06/11 (6d83272)**, kiểm thật trên truyện TEST: bật → ChatGPT viết Chương 3 (Sudowrite hết credit) → tự gửi chấm — **Chế độ Tự động cho từng truyện (Autopilot)**: chọn số chương mỗi đợt (vd. 2), giữ sẵn N chương đạt chuẩn trong kho (vd. 4); Xưởng tự viết → chấm → sửa → duyệt khi đạt; chương không đạt sau 3 vòng vào "Cần bạn xem" và đợt vẫn chạy tiếp chương sau (không chặn cả truyện).
 3. **Đăng chương lên Webnovel qua Adapter**: khảo sát trang tạo chương của Inkstone (chưa làm), rồi Adapter điền tên + nội dung chương và dùng **lịch phát hành của chính Inkstone** (hẹn giờ đăng). Như vậy đến giờ đăng máy không cần mở. Bật theo từng truyện, lần đầu bạn xác nhận; sau đó tự đăng theo lịch.
 4. **Bộ hẹn giờ 2 ngày/lần**: Xưởng là trang web nên chỉ chạy khi tab mở. Dùng **AI Manager** (luôn chạy trên máy) làm đồng hồ: đến hạn → Adapter mở tab Xưởng → Xưởng chạy Autopilot cho đợt đó → báo kết quả về Manager. Máy cần bật, Chrome mở (không cần mở tab Xưởng).
 5. **Bảng trạng thái & lỗi** (trang Tổng quan): mỗi truyện một dòng — đang làm gì, đợt tiếp theo lúc nào, chương nào chờ bạn, lỗi gần nhất và cách xử lý (hết credit, mất kết nối ChatGPT, Webnovel đăng xuất…). Chuông thông báo dẫn thẳng tới lỗi.
