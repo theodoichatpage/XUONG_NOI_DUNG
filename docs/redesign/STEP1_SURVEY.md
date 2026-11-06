@@ -48,3 +48,9 @@ Nguyên nhân trong mã:
 - **Dữ liệu cũ** (không hạ cấp, không sửa nội dung): Ch.1–2 → `published` + cờ `legacy_unreviewed`; Ch.3 → giữ duyệt cũ nhưng gắn `recheck` (78 < 85); Ch.4 → `recheck` (chưa chấm). Sao lưu JSON tự động trước khi chuyển.
 - **Cổng duyệt cứng**: chỉ duyệt khi chấm trên đúng phiên bản hiện tại, ≥ 85, không có lỗi nghiêm trọng. Duyệt = lưu bản bất biến + `publication_status=ready`. Đăng Webnovel luôn hỏi xác nhận.
 - **Giao diện 3 khu vực** (Chuẩn bị · Sản xuất · Duyệt & đăng) thay 4 bước; màn hình chi tiết giữ các phần nâng cao hiện có.
+
+## Đã sửa (06/11/2026, commit 8c9c201)
+
+- Hai trường mới `quality_status` và `publication_status`; trường `status` cũ giữ nguyên.
+- Cổng duyệt cứng: ChatGPT chấm đúng phiên bản hiện tại, ≥ 85, không lỗi nghiêm trọng, không mâu thuẫn, không lỗi kiểm tra tự động. Duyệt lưu bản bất biến (`approvedSnapshot`) và đưa vào hàng đợi đăng; đăng chỉ cho chương qua cổng và luôn hỏi bạn xác nhận.
+- Dữ liệu thật sau khi chạy (đã sao lưu 3,9 MB vào IndexedDB `xuong-backups` trước): The Ashen Crown Ch.1–2 "Đã đăng khi chưa được ChatGPT chấm", Ch.3 "Điểm 78/100, chưa đạt 85", Ch.4 "Đã duyệt khi chưa được ChatGPT chấm" — đều "Cần kiểm tra lại", không đổi nội dung hay trạng thái cũ. Muốn gỡ cờ: chấm lại, đạt ≥ 85 rồi bấm Duyệt chương.
