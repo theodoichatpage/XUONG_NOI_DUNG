@@ -1,4 +1,4 @@
-# Sudowrite Adapter 0.7.0 (Xưởng × Sudowrite × Webnovel)
+# Sudowrite Adapter 0.7.1 (Xưởng × Sudowrite × Webnovel)
 
 Trước đây tên là "Xưởng Webnovel Publisher". Nếu đã cài bản cũ: giải nén đè vào đúng thư mục cũ rồi bấm Tải lại, hoặc gỡ bản cũ rồi cài thư mục mới.
 

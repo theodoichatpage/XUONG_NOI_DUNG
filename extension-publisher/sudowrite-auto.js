@@ -28,12 +28,20 @@ const mine=e=>!!e.closest('[id^="xp-"]');
 function pageText(){let t=document.body.innerText||'';for(const e of document.querySelectorAll('[id^="xp-"]'))if(e.innerText)t=t.split(e.innerText).join('');return t}
 function panel(){return document.querySelector('[class*="GeneratePanel"]')}
 function btn(re,root=document){return [...root.querySelectorAll('button,[role="button"]')].find(b=>!mine(b)&&b.getClientRects().length&&(re.test((b.getAttribute('aria-label')||'').trim())||re.test((b.innerText||'').trim())))||null}
-function busy(){const p=panel();if(p&&[...p.querySelectorAll('button')].some(b=>b.disabled&&BUSY.test(b.innerText||'')))return true;if(p?.querySelector('[aria-busy="true"]'))return true;const w=document.querySelector('button[aria-label="Write"]');return !!(w&&/loading/i.test(w.innerText||''))}
+function busy(){const p=panel();if([...document.querySelectorAll('button')].some(b=>b.disabled&&!mine(b)&&b.getClientRects().length&&BUSY.test(b.innerText||'')))return true;if(p?.querySelector('[aria-busy="true"]'))return true;const w=document.querySelector('button[aria-label="Write"]');return !!(w&&/loading/i.test(w.innerText||''))}
 function problem(){const t=pageText();if(CREDITS.test(t))stop('out_of_credits','Sudowrite báo hết credit ("0 credits left"). Mua gói Sudowrite, rồi bấm Thử lại.');const p=panel();const e=p&&(p.innerText||'').match(SW_ERROR);if(e)stop('sudowrite_error','Sudowrite báo lỗi: '+(p.innerText||'').split('\n').find(l=>SW_ERROR.test(l)).slice(0,200))}
 const titleEl=()=>document.querySelector('textarea[aria-label="Edit Title"]');
 const titleIs=t=>norm(titleEl()?.value)===norm(t);
 const docText=()=>{const e=editor();return e?(e.innerText||'').trim():''};
 const words=s=>(String(s).match(/\S+/g)||[]).length;
+// Start under the Outline: the visible #button-create-document inside #story-bible-outline (another copy may exist off screen).
+function startButton(){return [...document.querySelectorAll('#story-bible-outline #button-create-document,#story-bible-outline [id="button-create-document"]')].find(e=>e.getClientRects().length)||null}
+const startTarget=st=>norm((st.querySelector('[class*="ButtonText"]')?.innerText||st.innerText||'').replace(/^\s*start\s*/i,''));
+// Picks the chapter in the Start button's menu. The button is looked up again after each click (React may redraw it).
+const startIs=title=>{const st=startButton();return !!st&&startTarget(st).startsWith(norm(title).slice(0,18))};
+async function pickStart(title){if(startIs(title))return startButton();let st=startButton();const chev=st?.querySelector('[class*="Chevron"]');if(!chev)stop('ui_changed','Không thấy mũi tên chọn chương cạnh nút Start.');st.scrollIntoView({block:'center'});await press(chev);
+ const opt=await until(()=>[...(startButton()||document).querySelectorAll('[role="option"]')].find(o=>!mine(o)&&o.getClientRects().length&&norm(o.innerText)===norm(title)),4000);if(!opt)stop('ui_changed','Danh sách chương của nút Start không có "'+title+'".');await press(opt);
+ if(!await until(()=>startIs(title),4000))stop('ui_changed','Không chọn được "'+title+'" cho nút Start.');return startButton()}
 function rowFor(title){return outlineRows().find(r=>norm(rowParts(r).name?.value)===norm(title))||null}
 function blankRow(){return outlineRows().find(r=>{const p=rowParts(r);return /^(chapter\s*\d*)?$/i.test(String(p.name?.value||'').trim())&&!richText(p.summary)})||null}
 function summaryText(b){const notes=(b.revision_instructions||[]).length?'\n\nRevision notes (round '+b.round+') — fix all of these:\n- '+b.revision_instructions.join('\n- '):'';const prev=b.previous_ending?'\n\nThe previous chapter ended with: '+b.previous_ending.slice(-400):'';return fitWords((b.beats||b.title)+prev+notes,1500)}
@@ -51,7 +59,7 @@ async function waitDone(step,ready,sample){const end=Date.now()+LIMIT[step];let 
 const pressedHere=new Set();
 async function creditPress(step,find,started){if(run.pressed?.step===step){if(pressedHere.has(step)&&(busy()||started(run.pressed)))return run.pressed;if(!pressedHere.has(step)&&busy()){pressedHere.add(step);return run.pressed}stop('needs_check','Trang đã tải lại sau khi Adapter bấm "'+LABEL[step]+'". Nếu chương trong tài liệu đã xong, bấm "Gửi chương về Xưởng". Nếu chưa, xóa phần viết dở rồi bấm Thử lại (Adapter mở lại Rough Draft; bấm lại sẽ tốn credit).')}
  const b=find();if(!b)stop('ui_changed','Không thấy nút cho bước "'+LABEL[step]+'". Sudowrite có thể đã đổi giao diện.');if(b.disabled)stop('ui_changed','Nút của bước "'+LABEL[step]+'" đang bị khóa.');
- const rec={step,at:Date.now(),base:(panel()?.innerText||'').length,baseDoc:docText().length};await mark({pressed:rec},'Bấm '+LABEL[step]);pressedHere.add(step);await press(b);
+ const rec={step,at:Date.now(),base:pageText().length,baseDoc:docText().length};await mark({pressed:rec},'Bấm '+LABEL[step]);pressedHere.add(step);await press(b);
  const ok=await until(()=>{problem();return busy()||started(rec)},20000);if(!ok)stop('no_start','Đã bấm "'+LABEL[step]+'" nhưng Sudowrite không bắt đầu.');return rec}
 
 const STEP={
@@ -69,9 +77,10 @@ const STEP={
   if(run.docUrl){const u=new URL(run.docUrl);if(u.pathname!==location.pathname){location.href=run.docUrl;await wait(15000);stop('wrong_project','Không mở được tài liệu chương trong dự án Sudowrite đã dùng.')}
    if(location.hash!==u.hash)location.hash=u.hash;if(await until(()=>editor()&&titleIs(b.title),15000))return {docUrl:location.href}}
   const row=rowFor(b.title)||(run.rowId&&document.getElementById(run.rowId));if(!row)stop('ui_changed','Không thấy Chương "'+b.title+'" trong Outline.');
-  const st=buttonByText(row,/^\s*start\s*$/i);let created=false;
-  if(st){await press(st);created=true}
-  else{const d=[...document.querySelectorAll('[role="button"][aria-label]')].find(e=>!mine(e)&&norm(e.getAttribute('aria-label'))===norm(b.title));if(!d)stop('ui_changed','Chương trong Outline không có nút Start và không thấy tài liệu cùng tên.');await press(d)}
+  const st=startButton();let created=false;const docFor=()=>[...document.querySelectorAll('[role="button"][aria-label]')].find(e=>!mine(e)&&norm(e.getAttribute('aria-label'))===norm(b.title));
+  if(st&&!docFor()){await press(await pickStart(b.title));created=true;await until(docFor,LIMIT.start);const d=docFor();if(d&&!titleIs(b.title))await press(d)}
+  else if(docFor()&&!titleIs(b.title))await press(docFor());
+  else if(!docFor()&&!st)stop('ui_changed','Không thấy nút Start dưới Outline.');
   if(!await until(()=>editor()&&titleIs(b.title)&&/doc=/.test(location.hash),LIMIT.start))stop('ui_changed','Đã bấm Start nhưng không thấy tài liệu "'+b.title+'".');
   return {docUrl:location.href,created:created||!!run.created}},
  async clear(){if(!docText())return {};if(!run.created)stop('doc_not_empty','Tài liệu chương có chữ nhưng không do Adapter tạo, nên Adapter không xóa. Xóa tay hoặc dùng "Gửi chương về Xưởng".');
@@ -81,9 +90,9 @@ const STEP={
   const g=await until(()=>document.querySelector('button[aria-label="Generate a Rough Draft"]')||btn(/^generate a rough draft$/i),LIMIT.rough);if(!g)stop('ui_changed','Không thấy nút "Generate a Rough Draft" trong tài liệu chương.');
   await press(g);if(!await until(panel,LIMIT.rough))stop('ui_changed','Bảng Generate a Rough Draft không mở.');return {}},
  async scenes(){if(!panel())stop('needs_check','Bảng Rough Draft đã đóng (có thể do tải lại trang). Mở lại tài liệu chương rồi bấm Thử lại.');
-  const grown=rec=>(panel()?.innerText||'').length>(rec.base||0)+200;
-  const rec=await creditPress('scenes',()=>btn(/^generate scenes$/i,panel()),grown);
-  await waitDone('scenes',()=>grown(rec)&&!!btn(/plan draft/i,panel()||document),()=>String((panel()?.innerText||'').length));return {}},
+  const grown=rec=>pageText().length>(rec.base||0)+200;
+  const rec=await creditPress('scenes',()=>btn(/^generate scenes$/i),grown);
+  await waitDone('scenes',()=>grown(rec)&&!!btn(/plan draft/i),()=>String(pageText().length));return {}},
  async plan(){const p=panel();if(!p)stop('needs_check','Bảng Rough Draft đã đóng. Mở lại tài liệu chương rồi bấm Thử lại.');if(btn(/^generate draft$/i,p))return {};
   const b=btn(/plan draft/i,p);if(!b)stop('ui_changed','Không thấy nút Plan Draft.');await press(b);
   const end=Date.now()+LIMIT.plan;while(Date.now()<end){problem();if(btn(/^generate draft$/i,panel()||document))return {};await beat();await wait(1000)}stop('timeout','Plan Draft chưa xong.')},
@@ -103,9 +112,10 @@ async function tick(){if(running||!inProject())return;running=true;try{const g=a
 const el=(tag,css,text)=>{const e=document.createElement(tag);if(css)e.style.cssText=css;if(text!=null)e.textContent=text;return e};
 const B='height:28px;padding:0 10px;border:1px solid #3a3a40;background:#1d1d20;color:#f2f2f2;cursor:pointer;font:600 12px Arial,sans-serif';
 const STATE={running:'Đang chạy',stopped:'Đã dừng',done:'Xong',cancelled:'Đã bỏ'};
-function draw(other){const key=JSON.stringify([brief,run,other]);if(key===shown&&document.getElementById('xp-sudo-auto'))return;shown=key;document.getElementById('xp-sudo-auto')?.remove();if(!brief||!run)return;
- const box=el('div','position:fixed;right:16px;bottom:16px;z-index:2147483646;width:400px;max-height:80vh;overflow:auto;background:#121213;color:#f2f2f2;border:1px solid #ff5a1f;box-shadow:0 14px 40px rgba(0,0,0,.45);font:13px/1.5 Arial,sans-serif;padding:12px');box.id='xp-sudo-auto';
- box.append(el('strong','display:block;color:#ff7a45',(brief.mode==='revise'?'Xưởng · Tự sửa ':'Xưởng · Tự viết ')+'Chương '+brief.chapter_no+(brief.round?' · vòng '+brief.round:'')),el('div','font-weight:700',brief.title));
+let small=false;
+function draw(other){const key=JSON.stringify([brief,run,other,small]);if(key===shown&&document.getElementById('xp-sudo-auto'))return;shown=key;document.getElementById('xp-sudo-auto')?.remove();if(!brief||!run)return;
+ const box=el('div','position:fixed;right:16px;bottom:16px;z-index:2147483646;width:'+(small?'260px':'400px')+';max-height:'+(small?'64px':'80vh')+';overflow:auto;background:#121213;color:#f2f2f2;border:1px solid #ff5a1f;box-shadow:0 14px 40px rgba(0,0,0,.45);font:13px/1.5 Arial,sans-serif;padding:12px');box.id='xp-sudo-auto';
+ const tg=el('button',B+';float:right;height:22px;font-size:11px',small?'Mở':'Thu gọn');tg.onclick=()=>{small=!small;shown='';draw(other)};box.append(tg);box.append(el('strong','display:block;color:#ff7a45',(brief.mode==='revise'?'Xưởng · Tự sửa ':'Xưởng · Tự viết ')+'Chương '+brief.chapter_no+(brief.round?' · vòng '+brief.round:'')),el('div','font-weight:700',brief.title));
  const st=run.paused&&run.state==='running'?'Tạm dừng (dừng sau bước đang chạy)':STATE[run.state]||run.state;box.append(el('div','margin:4px 0 8px;color:'+(run.state==='stopped'?'#ffb59c':run.state==='done'?'#4ade80':'#d6d6da'),'Trạng thái: '+st+(other?' · đang chạy ở tab Sudowrite khác':'')));
  for(const s of stepsFor(brief)){const done=(run.done||[]).includes(s),cur=run.step===s&&!done;box.append(el('div','padding:2px 0;color:'+(done?'#f2f2f2':cur?'#ff7a45':'#8b8b90'),(done?'✓ ':cur?'▶ ':'· ')+LABEL[s]))}
  if(run.error)box.append(el('p','margin:8px 0;color:#ffb59c',run.error));

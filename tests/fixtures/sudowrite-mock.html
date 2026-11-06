@@ -45,8 +45,13 @@ function richEditor(text,onSave,placeholder,extra={}){const e=h('div',{contented
  e.addEventListener('input',()=>onSave(paras(e).join('\n')));e.addEventListener('focusout',()=>onSave(paras(e).join('\n')));return e}
 function drawRows(){$('#rows').replaceChildren(...S.rows.map(r=>{const name=h('input',{placeholder:'Chapter Name'});name.value=r.name;name.addEventListener('change',()=>{r.name=name.value;save();drawDocs()});name.addEventListener('blur',()=>{r.name=name.value;save()});
  const sum=richEditor(r.summary,t=>{r.summary=t;save()},'Chapter Summary');
- const act=r.docId?h('button',{onclick:()=>openDoc(r.docId),text:'Open'}):h('button',{text:'Start',onclick:()=>{const d={id:'d'+(++S.n),title:r.name,row:r.id,body:[]};S.docs.push(d);r.docId=d.id;save();drawRows();drawDocs();openDoc(d.id)}});
- return h('div',{class:'row',id:'story-bible-outline-chapter-'+r.id},name,sum,h('small',{text:"Click Start when you're ready to draft your Chapter "}),act)}))}
+ return h('div',{class:'row',id:'story-bible-outline-chapter-'+r.id},name,sum)}));drawStart()}
+let startPick=null,startMenu=false;
+function drawStart(){const tgt=S.rows.find(r=>r.id===startPick)||S.rows.find(r=>!r.docId)||S.rows[0];$('#start-box')?.remove();if(!tgt)return;
+ const menu=startMenu?h('div',{role:'listbox'},...S.rows.map(r=>h('button',{role:'option',text:r.name,onclick:e=>{e.stopPropagation();startPick=r.id;startMenu=false;drawStart()}}))):'';
+ const chev=h('div',{class:'CreateDocument__ChevronContainer-mock',text:'⌄',onclick:e=>{e.stopPropagation();startMenu=!startMenu;drawStart()}});
+ const st=h('div',{id:'button-create-document',role:'button',class:'CreateDocument__ButtonContainer-mock',onclick:()=>{const d={id:'d'+(++S.n),title:tgt.name,row:tgt.id,body:[]};S.docs.push(d);tgt.docId=d.id;startPick=null;save();drawStart();drawDocs()}},h('div',{class:'CreateDocument__ButtonText-mock'},h('b',{text:'Start'}),h('br'),h('small',{text:tgt.name})),chev,menu);
+ $('#story-bible-outline').append(h('div',{id:'start-box',class:'CreateDocument__Container-mock'},h('p',{text:"Now the fun part begins! Click Start when you're ready to draft your Chapter."}),st))}
 $('#add-chapter').onclick=async()=>{await wait(300);S.rows.push({id:'r'+(++S.n),name:'Chapter 1',summary:''});save();drawRows()};
 function drawDocs(){$('#docs').replaceChildren(...S.docs.map(d=>h('div',{role:'button','aria-label':d.title,onclick:()=>openDoc(d.id),text:d.title})))}
 function openDoc(id){location.hash='doc='+id}
@@ -61,14 +66,14 @@ function drawDoc(){const id=(location.hash.match(/doc=(\w+)/)||[])[1],d=S.docs.f
  if(panelState&&panelState.doc===d.id)kids.push(drawPanel(d,row,ed));
  m.replaceChildren(...kids)}
 drawDoc.soft=()=>{const id=(location.hash.match(/doc=(\w+)/)||[])[1],d=S.docs.find(x=>x.id===id);if(d&&!d.body.length&&!panelState&&!$('[aria-label="Generate a Rough Draft"]'))drawDoc()};
-function drawPanel(d,row,ed){const p=panelState,P=h('div',{class:'GeneratePanel__InnerContainer-mock'});
+function drawPanel(d,row,ed){const p=panelState,P=h('div',{class:'GeneratePanel__InnerContainer-mock'}),SC=h('div',{class:'scenes-section'},h('button',{text:'Add Scenes'}));
  P.append(h('div',{text:'POV: Third person · Length: Auto · Tense: Past · Prose Mode: Muse'}));
  const gs=h('button',{text:p.phase==='scenes'?p.progress:'Generate Scenes'});if(p.phase!=='idle'&&p.phase!=='ready')gs.disabled=true;
  gs.onclick=async()=>{S.presses.scenes++;save();if(S.credits<=0){p.error='0 credits left, sign up for a plan to keep using Sudowrite.';return drawDoc()}S.credits--;save();p.phase='scenes';
   for(const t of['Checking Characters…','Checking Worldbuilding…','Checking Style and Genre…','Checking Synopsis and Outline…','Reviewing Scenes Best Practices…','Ensuring Perfect Formatting…']){p.progress=t;drawDoc();await wait(450)}
   const sum=row.summary||'';p.scenes=[1,2,3].map(i=>'Scene '+i+': '+sum.split(/[.!?]/)[i-1]?.trim()+' — the scene builds on the outline and the Story Bible, with a clear goal, a turn and a hook to the next scene.');p.phase='ready';drawDoc()};
- P.append(gs);
- if(p.scenes.length)P.append(h('h4',{text:'Scenes'}),...p.scenes.map(s=>h('p',{text:s})));
+ SC.append(gs);
+ if(p.scenes.length)SC.append(h('h4',{text:'Scenes'}),...p.scenes.map(s=>h('p',{text:s})));
  if(p.phase!=='review'&&p.phase!=='draft'){const pd=h('button',{text:p.phase==='plan'?'Checking scenes…':'Plan Draft · All Scenes'});if(p.phase==='plan'||p.phase==='scenes')pd.disabled=true;
   pd.onclick=async()=>{S.presses.plan++;save();if(!p.scenes.length){p.error='There was an error estimating credits for this chapter. Retry / Cancel';return drawDoc()}p.phase='plan';drawDoc();await wait(800);if(S.credits<=0){p.phase='ready';p.error='0 credits left, sign up for a plan to keep using Sudowrite.';return drawDoc()}p.phase='review';drawDoc()};P.append(pd)}
  if(p.phase==='review'||p.phase==='draft'){P.append(h('h4',{text:'Review Plan'}));const gd=h('button',{text:p.phase==='draft'?p.progress:'Generate Draft'});if(p.phase==='draft')gd.disabled=true;
@@ -77,7 +82,7 @@ function drawPanel(d,row,ed){const p=panelState,P=h('div',{class:'GeneratePanel_
    for(let i=0;i<3;i++){p.progress='Writing scene '+(i+1)+' of 3…';for(let k=0;k<3;k++){out.push(['At dawn','By noon','At dusk','Near midnight','Before the rain'][(S.applied.length-1)%5]+', '+p.scenes[i].replace(/^Scene \d+: /,'')+' '+'He weighed every choice against the debt his family carried, and the village watched him do it. '.repeat(10));d.body=[...out];save();drawDoc();await wait(350)}await wait(600)}
    panelState=null;drawDoc()};P.append(gd)}
  if(p.error)P.append(h('p',{class:'err',text:p.error}));
- return P}
+ return h('div',{},SC,P)}
 addEventListener('hashchange',()=>{if(panelState&&!location.hash.includes('doc='+panelState.doc))panelState=null;drawDoc()});
 drawRows();drawDocs();drawDoc();
 </script>

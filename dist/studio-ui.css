@@ -44,3 +44,13 @@ body.u-app #sidebar{min-height:54px;max-height:54px}.u-app .u-card small,.u-app 
 .u-adapter-card p{margin:6px 0 10px;color:var(--u-muted)}
 @media(max-width:1200px){.u-chip small{display:none}}
 @media(max-width:760px){.u-chips{display:none}}
+
+/* New story: choose the writer (Xưởng / Sudowrite) */
+.u-writer-modal{position:relative;width:min(640px,92vw);background:var(--u-bg,#0b0b0c);border:1px solid var(--u-line);box-shadow:0 24px 60px rgba(0,0,0,.5);padding:22px 24px}
+.u-writer-modal h2{margin:0 0 6px;font-size:18px}.u-writer-modal p{margin:0 0 14px;color:var(--u-muted)}
+.u-writer-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.u-writer-opts button{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;padding:14px;border:1px solid var(--u-line);background:transparent;color:var(--u-ink);cursor:pointer;min-height:120px}
+.u-writer-opts button:hover,.u-writer-opts button:focus-visible{border-color:#ff5a1f}
+.u-writer-opts b{font-size:15px;color:#ff7a45}.u-writer-opts span{font-size:12.5px;color:var(--u-muted);line-height:1.45}
+.u-writer{display:inline-block;padding:0 5px;margin-right:4px;border:1px solid var(--u-line);border-radius:3px;font-size:11px}.u-writer.sudowrite{color:#ff7a45;border-color:#ff7a45}
+@media(max-width:560px){.u-writer-opts{grid-template-columns:1fr}}

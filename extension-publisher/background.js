@@ -29,3 +29,5 @@ async function handle(m,sender){if(sender.id!==chrome.runtime.id)return err('Ngu
  return err('Lệnh không hỗ trợ')}
 chrome.runtime.onMessage.addListener((m,sender,reply)=>{handle(m||{},sender).then(reply,e=>reply(err(e)));return true});
 importScripts('manager.js','sudowrite-brief.js');
+
+chrome.runtime.onInstalled?.addListener(async d=>{if(d.reason!=='update')return;for(const t of await chrome.tabs.query({url:['https://editor.sudowrite.com/*','https://xuong-noi-dung-khaki.vercel.app/*']}))chrome.tabs.reload(t.id).catch(()=>{})});
