@@ -1,0 +1,263 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/bible-review.schema.json",
+ "title": "ChatGPT review of a Story Bible (REVIEW_BIBLE), as stored by Xưởng",
+ "type": "object",
+ "required": [
+  "rubric",
+  "contradictions",
+  "critical_errors",
+  "strengths",
+  "weaknesses",
+  "revision_instructions",
+  "summaryVi",
+  "total",
+  "verdict",
+  "rev"
+ ],
+ "properties": {
+  "rubric": {
+   "type": "object",
+   "required": [
+    "premise",
+    "conflict",
+    "characters",
+    "world",
+    "outline",
+    "consistency",
+    "genre"
+   ],
+   "properties": {
+    "premise": {
+     "type": "object",
+     "required": [
+      "score",
+      "why",
+      "fix"
+     ],
+     "properties": {
+      "score": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 20
+      },
+      "why": {
+       "type": "string"
+      },
+      "fix": {
+       "type": "string"
+      }
+     }
+    },
+    "conflict": {
+     "type": "object",
+     "required": [
+      "score",
+      "why",
+      "fix"
+     ],
+     "properties": {
+      "score": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 15
+      },
+      "why": {
+       "type": "string"
+      },
+      "fix": {
+       "type": "string"
+      }
+     }
+    },
+    "characters": {
+     "type": "object",
+     "required": [
+      "score",
+      "why",
+      "fix"
+     ],
+     "properties": {
+      "score": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 20
+      },
+      "why": {
+       "type": "string"
+      },
+      "fix": {
+       "type": "string"
+      }
+     }
+    },
+    "world": {
+     "type": "object",
+     "required": [
+      "score",
+      "why",
+      "fix"
+     ],
+     "properties": {
+      "score": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 10
+      },
+      "why": {
+       "type": "string"
+      },
+      "fix": {
+       "type": "string"
+      }
+     }
+    },
+    "outline": {
+     "type": "object",
+     "required": [
+      "score",
+      "why",
+      "fix"
+     ],
+     "properties": {
+      "score": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 15
+      },
+      "why": {
+       "type": "string"
+      },
+      "fix": {
+       "type": "string"
+      }
+     }
+    },
+    "consistency": {
+     "type": "object",
+     "required": [
+      "score",
+      "why",
+      "fix"
+     ],
+     "properties": {
+      "score": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 10
+      },
+      "why": {
+       "type": "string"
+      },
+      "fix": {
+       "type": "string"
+      }
+     }
+    },
+    "genre": {
+     "type": "object",
+     "required": [
+      "score",
+      "why",
+      "fix"
+     ],
+     "properties": {
+      "score": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 10
+      },
+      "why": {
+       "type": "string"
+      },
+      "fix": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "contradictions": {
+   "type": "array",
+   "maxItems": 10,
+   "items": {
+    "type": "object",
+    "required": [
+     "issue",
+     "where"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "issue": {
+      "type": "string",
+      "minLength": 1
+     },
+     "where": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "critical_errors": {
+   "type": "array",
+   "maxItems": 10,
+   "items": {
+    "type": "object",
+    "required": [
+     "issue",
+     "where"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "issue": {
+      "type": "string",
+      "minLength": 1
+     },
+     "where": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "strengths": {
+   "type": "array",
+   "maxItems": 5,
+   "items": {
+    "type": "string"
+   }
+  },
+  "weaknesses": {
+   "type": "array",
+   "maxItems": 5,
+   "items": {
+    "type": "string"
+   }
+  },
+  "revision_instructions": {
+   "type": "array",
+   "maxItems": 8,
+   "items": {
+    "type": "string"
+   }
+  },
+  "summaryVi": {
+   "type": "string",
+   "minLength": 1
+  },
+  "total": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 100
+  },
+  "verdict": {
+   "enum": [
+    "ok",
+    "revise"
+   ],
+   "description": "ok only when total >= 85 with no contradictions and no critical errors"
+  },
+  "rev": {
+   "const": 1
+  }
+ }
+}

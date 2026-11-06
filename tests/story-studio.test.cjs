@@ -44,7 +44,7 @@ test('empty idea is rejected without touching data',async()=>{
 test('selected story renders its title, status and character edit buttons',()=>{
   const s={id:'s1',title:'Kẻ giữ ký ức',story:{characters:[{id:'c1',name:'Minh',role:'Nhân vật chính',personality:'Thông minh'}],plans:[],pipeline:{source:{mode:'topic',topic:'Ý tưởng'},artifacts:{bible:{value:{premise:'Minh khám phá thành phố.',mainThreads:'Twist A\nTwist B'}}}}}};
   const c=runtime([s]);c.uiCurrentStage=()=>['characters','Nhân vật','GENERATE_CHARACTERS'];c.uiStoryJob=()=> '';
-  s.story.pipeline.artifacts.bible.status='approved';c.lfNoReview=c.lfNoReview||(x=>x);
+  s.story.pipeline.artifacts.bible.status='approved';c.lfNoReview=c.lfNoReview||(x=>x);c.lfBibleReviewFresh=()=>false;
   const html=c.uiStory();
   // Step 2 v2 (mockup approved 06/11/2026): 7 Story Bible sections in Sudowrite order, details behind links, Sudowrite panel
   for(const part of['Kẻ giữ ký ức','data-ui-action="build-story"','data-ui-action="story-advanced"','aria-selected="true" data-ui-storystep="2"','Story Bible · 7 mục','data-ui-sbsec="braindump"','data-ui-sbsec="outline"','data-ui-plotdetail="threads"','Đồng bộ với Sudowrite','data-ui-sudo="fill"','Sẵn sàng sản xuất chương?'])assert.ok(html.includes(part),part);

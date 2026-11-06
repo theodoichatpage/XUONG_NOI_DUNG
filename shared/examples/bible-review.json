@@ -1,0 +1,60 @@
+{
+ "rubric": {
+  "premise": {
+   "score": 18,
+   "why": "Ý tưởng đồng hồ quay ngược rõ, có móc.",
+   "fix": ""
+  },
+  "conflict": {
+   "score": 12,
+   "why": "Mức cược chưa rõ ở arc 2.",
+   "fix": "Thêm hậu quả nếu đồng hồ dừng."
+  },
+  "characters": {
+   "score": 17,
+   "why": "Elias có mục tiêu rõ.",
+   "fix": ""
+  },
+  "world": {
+   "score": 8,
+   "why": "Luật quay ngược chưa đủ.",
+   "fix": "Ghi rõ giới hạn 12 vạch."
+  },
+  "outline": {
+   "score": 12,
+   "why": "Chương 2 lặp nhịp chương 1.",
+   "fix": "Đổi chương 2 thành điều tra ở bến cảng."
+  },
+  "consistency": {
+   "score": 9,
+   "why": "",
+   "fix": ""
+  },
+  "genre": {
+   "score": 9,
+   "why": "",
+   "fix": ""
+  }
+ },
+ "contradictions": [],
+ "critical_errors": [
+  {
+   "issue": "Bí mật của Silas lộ ngay chương 1.",
+   "where": "dàn ý chương 1"
+  }
+ ],
+ "strengths": [
+  "Móc mở đầu mạnh"
+ ],
+ "weaknesses": [
+  "Arc 2 thiếu mức cược"
+ ],
+ "revision_instructions": [
+  "Dời bí mật của Silas sang chương 3",
+  "Ghi rõ giới hạn 12 vạch"
+ ],
+ "summaryVi": "Khá, cần dời bí mật trước khi viết.",
+ "total": 85,
+ "verdict": "revise",
+ "rev": 1
+}
