@@ -349,8 +349,10 @@ async function uiQaTick(){if(uiQaBusy)return false;const on=uiQaOn();if(!on&&!db
   if(!lfAIReviewFresh(c)){const last=uiReviewJob(c);let fail=qa.fail||0;if(last?.status==='error'&&qa.status==='reviewing'&&qa.version===ver){fail++;if(fail>=2){uiPersist(()=>c.qa={...qa,fail,status:'needs-human',note:'ChatGPT chấm lỗi 2 lần'});continue}}uiPersist(()=>c.qa={...qa,fail,status:'reviewing',version:ver});await lfSend(s,'REVIEW_CHAPTER',{chapterId:c.id});return true}
   const sc=uiScoreOf(s,c);if(qa.scoredVersion!==ver)uiPersist(()=>c.qa={...qa,scores:[...(qa.scores||[]),sc.score].slice(-8),scoredVersion:ver,version:ver});const q=c.qa;
   if(sc.pass){if(q.status!=='passed')uiPersist(()=>c.qa={...q,status:'passed'});continue}
-  if((q.round||0)>=(q.sudoAuto||q.fallback||q.autopilot?Math.min(3,uiQaMax()):uiQaMax())){if(q.status!=='needs-human')uiPersist(()=>c.qa={...q,status:'needs-human',note:'Đã sửa '+q.round+' vòng, chưa đạt '+uiQaTarget()});continue}
-  uiPersist(()=>c.qa={...q,round:(q.round||0)+1,status:'fixing'});
+  // a round counts only when its revision reached the chapter: a fix sent for this same version that never came back is retried, not counted
+  const lost=q.fixVersion===ver,done=(q.round||0)-(lost?1:0);
+  if(done>=(q.sudoAuto||q.fallback||q.autopilot?Math.min(3,uiQaMax()):uiQaMax())){if(q.status!=='needs-human')uiPersist(()=>c.qa={...q,status:'needs-human',note:'Đã sửa '+q.round+' vòng, chưa đạt '+uiQaTarget()});continue}
+  uiPersist(()=>c.qa={...q,round:lost?(q.round||1):(q.round||0)+1,status:'fixing',fixVersion:ver});
   if(q.sudoAuto&&!uiSudoUseGpt()){try{await uiSudoSend(s,c,'revise',{auto:true})}catch(e){uiPersist(()=>c.qa={...c.qa,status:'needs-human',version:ver,note:'Không giao được cho Sudowrite: '+e.message})}return true}
   await uiChapterWrite(s,c,'fix',null,uiScoreFixAsk(c.aiReview.value,s));return true}}}
  catch(e){toast('Điều phối chất lượng: '+e.message)}finally{uiQaBusy=false}return false}

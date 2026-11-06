@@ -60,3 +60,12 @@ test('nothing is ever published by the autopilot', () => {
   const src = fs.readFileSync('dist/studio-ui.js', 'utf8'), engine = src.slice(src.indexOf('// ---- Autopilot per story'), src.indexOf('function uiAutopilotSwitch'));
   assert.doesNotMatch(engine, /status='live'|publication_status='published'|uiPublishAction|XP_FILL_LISTING/);
 });
+test('a fix round whose revision never came back (Bridge error) is retried, not counted', async () => {
+  const { c, chapters } = setup({ chapters: [ch(1, { aiReview: rv(84), qa: { round: 0, scores: [84], autopilot: true } })] });
+  await c.uiAutopilotTick(); assert.equal(chapters[0].qa.round, 1); assert.equal(chapters[0].qa.fixVersion, 1);
+  c.db.aiJobs.forEach(j => { j.status = 'error'; j.createdAt = '2026-11-05T00:00:00Z'; }); // the send failed; the text is unchanged (version 1)
+  c.writes = []; await c.uiQaTick(); assert.equal(chapters[0].qa.round, 1, 'same round reused'); assert.deepEqual(c.writes.map(w => w.mode), ['fix']);
+  // a revision that was applied (new version) counts: after 3 real rounds it stops
+  chapters[0].qa = { round: 3, scores: [70, 75, 80], autopilot: true, fixVersion: 1 }; chapters[0].bodyRevision = 2; chapters[0].aiReview = rv(80, 2); c.db.aiJobs = []; c.writes = [];
+  await c.uiQaTick(); assert.equal(chapters[0].qa.status, 'needs-human'); assert.equal(c.writes.length, 0);
+});
