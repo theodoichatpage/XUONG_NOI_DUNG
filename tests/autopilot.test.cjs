@@ -1,0 +1,62 @@
+// Autopilot per story: one chapter at a time → review → fixes (max 3) → approve through the gate; keeps a buffer; never publishes.
+const test = require('node:test'), assert = require('node:assert/strict'), vm = require('node:vm'), fs = require('node:fs');
+function setup({ writer = 'xuong', chapters = [], planned = 10, buffer = 2, ap = true, stage = 'ready' } = {}) {
+  const src = fs.readFileSync('dist/studio-ui.js', 'utf8'), store = {};
+  const s = { id: 'ser1', title: '[TEST] Book', writer, chapterLength: 1500, story: { plans: [], glossary: [], characters: [], pipeline: { source: { chapters: planned } } }, ...(ap ? { autopilot: { on: true, state: 'running', buffer, startedAt: '2026-11-06T00:00:00Z', log: [] } } : {}) };
+  const c = vm.createContext({ db: { series: [s], content: chapters, channels: [], printProjects: [], assets: [], workflows: [], metrics: [], aiJobs: [], uiSettings: {}, migrations: { statusSplit: 'x' } }, Date, structuredClone, setTimeout: () => {}, console, today: () => '2026-11-06', loadError: false,
+    toast: m => c.toasted = m, save: () => true, validate: () => {}, esc: x => String(x ?? ''), uid: () => 'id' + (++c.n), n: 0, $: () => null, location: { hash: '#series' }, localStorage: { getItem: k => store[k] ?? null, setItem: (k, v) => store[k] = String(v) },
+    lfData: x => x.story, lfPipeline: x => x.story.pipeline, lfApproved: () => true, lfChapters: x => chapters.filter(y => y.seriesId === x.id).sort((a, b) => a.chapterNumber - b.chapterNumber), lfStoryLang: () => 'English', lfChapterCheck: () => ({ items: [] }), lfVersion: x => Number(x.bodyRevision || 1),
+    lfAIReviewFresh: x => !!x.aiReview && x.aiReview.revision === Number(x.bodyRevision || 1), LF_RUBRIC: [], lfRubricLabel: (_s, k) => k, lfBibleReviewFresh: () => false,
+    lfNextChapter: x => Math.max(0, ...chapters.filter(y => y.seriesId === x.id).map(y => y.chapterNumber)) + 1, lfChapterDefaults: x => ({ seriesId: x.id, chapterNumber: Math.max(0, ...chapters.map(y => y.chapterNumber)) + 1, title: 'Chương', status: 'draft', body: '' }), lfPlans: () => [],
+    bridgeConnectionState: () => ({}), jobState: j => j.status, lfJobKinds: {}, lfNeedsReview: () => false, lfReviewFresh: () => false });
+  vm.runInContext(src.slice(0, src.indexOf('const uiBaseChoose=')), c);
+  c.uiRender = () => {}; c.uiCurrentStage = () => [stage]; c.uiConfirm = async () => true;
+  c.writes = []; c.uiChapterWrite = async (_s, ch, mode) => { let x = ch; if (!x) { x = { id: 'w' + (chapters.length + 1), seriesId: 'ser1', chapterNumber: c.lfNextChapter(s), title: 'Chương', status: 'draft', body: '', history: [], bodyRevision: 1 }; chapters.push(x); } c.writes.push({ id: x.id, n: x.chapterNumber, mode }); c.db.aiJobs.push({ seriesId: 'ser1', storyTask: 'WRITE_CHAPTER', targetId: x.id, status: 'queued' }); };
+  c.reviews = []; c.lfSend = async (_s, kind, scope) => { c.reviews.push(scope.chapterId); c.db.aiJobs.push({ seriesId: 'ser1', storyTask: kind, scope, status: 'queued' }); };
+  c.calls = []; c.xpCall = async (kind, extra) => { c.calls.push(JSON.parse(JSON.stringify({ kind, ...extra }))); return { ok: true }; };
+  return { c, s, chapters };
+}
+const finishJobs = c => c.db.aiJobs.forEach(j => { if (j.status === 'queued') j.status = 'applied'; });
+const rv = (total, rev = 1, extra = {}) => ({ revision: rev, value: { v: 2, total, rubric: { plot: { score: 10, fix: 'x' } }, fixes: [], contradictions: [], critical_errors: [], revision_instructions: ['Sửa nhịp'], summaryVi: 's', ...extra } });
+const ch = (n, extra = {}) => ({ id: 'c' + n, seriesId: 'ser1', chapterNumber: n, title: 'Chương ' + n, status: 'draft', body: 'Body ' + n, history: [], bodyRevision: 1, qa: { round: 0, scores: [], autopilot: true }, ...extra });
+
+test('off, paused or Story Bible not approved → nothing is written', async () => {
+  let t = setup({ ap: false }); assert.equal(await t.c.uiAutopilotTick(), false); assert.equal(t.c.writes.length, 0);
+  t = setup(); t.s.autopilot.state = 'paused'; await t.c.uiAutopilotTick(); assert.equal(t.c.writes.length, 0);
+  t = setup({ stage: 'characters' }); await t.c.uiAutopilotTick(); assert.equal(t.c.writes.length, 0); assert.equal(t.s.autopilot.state, 'waiting'); assert.match(t.s.autopilot.note, /Story Bible/);
+});
+test('Xưởng story: writes the next chapter with ChatGPT, one at a time', async () => {
+  const { c, s, chapters } = setup();
+  await c.uiAutopilotTick(); assert.deepEqual(c.writes.map(w => w.mode), ['new']); assert.equal(chapters[0].qa.autopilot, true); assert.match(s.autopilot.log.at(-1).text, /Bắt đầu Chương 1/);
+  await c.uiAutopilotTick(); assert.equal(c.writes.length, 1, 'no second chapter while the first is being written');
+});
+test('a written chapter is sent for review; a passing one is approved through the gate; a failing one is fixed', async () => {
+  const { c, s, chapters } = setup({ chapters: [ch(1)] });
+  await c.uiAutopilotTick(); assert.deepEqual(c.reviews, ['c1']); finishJobs(c);
+  chapters[0].aiReview = rv(90); await c.uiAutopilotTick(); assert.equal(chapters[0].status, 'approved'); assert.equal(chapters[0].approval.score, 90); assert.match(s.autopilot.log.at(-1).text, /Duyệt Chương 1 \(90\/100\)/);
+  const t = setup({ chapters: [ch(1, { aiReview: rv(70) })] }); await t.c.uiAutopilotTick(); assert.deepEqual(t.c.writes.map(w => w.mode), ['fix']); assert.equal(t.chapters[0].qa.round, 1); assert.notEqual(t.chapters[0].status, 'approved');
+});
+test('a chapter waiting for you (after 3 rounds) does not block the next one; the buffer and the outline end stop it', async () => {
+  const { c, chapters } = setup({ chapters: [ch(1, { aiReview: rv(80), qa: { round: 3, scores: [70, 75, 80], autopilot: true, status: 'needs-human' } })] });
+  await c.uiAutopilotTick(); assert.deepEqual(c.writes.map(w => [w.n, w.mode]), [[2, 'new']]);
+  const ok = n => ch(n, { status: 'approved', aiReview: rv(90), approval: { revision: 1, score: 90 } });
+  let t = setup({ chapters: [ok(1), ok(2)], buffer: 2 }); await t.c.uiAutopilotTick(); assert.equal(t.c.writes.length, 0); assert.equal(t.s.autopilot.state, 'idle');
+  t = setup({ chapters: [ok(1), ok(2)], buffer: 3, planned: 2 }); await t.c.uiAutopilotTick(); assert.equal(t.c.writes.length, 0); assert.equal(t.s.autopilot.state, 'done');
+  void chapters;
+});
+test('a ChatGPT error stops the autopilot; an empty chapter stops it and is retried on resume', async () => {
+  let t = setup(); t.c.db.aiJobs.push({ seriesId: 'ser1', storyTask: 'WRITE_CHAPTER', status: 'error', error: 'ChatGPT quá tải', createdAt: '2026-11-06T01:00:00Z' });
+  await t.c.uiAutopilotTick(); assert.equal(t.s.autopilot.state, 'error'); assert.match(t.s.autopilot.note, /quá tải/); assert.equal(t.c.writes.length, 0);
+  t = setup({ chapters: [ch(1, { body: '' })] }); await t.c.uiAutopilotTick(); assert.equal(t.s.autopilot.state, 'error'); assert.match(t.s.autopilot.note, /Chương 1 chưa có nội dung/);
+  await t.c.uiAutopilotSwitch(t.s, 'resume'); await t.c.uiAutopilotTick(); assert.deepEqual(t.c.writes.map(w => [w.id, w.mode]), [['c1', 'rewrite']], 'the same chapter is written again, no gap');
+});
+test('Sudowrite story: the chapter goes to Sudowrite; when credits are out, ChatGPT writes it instead', async () => {
+  let t = setup({ writer: 'sudowrite' }); await t.c.uiAutopilotTick();
+  assert.equal(t.c.calls[0].kind, 'XP_SUDO_BRIEF'); assert.equal(t.c.calls[0].brief.auto, true); assert.equal(t.chapters[0].qa.autopilot, true); assert.equal(t.chapters[0].qa.sudoAuto, true);
+  t = setup({ writer: 'sudowrite' }); t.c.db.uiSettings.sudoCreditsOutAt = '2026-11-06T00:00:00Z'; await t.c.uiAutopilotTick();
+  assert.equal(t.c.calls.length, 0); assert.deepEqual(t.c.writes.map(w => w.mode), ['rewrite']); assert.match(t.s.autopilot.log.at(-1).text, /ChatGPT viết thay/);
+});
+test('nothing is ever published by the autopilot', () => {
+  const src = fs.readFileSync('dist/studio-ui.js', 'utf8'), engine = src.slice(src.indexOf('// ---- Autopilot per story'), src.indexOf('function uiAutopilotSwitch'));
+  assert.doesNotMatch(engine, /status='live'|publication_status='published'|uiPublishAction|XP_FILL_LISTING/);
+});
