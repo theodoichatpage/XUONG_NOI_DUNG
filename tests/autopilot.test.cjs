@@ -69,3 +69,14 @@ test('a fix round whose revision never came back (Bridge error) is retried, not 
   chapters[0].qa = { round: 3, scores: [70, 75, 80], autopilot: true, fixVersion: 1 }; chapters[0].bodyRevision = 2; chapters[0].aiReview = rv(80, 2); c.db.aiJobs = []; c.writes = [];
   await c.uiQaTick(); assert.equal(chapters[0].qa.status, 'needs-human'); assert.equal(c.writes.length, 0);
 });
+test('a ChatGPT job with no answer for 20 minutes is cancelled and the fix is sent again; 3 timeouts → Cần bạn xem', async () => {
+  const { c, s, chapters } = setup({ chapters: [ch(1, { aiReview: rv(83), qa: { round: 3, scores: [78, 84, 83], autopilot: true, status: 'fixing', fixVersion: 1, scoredVersion: 1 } })] });
+  const job = { seriesId: 'ser1', storyTask: 'WRITE_CHAPTER', targetId: 'c1', status: 'running', createdAt: '2026-11-06T14:52:00Z' };
+  c.db.aiJobs.push(job);
+  assert.equal(await c.uiStuckTick(Date.parse('2026-11-06T15:05:00Z')), false, '13 minutes: still waiting');
+  assert.equal(await c.uiStuckTick(Date.parse('2026-11-06T15:13:00Z')), true); assert.equal(job.status, 'error'); assert.equal(job.timedOut, true); assert.equal(chapters[0].qa.stuck, 1);
+  c.writes = []; await c.uiQaTick(); assert.deepEqual(c.writes.map(w => w.mode), ['fix'], 'the same fix round is sent again'); assert.equal(chapters[0].qa.round, 3);
+  await c.uiAutopilotTick(); assert.notEqual(s.autopilot.state, 'error', 'a timeout does not stop the autopilot');
+  chapters[0].qa.stuck = 2; c.db.aiJobs.forEach(j => { if (j.status === 'queued') { j.status = 'running'; j.createdAt = '2026-11-06T16:00:00Z'; } });
+  await c.uiStuckTick(Date.parse('2026-11-06T17:00:00Z')); assert.equal(chapters[0].qa.status, 'needs-human'); assert.match(chapters[0].qa.note, /3 lần/);
+});
