@@ -81,3 +81,19 @@ body.u-app #main .sb-item{border-radius:8px}
 .u-settings-modal .set-quick button .u-icon,.set-tabs .u-icon,.set-wide .u-icon{width:16px;height:16px}
 @media(max-width:900px){.set-grid{grid-template-columns:1fr}.set-row{grid-template-columns:32px minmax(0,1fr) 120px}.set-row .set-st{grid-column:2}.set-row .set-act{grid-column:3;grid-row:1/3}}
 .set-st{overflow:hidden}.set-st>span,.set-st small{max-width:150px;overflow:hidden;text-overflow:ellipsis}
+
+/* 06/11 simplification */
+body.u-app #main .u-writer-opts button,.u-writer-opts button{height:auto!important;min-height:112px!important;white-space:normal;justify-content:flex-start}
+.u-settings-modal{width:min(1200px,94vw)!important;height:min(680px,92vh)!important;max-height:none!important;overflow:auto}
+.sb-body.sb-two{grid-template-columns:minmax(0,1fr) 380px}
+.sb-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px}
+.sb-tabs button{height:32px;padding:0 12px;border:1px solid var(--st-line,#2a2a2f);border-radius:999px!important;background:transparent;color:var(--st-muted,#9a9aa2);cursor:pointer}
+.sb-tabs button.on{border-color:#ff5a1f;color:#ff7a45;background:rgba(255,90,31,.08)}
+.sp-vh{display:flex;flex-direction:column;gap:6px;padding:16px 20px;border-bottom:1px solid var(--st-line)}.sp-vh h3{margin:0;font-size:18px!important}.sp-vh .sp-meta{padding:0;border:0}
+.sp-read{flex:1;min-height:0;overflow:auto;padding:20px max(24px,calc((100% - 720px)/2))}.sp-read p{margin:0 0 14px;font-size:16px!important;line-height:1.85}
+.sp-side h4{margin:0}.sp-apst{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:var(--st-muted)}
+.sp-aplog{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;color:var(--st-muted);font-size:12.5px!important}.sp-aplog small{color:var(--st-muted)}
+.st-body.sp-body.rv-two{grid-template-columns:270px minmax(0,1fr)}
+@media(max-width:1200px){.sb-body.sb-two{grid-template-columns:1fr}}
+@media(max-width:1100px){.st-body.sp-body.rv-two{grid-template-columns:1fr}}
+@media(min-width:1101px) and (max-width:1500px){.st-body.sp-body:not(.rv-two){grid-template-columns:230px minmax(0,1fr) 300px;height:calc(100dvh - 54px - 150px)}.st-body.sp-body:not(.rv-two)>.st-assistant{grid-column:auto}.st-body.sp-body:not(.rv-two) :is(.sp-list,.sp-ed){height:auto}}

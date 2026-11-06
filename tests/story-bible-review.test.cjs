@@ -44,12 +44,12 @@ function ui(review) {
   return { c, s };
 }
 const v = (total, crit) => ({ total, verdict: total >= 85 && !crit ? 'ok' : 'revise', rubric: Object.fromEntries(['premise', 'conflict', 'characters', 'world', 'outline', 'consistency', 'genre'].map(k => [k, { score: 5, why: '', fix: '' }])), critical_errors: crit ? [{ issue: 'Bí mật lộ ở chương 1', where: 'dàn ý chương 1' }] : [], contradictions: [], revision_instructions: ['Dời bí mật sang chương 3'], summaryVi: 'Khá' });
-test('step 2: no review → a real "Chấm Story Bible" button; with a review → score, critical errors and instructions', () => {
-  let { c, s } = ui(null); let html = c.uiSbReview(s); assert.match(html, /data-ui-action="review-bible">Chấm Story Bible</); assert.doesNotMatch(html, /Chưa xây/);
+test('step 2: no review → Xưởng sends it in the background (no button); with a review → score, critical errors and instructions', () => {
+  let { c, s } = ui(null); let html = c.uiSbReview(s); assert.match(html, /Xưởng tự gửi ChatGPT chấm/); assert.doesNotMatch(html, /<button/); assert.doesNotMatch(html, /Chưa xây/);
   ({ c, s } = ui(v(78, true))); html = c.uiSbReview(s);
-  assert.match(html, /<b>78<\/b>/); assert.match(html, /Cần sửa/); assert.match(html, /Lỗi nghiêm trọng/); assert.match(html, /Bí mật lộ ở chương 1 — dàn ý chương 1/); assert.match(html, /Dời bí mật sang chương 3/); assert.match(html, /Chấm lại/); assert.match(html, /copy-bible-fix/);
+  assert.match(html, /<b>78<\/b>/); assert.match(html, /Cần sửa/); assert.match(html, /Lỗi nghiêm trọng/); assert.match(html, /Bí mật lộ ở chương 1 — dàn ý chương 1/); assert.match(html, /Dời bí mật sang chương 3/); assert.doesNotMatch(html, /<button/);
 });
-test('step 2: a fresh review with critical errors blocks "Sang bước 3"', () => {
+test('step 2: a fresh review with critical errors stops chapter production; the review runs once per Story Bible version', () => {
   const src = fs.readFileSync('dist/studio-ui.js', 'utf8');
-  assert.match(src, /blocked=!!bv&&bv\.critical_errors\.length>0/); assert.match(src, /data-ui-storystep="3" '\+\(ready&&!blocked\?'':'disabled'\)/);
+  assert.match(src, /if\(bv&&bv\.critical_errors\.length\)return uiApSet\(s,'waiting'/); assert.match(src, /if\(s\.bibleAutoSig===sig\)return false/);
 });

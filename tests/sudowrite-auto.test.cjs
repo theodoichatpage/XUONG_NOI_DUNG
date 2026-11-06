@@ -139,15 +139,15 @@ test('Xưởng: after 3 Sudowrite rounds below 85 the chapter waits for you (C�
   assert.equal(await c.uiQaTick(), false); assert.equal(ch2.qa.status, 'needs-human'); assert.equal(c.calls.length, 0);
   assert.equal(c.uiQaTag(ch2)[1], 'Cần bạn xem');
 });
-test('Xưởng: a passing chapter stops the loop', async () => {
+test('Xưởng: a passing chapter stops the loop and is approved without waiting', async () => {
   const { c, content } = studio(); const ch2 = content[1];
   c.db.sudoJobs = {}; ch2.qa = { round: 1, scores: [74], sudoAuto: true, status: 'fixing' }; ch2.aiReview = review(88, 1); ch2.aiReview.value.rubric.plot.score = 20; ch2.aiReview.value.rubric.hook.score = 18;
-  await c.uiQaTick(); assert.equal(ch2.qa.status, 'passed'); assert.equal(c.calls.length, 0);
+  await c.uiQaTick(); assert.equal(ch2.status, 'approved'); assert.equal(ch2.approval.score, 88); assert.equal(c.calls.length, 0);
 });
 const stopped = (c, mode = 'write') => { c.db.sudoJobs = { 'xw-ser-ser1:2': { seriesId: 'ser1', chapterId: 'c2', mode, auto: true, round: mode === 'revise' ? 1 : 0, status: 'sent', at: new Date().toISOString() } }; return { job_key: 'xw-ser-ser1:2', mode, round: 0, status: 'stopped', code: 'out_of_credits', error: 'Sudowrite báo hết credit', at: 1 }; };
 const runTimers = c => { c.later = []; c.setTimeout = fn => { c.later.push(fn); }; };
 const gptCalls = c => { c.writes = []; c.uiChapterWrite = async (_s, ch, mode, _b, ask) => { c.writes.push({ chapter: ch.id, mode, ask }); }; };
-test('Xưởng: out of credits with the fallback off → Cần bạn xem with the reason (no ChatGPT)', () => {
+test.skip('Xưởng: out of credits with the fallback off → Cần bạn xem (fallback is always on since 06/11/2026)', () => {
   const { c, content } = studio(); gptCalls(c); c.db.uiSettings.sudoFallback = false;
   const r = c.uiSudoStatus(stopped(c));
   assert.equal(r.ok, true); assert.equal(c.db.sudoJobs['xw-ser-ser1:2'].status, 'stopped'); assert.equal(content[1].qa.status, 'needs-human'); assert.match(content[1].qa.note, /hết credit/); assert.match(c.toasted, /hết credit/);

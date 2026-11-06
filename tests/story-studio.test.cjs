@@ -15,7 +15,7 @@ function runtime(series=[]){
 test('no story yet: full workspace with idea fields instead of the old blank start card',()=>{
   const c=runtime(),html=c.uiStory();
   assert.doesNotMatch(html,/Bắt đầu bộ truyện đầu tiên/);
-  for(const part of['Bộ truyện của tôi','Tạo truyện mới','Xưởng Truyện','Ý tưởng & nguồn','Cốt truyện & nhân vật','Sản xuất chương','Tạo từ chủ đề','Sáng tạo từ kịch bản mẫu','Chủ đề / Ý tưởng chính','0/2000','Thể loại','Quy mô','Văn phong cá nhân','Yêu cầu bổ sung','data-ui-action="reset-source"','data-ui-action="create-from-idea"','Xây dựng truyện bằng AI','Trợ lý Xưởng (AI)','Tác vụ','Hội thoại','Kết quả','Chọn tác vụ AI','Tiến trình','Đã gửi yêu cầu đến ChatGPT','ChatGPT đang xử lý','Nhận kết quả &amp; hiển thị'.replace('&amp;','&'),'Chờ bạn duyệt áp dụng'])assert.ok(html.includes(part),part);
+  for(const part of['Bộ truyện của tôi','Tạo truyện mới','Ý tưởng & nguồn','Cốt truyện & nhân vật','Sản xuất chương','Tạo từ chủ đề','Sáng tạo từ kịch bản mẫu','Chủ đề / Ý tưởng chính','0/2000','Thể loại','Quy mô','Văn phong cá nhân','Yêu cầu bổ sung','data-ui-action="reset-source"','data-ui-action="create-from-idea"','Xây dựng truyện bằng AI','Trợ lý Xưởng (AI)','Tác vụ','Hội thoại','Kết quả','Chọn tác vụ AI','Tiến trình','Đã gửi yêu cầu đến ChatGPT','ChatGPT đang xử lý','Nhận kết quả &amp; hiển thị'.replace('&amp;','&'),'Chờ bạn duyệt áp dụng'])assert.ok(html.includes(part),part);
   for(const gone of['Cấu trúc bộ truyện','Gợi ý nhanh','Ý tưởng mẫu','<h3>Ý tưởng & nguồn','Bộ truyện:'])assert.ok(!html.includes(gone),gone);
   vm.runInContext("uiState.storySteps={new:{step:3,base:1}}",c);assert.match(c.uiStory(),/Tạo truyện ở bước 1/)});
 test('the source tab switches between topic and reference fields',()=>{
@@ -47,8 +47,8 @@ test('selected story renders its title, status and character edit buttons',()=>{
   s.story.pipeline.artifacts.bible.status='approved';c.lfNoReview=c.lfNoReview||(x=>x);c.lfBibleReviewFresh=()=>false;
   const html=c.uiStory();
   // Step 2 v2 (mockup approved 06/11/2026): 7 Story Bible sections in Sudowrite order, details behind links, Sudowrite panel
-  for(const part of['Kẻ giữ ký ức','data-ui-action="build-story"','data-ui-action="story-advanced"','aria-selected="true" data-ui-storystep="2"','Story Bible · 7 mục','data-ui-sbsec="braindump"','data-ui-sbsec="outline"','data-ui-plotdetail="threads"','Đồng bộ với Sudowrite','data-ui-sudo="fill"','Sẵn sàng sản xuất chương?'])assert.ok(html.includes(part),part);
-  assert.match(html,/<button disabled[^>]*>Lấy từ Sudowrite<\/button>/,'reading back from Sudowrite is not built: shown disabled, not faked');
+  for(const part of['Kẻ giữ ký ức','data-ui-action="build-story"','aria-selected="true" data-ui-storystep="2"','class="sb-tabs"','data-ui-sbsec="braindump"','data-ui-sbsec="outline"','Đồng bộ với Sudowrite','data-ui-sudo="fill"'])assert.ok(html.includes(part),part);
+  assert.doesNotMatch(html,/Lấy từ Sudowrite|Sẵn sàng sản xuất chương|Story Bible · 7 mục|review-bible/,'no left column, no manual review button, no readiness block');
   assert.ok(!html.includes('Trợ lý Xưởng (AI)'),'step 2 has no AI assistant panel');assert.doesNotMatch(html,/data-ui-plottab=/,'the 5 old tabs are gone');
   c.lfApproved=()=>true;vm.runInContext("uiState.sbSec='characters'",c);const ch=c.uiStory();assert.ok(ch.includes('data-ui-character="c1"'),'characters keep their edit button');assert.ok(ch.includes('Physical Description')&&ch.includes('Personality'),'fields mapped to Sudowrite');
   vm.runInContext("uiState.plotDetail='threads'",c);const th=c.uiStory();assert.ok(th.includes('Twist A')&&th.includes('Twist B'));assert.ok(th.includes('← Story Bible'));vm.runInContext("uiState.plotDetail='';uiState.sbSec=''",c);
@@ -73,7 +73,9 @@ function produce(){
 const passReview=(c,ids)=>{c.lfAIReviewFresh=x=>!!x.aiReview;c.uiConfirm=async()=>true;for(const id of ids){const x=c.db.content.find(y=>y.id===id);x.aiReview={revision:1,value:{v:2,total:90,rubric:{},contradictions:[],critical_errors:[]}}}};
 test('step 3 shows chapter list, editor and production panel without fake chapters',()=>{
   const {c,s}=produce();vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const html=c.uiStory();
-  for(const part of['Chương','Tất cả','Bản nháp','Đã duyệt','Đã đăng','Chưa có chương. Chọn số chương','Sản xuất tiếp','Hướng phát triển','Yêu cầu bổ sung','Sản xuất 10 chương','Xưởng <b>→</b> ChatGPT','Trợ lý Xưởng (AI)'])assert.ok(html.includes(part),part);
+  for(const part of['Chương','Chưa có chương. Chọn số chương','Viết tiếp','Hướng phát triển','Yêu cầu bổ sung','Sản xuất 10 chương','data-ui-action="ap-run"'])assert.ok(html.includes(part),part);
+  for(const gone of['Tất cả','Bản nháp','Trợ lý Xưởng (AI)','Thủ công','data-ui-chwrite','data-ui-chapprove','Lấy kết quả','Tự động</b>'])assert.ok(!html.includes(gone),gone);
+  const body=html.slice(html.indexOf('st-body sp-body'));assert.ok((body.match(/<button/g)||[]).length<=4,'at most 4 buttons in step 3');
   assert.doesNotMatch(html,/data-ui-chapter=/)});
 test('batch writes chapters one by one and only moves on after the previous one is saved',async()=>{
   const {c,s,chs}=produce();vm.runInContext("uiState.batchDrafts={b:{count:3,ending:'faster',options:'Giữ nhịp nhanh'}}",c);
@@ -124,8 +126,7 @@ test('auto-approve: valid stage results are approved and the next stage is sent,
   const c=runtime([s]);const approved=[],sent=[];let order=['bible','characters','outline'];
   Object.assign(c,{lfApprove:(x,k)=>{approved.push(k)},uiCurrentStage:()=>{const k=order.find(k=>!approved.includes(k))||'ready';return [k,k]},uiBuildStory:async()=>{sent.push(uiCur())}});
   const uiCur=()=>c.uiCurrentStage()[0];
-  await c.uiAutoApproveTick();assert.deepEqual(approved,[],'off by default');
-  c.db.uiSettings={autoApprove:true};await c.uiAutoApproveTick();assert.deepEqual(approved,['bible']);assert.deepEqual(sent,['characters'],'next stage sent to ChatGPT');
+  await c.uiAutoApproveTick();assert.deepEqual(approved,['bible']);assert.deepEqual(sent,['characters'],'next stage sent to ChatGPT');
   await c.uiAutoApproveTick();assert.deepEqual(approved,['bible'],'nothing to approve until the characters arrive');
   s.story.pipeline.artifacts.characters={value:{characters:[]},createdAt:'t2'};c.db.aiJobs.push({seriesId:'a',storyTask:'GENERATE_OUTLINE',status:'running'});await c.uiAutoApproveTick();assert.deepEqual(approved,['bible'],'waits while ChatGPT is busy');
   c.db.aiJobs[0].status='applied';await c.uiAutoApproveTick();assert.deepEqual(approved,['bible','characters'])});
@@ -143,16 +144,16 @@ test('a chapter being written shows the moving "writing" state in the list and t
   const c=runtime([s]);Object.assign(c,{lfApproved:()=>true,lfChapters:()=>c.db.content,lfNextChapter:()=>2,lfPlans:()=>[],jobState:j=>j.status,uiCurrentStage:()=>['ready','',''],uiStoryJob:()=>''});
   c.db.content.push({id:'k1',seriesId:'w2',chapterNumber:1,title:'Chương 1 — W',status:'draft',body:'',productionTask:'chapter'});c.db.aiJobs.push({id:'j',storyTask:'WRITE_CHAPTER',targetId:'k1',seriesId:'w2',status:'waiting_send'});
   vm.runInContext("uiState.storySteps={w2:{step:3,base:3}}",c);const html=c.uiStory();
-  assert.match(html,/class="sp-row active writing"/);assert.match(html,/class="sp-skel"/);assert.match(html,/ChatGPT đang viết Chương 1/)});
+  assert.match(html,/class="sp-row active writing"/);assert.match(html,/class="sp-skel"/);assert.match(html,/Đang viết Chương 1/)});
 test('Bridge returns to the Xưởng tab once the prompt is sent, and only then',()=>{
   const bg=fs.readFileSync('extension/background.js','utf8'),cs=fs.readFileSync('extension/chatgpt-content.js','utf8');
   assert.match(cs,/kind:'XN_CHAT_SENT',jobId:j\.id,sent/);assert.match(bg,/m\.kind==='XN_CHAT_SENT'/);assert.match(bg,/if\(m\.sent&&j\.studioTabId\)/)});
 
-test('the author request box is shown in the editor and sent with Viết lại',async()=>{
+test('a rewrite with an author request is sent with Viết lại (the step 3 view is read-only)',async()=>{
   const s={id:'r',title:'R',story:{characters:[],plans:[],glossary:[],memories:[],pipeline:{source:{mode:'topic',topic:'x',chapters:20},artifacts:{}}}};
   const c=runtime([s]);let prompt='';Object.assign(c,{lfApproved:()=>true,lfChapters:()=>c.db.content,lfNextChapter:()=>2,lfPlans:()=>[],jobState:j=>j.status,uiCurrentStage:()=>['ready','',''],uiStoryJob:()=>'',lfContext:(s,n,intent)=>intent,xnDispatchText:async(job,p)=>{prompt=p;c.db.aiJobs.push(job);return job}});
   c.db.content.push({id:'q1',seriesId:'r',chapterNumber:1,title:'Chương 1 — R',status:'review',body:'Old text',productionTask:'chapter'});
-  vm.runInContext("uiState.storySteps={r:{step:3,base:3}}",c);assert.match(c.uiStory(),/id="uChAsk"/);
+  vm.runInContext("uiState.storySteps={r:{step:3,base:3}}",c);assert.doesNotMatch(c.uiStory(),/<textarea id="uChBody"/);
   await c.uiChapterWrite(s,c.db.content[0],'rewrite',null,'Mở đầu bằng cảnh chủ nợ đến đòi nhà');assert.match(prompt,/VIẾT LẠI toàn bộ chương này theo hướng KHÁC RÕ RỆT/);assert.match(prompt,/ĐOẠN MỞ ĐẦU CỦA BẢN TRƯỚC[\s\S]*Old text/);assert.match(prompt,/YÊU CẦU CỦA TÁC GIẢ CHO LẦN VIẾT NÀY.*chủ nợ/)});
 
 test('a rewrite result replaces a chapter that is waiting for review; approved chapters stay locked',()=>{
@@ -167,7 +168,7 @@ test('a finished batch that still carries an old error is closed, so production 
   const {c,s,chs}=produce();c.db.content.push({id:'d1',seriesId:'b',chapterNumber:1,title:'Chương 1 — Plan 1',status:'approved',body:'Text',productionTask:'chapter'});
   s.uiBatch={id:'old',start:1,end:1,count:1,current:1,status:'error',error:'Context vượt giới hạn.'};
   vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const html=c.uiStory();assert.equal(s.uiBatch.status,'done');assert.doesNotMatch(html,/Context vượt giới hạn/);
-  assert.match(html,/data-ui-action="batch-one"[^>]*>Viết chương tiếp theo \(2\)/);await c.uiBatchStart(s,1);assert.equal(s.uiBatch.start,2);assert.equal(c.sent.length,1)});
+  assert.match(html,/data-ui-action="ap-run"/);await c.uiBatchStart(s,1);assert.equal(s.uiBatch.start,2);assert.equal(c.sent.length,1)});
 
 function vaultRuntime(series=[]){const c=runtime(series);Object.assign(c,{crypto:globalThis.crypto,TextEncoder,TextDecoder,atob,btoa,setTimeout:()=>0,clearTimeout:()=>{},safeLink:(u,l)=>'<a>'+l+'</a>',uiBadge:t=>t});const answers=[];c.choose=async()=>answers.shift()??null;return {c,answers}}
 test('Webnovel passwords are stored only encrypted and open again with the master password (new device = same backup + master password)',async()=>{
@@ -230,19 +231,20 @@ test('quality loop: score → fix below target → score again; passes at the ta
   Object.assign(c,{LF_RUBRIC:[['plot','a',20],['hook','b',20],['characters','c',15],['style','d',15],['world','e',10],['pacing','f',10],['genre','g',10]],lfRubricLabel:(s,k)=>k,lfChapterCheck:()=>({items:[]}),lfVersion:()=>ver,lfAIReviewFresh:x=>!!x.aiReview&&x.aiReview.revision===ver,lfSend:async(x,k,sc)=>{sent.push('review:'+sc.chapterId)},uiChapterWrite:async(x,ch,mode,b,ask)=>{sent.push(mode+':'+ch.id);assert.match(ask,/Sửa chương theo góp ý/)}});
   
   c.db.content.push({id:'q1',seriesId:'b',chapterNumber:1,status:'review',body:'a',productionTask:'chapter'});
-  assert.equal(await c.uiQaTick(),false,'off by default');c.db.uiSettings={qaLoop:true,qaTarget:85,qaMaxRounds:2};
+  assert.equal(await c.uiQaTick(),false,'nothing flagged → nothing sent');c.db.uiSettings={qaTarget:85,qaMaxRounds:2};c.db.content[0].qa={round:0,scores:[],autopilot:true};c.uiQaMax=()=>2;
   await c.uiQaTick();assert.deepEqual(sent,['review:q1']);
   c.db.content[0].aiReview={revision:ver,value:rv(70)};await c.uiQaTick();assert.deepEqual(sent,['review:q1','fix:q1']);assert.equal(c.db.content[0].qa.round,1);
   ver=2;await c.uiQaTick();assert.equal(sent.at(-1),'review:q1','the fixed chapter is scored again');
   c.db.content[0].aiReview={revision:ver,value:rv(80)};await c.uiQaTick();assert.equal(sent.at(-1),'fix:q1');assert.equal(c.db.content[0].qa.round,2);
   ver=3;c.db.content[0].aiReview={revision:ver,value:rv(82)};await c.uiQaTick();assert.equal(c.db.content[0].qa.status,'needs-human','stops after the maximum rounds');assert.deepEqual([...c.db.content[0].qa.scores],[70,80,82]);
-  ver=4;c.db.content[0].qa.status='fixing';c.db.content[0].aiReview={revision:ver,value:rv(90)};await c.uiQaTick();assert.equal(c.db.content[0].qa.status,'passed')});
+  ver=4;c.db.content[0].qa.status='fixing';c.db.content[0].aiReview={revision:ver,value:rv(90)};await c.uiQaTick();assert.equal(c.db.content[0].status,'approved','a passing chapter is approved without waiting')});
 test('step 4 shows the 7 criteria with why/where to fix, and publishing lives there (not in step 3)',()=>{const {c,s}=produce();c.LF_RUBRIC=[['plot','Cốt truyện và ý tưởng',20],['hook','Mở đầu và sức hút',20],['characters','Xây dựng nhân vật',15],['style','Văn phong',15],['world','Bối cảnh',10],['pacing','Nhịp',10],['genre','Phù hợp',10]];c.lfRubricLabel=(s,k)=>c.LF_RUBRIC.find(x=>x[0]===k)[1];c.lfChapterCheck=()=>({items:[]});c.lfAIReviewFresh=()=>true;
   const value={v:2,total:70,verdict:'revise',rubric:{plot:{score:16,why:'Ý tưởng rõ',fix:''},hook:{score:11,why:'Mở chậm',fix:'Cắt đoạn tả mái nhà'},characters:{score:11,why:'',fix:''},style:{score:13,why:'',fix:''},world:{score:8,why:'',fix:''},pacing:{score:5,why:'',fix:'Kết bằng tiếng gõ cửa'},genre:{score:6,why:'',fix:''}},contradictions:[],fixes:[{where:'The roof was not his.',problem:'Mở bằng tả',suggestion:'Mở bằng chủ nợ'}],summaryVi:'Tiềm năng tốt.'};
   c.db.content.push({id:'v1',seriesId:'b',chapterNumber:1,title:'Chương 1 — A House Full of Debt',status:'review',body:'x',productionTask:'chapter',aiReview:{revision:1,value}});c.uiState.chOpen={b:'v1'};
   vm.runInContext("uiState.storySteps={b:{step:4,base:3}}",c);const html=c.uiStory();
-  for(const x of['ĐÁNH GIÁ BIÊN TẬP','70/100','Mở đầu và sức hút','11/20','Vì sao:','Sửa ở đâu:','Cắt đoạn tả mái nhà','Cần sửa ở đâu (1)','Mở bằng chủ nợ','Điều phối chất lượng','Sửa theo góp ý','data-ui-publish="one"','Chọn nhiều'])assert.ok(html.includes(x),x);
-  vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const s3=c.uiStory();assert.doesNotMatch(s3,/data-ui-publish=/);assert.match(s3,/data-ui-storystep="4">Xem đánh giá ›/,'step 3 links to step 4 from the score row');assert.doesNotMatch(s3,/<button data-ui-storystep="4">Đánh giá & đăng ›/,'no duplicate of the stepper')});
+  for(const x of['ĐÁNH GIÁ BIÊN TẬP','70/100','Mở đầu và sức hút','11/20','Vì sao:','Sửa ở đâu:','Cắt đoạn tả mái nhà','Cần sửa ở đâu (1)','Mở bằng chủ nợ','Sửa lại theo góp ý'])assert.ok(html.includes(x),x);
+  for(const gone of['Điều phối chất lượng','Chọn nhiều','Chấm lại','Duyệt chương','Mở trong trình soạn','data-ui-publish="one"'])assert.ok(!html.includes(gone),gone);
+  vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const s3=c.uiStory();assert.doesNotMatch(s3,/data-ui-publish=/)});
 test('scoring shows "sending" at once and keeps an error visible in the score row',async()=>{const {c,s}=produce();Object.assign(c,{lfChapterCheck:()=>({items:[]}),lfAIReviewFresh:()=>false});c.db.content.push({id:'z1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'review',body:'Text',productionTask:'chapter'});c.uiState.chOpen={b:'z1'};
   let seen='';c.lfSend=async()=>{seen=c.uiScoreRow(s,c.db.content[0],'Text',false);throw Error('Bộ truyện đang có việc khác')};c.uiRender=()=>{};
   await assert.rejects(c.uiScoreAction(s,'review'),/việc khác/);assert.match(seen,/Đang gửi yêu cầu chấm sang ChatGPT/);assert.match(c.uiScoreRow(s,c.db.content[0],'Text',false),/sp-score-err">Bộ truyện đang có việc khác/);
