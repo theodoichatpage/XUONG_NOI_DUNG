@@ -44,10 +44,14 @@ test('empty idea is rejected without touching data',async()=>{
 test('selected story renders its title, status and character edit buttons',()=>{
   const s={id:'s1',title:'Kẻ giữ ký ức',story:{characters:[{id:'c1',name:'Minh',role:'Nhân vật chính',personality:'Thông minh'}],plans:[],pipeline:{source:{mode:'topic',topic:'Ý tưởng'},artifacts:{bible:{value:{premise:'Minh khám phá thành phố.',mainThreads:'Twist A\nTwist B'}}}}}};
   const c=runtime([s]);c.uiCurrentStage=()=>['characters','Nhân vật','GENERATE_CHARACTERS'];c.uiStoryJob=()=> '';
+  s.story.pipeline.artifacts.bible.status='approved';c.lfNoReview=c.lfNoReview||(x=>x);
   const html=c.uiStory();
-  for(const part of['Kẻ giữ ký ức','Minh khám phá thành phố.','Twist A','data-ui-character="c1"','data-ui-action="build-story"','data-ui-action="story-advanced"','aria-selected="true" data-ui-storystep="2"','Tổng quan','Thế giới','Tuyến truyện','Nút thắt đang theo dõi','data-ui-plottab="threads"','Minh khám phá thành phố.'])assert.ok(html.includes(part),part);
-  assert.ok(!html.includes('Trợ lý Xưởng (AI)'),'step 2 has no AI assistant panel');assert.doesNotMatch(html,/data-ui-plottab="characters"/,'no duplicate characters tab');
-  vm.runInContext("uiState.plotTab='threads'",c);assert.ok(c.uiStory().includes('Twist B'));vm.runInContext("uiState.plotTab=''",c);
+  // Step 2 v2 (mockup approved 06/11/2026): 7 Story Bible sections in Sudowrite order, details behind links, Sudowrite panel
+  for(const part of['Kẻ giữ ký ức','data-ui-action="build-story"','data-ui-action="story-advanced"','aria-selected="true" data-ui-storystep="2"','Story Bible · 7 mục','data-ui-sbsec="braindump"','data-ui-sbsec="outline"','data-ui-plotdetail="threads"','Đồng bộ với Sudowrite','data-ui-sudo="fill"','Sẵn sàng sản xuất chương?'])assert.ok(html.includes(part),part);
+  assert.match(html,/<button disabled[^>]*>Lấy từ Sudowrite<\/button>/,'reading back from Sudowrite is not built: shown disabled, not faked');
+  assert.ok(!html.includes('Trợ lý Xưởng (AI)'),'step 2 has no AI assistant panel');assert.doesNotMatch(html,/data-ui-plottab=/,'the 5 old tabs are gone');
+  c.lfApproved=()=>true;vm.runInContext("uiState.sbSec='characters'",c);const ch=c.uiStory();assert.ok(ch.includes('data-ui-character="c1"'),'characters keep their edit button');assert.ok(ch.includes('Physical Description')&&ch.includes('Personality'),'fields mapped to Sudowrite');
+  vm.runInContext("uiState.plotDetail='threads'",c);const th=c.uiStory();assert.ok(th.includes('Twist A')&&th.includes('Twist B'));assert.ok(th.includes('← Story Bible'));vm.runInContext("uiState.plotDetail='';uiState.sbSec=''",c);
   vm.runInContext("uiState.storySteps={s1:{step:1,base:2}}",c);assert.match(c.uiStory(),/id="uStoryIdea"[^>]*>Ý tưởng</);
   vm.runInContext("uiState.storySteps={s1:{step:1,base:1}}",c);assert.doesNotMatch(c.uiStory(),/id="uStoryIdea"/,'an old manual step is dropped once the workflow moves on')});
 test('index.html loads a single Xưởng Truyện renderer',()=>{

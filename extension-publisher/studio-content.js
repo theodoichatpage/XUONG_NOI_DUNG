@@ -1,7 +1,7 @@
 'use strict';
 // Bridges the Xưởng page and the Adapter background. Only allow-listed kinds pass in either direction.
 (()=>{if(window.__xpStudio)return;window.__xpStudio=true;
-const allowed=new Set(['XP_PING','XP_FILL_LISTING','XP_SUDO_FILL','XP_SUDO_PULL','XP_SUDO_BRIEF']);
+const allowed=new Set(['XP_PING','XP_FILL_LISTING','XP_SUDO_FILL','XP_SUDO_PULL','XP_SUDO_BRIEF','XP_SUDO_LAST_REPORT']);
 // Page → extension
 window.addEventListener('message',e=>{if(e.source!==window||e.origin!==location.origin||e.data?.source!=='XP_STUDIO_V1'||!allowed.has(e.data.kind))return;const {requestId,kind,listing,kit,overwrite,brief}=e.data;if(typeof requestId!=='string')return;chrome.runtime.sendMessage({kind,listing,kit,overwrite,brief}).then(result=>window.postMessage({source:'XP_EXTENSION_V1',requestId,result},location.origin)).catch(err=>window.postMessage({source:'XP_EXTENSION_V1',requestId,result:{ok:false,error:err.message}},location.origin))});
 // Extension → page: the page answers with {source:'XP_STUDIO_V1', kind:'XP_REPLY', requestId, result}.

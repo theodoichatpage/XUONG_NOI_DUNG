@@ -631,3 +631,21 @@ html.dark .rv-list li.error{color:#ff8b8b}html.dark .rv-list li.warn{color:#f0c3
 .sw-auto{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.sw-auto small{width:100%;color:var(--st-muted)}
 
 .rv-crit-err{color:#f87171}.rv-critical li{color:#ffb59c}.rv-sw{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.rv-sw{grid-template-columns:1fr}}
+
+/* Bước 2 v2: Story Bible 7 mục + đồng bộ Sudowrite */
+.sb-body{display:grid;grid-template-columns:230px minmax(0,1fr) 360px;gap:14px;align-items:start}
+.sb-nav,.sb-blk{background:var(--st-panel,#121214);border:1px solid var(--st-line,#2a2a2f);padding:14px}
+.sb-nav h3,.sb-blk h3{margin:0 0 4px;font-size:15px}.sb-muted{color:var(--st-muted,#9a9aa2);margin:0 0 8px;font-size:12.5px}
+.sb-item{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;padding:9px 8px;border:0;border-bottom:1px solid var(--st-line,#2a2a2f);background:transparent;color:inherit;text-align:left;cursor:pointer;font:inherit}
+.sb-item.on{background:#1d130e;box-shadow:inset 3px 0 0 #ff5a1f}
+.sb-more{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:12px}.sb-more small{width:100%}.sb-more .on{text-decoration:underline}
+.sb-main{padding:0 20px 20px}.sb-content{padding-top:14px}.sb-h{margin:0 0 10px;font-size:18px}
+.sb-card{border:1px solid var(--st-line,#2a2a2f);margin-bottom:10px}.sb-card header{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.03)}
+.sb-text{margin:0;padding:10px 12px;white-space:pre-wrap;max-height:520px;overflow:auto;line-height:1.6}
+.sb-traits{display:grid;grid-template-columns:150px minmax(0,1fr) 150px;font-size:13px}.sb-traits>div{padding:7px 12px;border-top:1px solid var(--st-line,#2a2a2f);white-space:pre-wrap}.sb-th{color:var(--st-muted,#9a9aa2)}
+.sb-side{display:grid;gap:14px}.sb-bh{display:flex;align-items:center}.sb-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--st-line,#2a2a2f);font-size:13px}
+.sb-blk .u-actions{margin:8px 0;flex-wrap:wrap}
+.sb-tag{font-size:11px;padding:1px 6px;border:1px solid var(--st-line,#2a2a2f);white-space:nowrap}.sb-tag.live{color:#4ade80;border-color:#2f6f45}.sb-tag.sim{color:#a78bfa;border-color:#5b4a99}.sb-tag.hand,.sb-tag.warn{color:#e8b33a;border-color:#7a5e1f}.sb-tag.none{color:var(--st-muted,#9a9aa2)}
+.sb-detail-h{margin-bottom:8px}
+@media(max-width:1200px){.sb-body{grid-template-columns:200px minmax(0,1fr)}.sb-side{grid-column:1/-1;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}}
+@media(max-width:760px){.sb-body{grid-template-columns:1fr}.sb-traits{grid-template-columns:1fr}.sb-traits .sb-th{display:none}}
