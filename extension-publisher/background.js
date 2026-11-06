@@ -8,7 +8,8 @@ function fromStudio(sender){try{return STUDIO_ORIGINS.has(new URL(sender.url).or
 function fromSudowrite(sender){try{return new URL(sender.url).origin==='https://editor.sudowrite.com'}catch{return false}}
 const SUDO_KEYS=['braindump','genre','style','synopsis','characters','worldbuilding','outline'];
 const SUDO_LISTS={characterList:20,worldList:20,outlineList:80};
-function cleanList(v,max){return (Array.isArray(v)?v:[]).slice(0,max).map(x=>({name:String(x?.name??'').slice(0,120).trim(),text:String(x?.text??'').slice(0,6000)})).filter(x=>x.name)}
+const TRAIT_KEYS=['personality','motivations','conflict','strengths','weaknesses','arc','physical'];
+function cleanList(v,max){return (Array.isArray(v)?v:[]).slice(0,max).map(x=>({name:String(x?.name??'').slice(0,120).trim(),text:String(x?.text??'').slice(0,6000),...(x?.fields&&typeof x.fields==='object'?{fields:Object.fromEntries(TRAIT_KEYS.map(k=>[k,String(x.fields[k]??'').slice(0,3000)]).filter(([,v])=>v.trim()))}:{})})).filter(x=>x.name)}
 function cleanKit(k){if(!k||typeof k!=='object')throw Error('Thiếu gói Story Bible');return {...Object.fromEntries(SUDO_KEYS.map(x=>[x,String(k[x]??'').slice(0,30000)])),...Object.fromEntries(Object.entries(SUDO_LISTS).map(([x,max])=>[x,cleanList(k[x],max)]))}}
 async function sudoTabs(){const tabs=await chrome.tabs.query({url:'https://editor.sudowrite.com/*'});return tabs.sort((a,b)=>(b.active-a.active)||((b.lastAccessed||0)-(a.lastAccessed||0)))}
 function fromInkstone(sender){try{return new URL(sender.url).origin==='https://inkstone.webnovel.com'}catch{return false}}

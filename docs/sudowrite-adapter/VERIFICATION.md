@@ -1,0 +1,49 @@
+# Sudowrite Adapter — đã kiểm thật hay chỉ giả lập (0.7.2, 06/11/2026)
+
+Nguồn sự thật cho từng chức năng. **Kiểm thật** = chạy trên editor.sudowrite.com thật, dự án thử "XUONG TEST Adapter", và kiểm lại sau khi tải lại trang. **Giả lập** = chỉ kiểm trên trang Sudowrite giả lập (`tests/fixtures/sudowrite-mock.html`, có nhãn MOCK) vì bước đó cần credit. Không có bước nào vượt qua giới hạn credit của Sudowrite.
+
+## Story Bible (không tốn credit)
+
+| Chức năng | Trạng thái | Bằng chứng |
+|---|---|---|
+| Braindump, Genre, Synopsis | **Kiểm thật** (05–06/11) | điền + đọc lại sau tải trang |
+| Characters: thêm thẻ trống ("Blank Character") | **Kiểm thật** (06/11) | menu Radix: mở bằng pointerdown, chọn bằng di chuột vào mục rồi nhả |
+| Characters: tên + 7 ô (Personality, Motivations, Internal Conflict, Strengths, Weaknesses, Character Arc, Physical Description) | **Kiểm thật** (06/11) | Elias Vane 7/7, Silas Reed 7/7, Mara Quinn 6/6 sau tải trang |
+| Worldbuilding: thẻ trống + tên + mô tả | **Kiểm thật** (06/11) | 2 thẻ sau tải trang |
+| Outline: thêm chương + tên + tóm tắt | **Kiểm thật** (05–06/11) | Chapter 2, 3 sau tải trang |
+| Không bao giờ bấm Generate / Surprise Me trong menu thẻ | **Kiểm thật** + test tĩnh | chỉ chấp nhận mục bắt đầu bằng "Blank" trong menu vừa mở |
+| Style | **Chưa tự động** (dán tay) | — |
+| Đọc Story Bible từ Sudowrite về Xưởng | **Chưa xây** | — |
+
+Lỗi tìm ra khi kiểm thật và đã sửa: menu chọn nhầm danh sách chương của nút Start; click giả không chọn được mục menu Radix; ô nhân vật chỉ hiện khi nhãn của chính ô đó cuộn vào màn hình (trước đây bị bỏ qua lặng lẽ); gõ nhanh làm mất ô chưa kịp lưu; danh sách Worldbuilding lặp lại nhân vật.
+
+## Viết chương tự động
+
+| Bước | Trạng thái | Ghi chú |
+|---|---|---|
+| Giao việc Xưởng → Adapter, bảng tiến trình, tạm dừng / tiếp tục / thử lại / bỏ | **Kiểm thật** (06/11) | |
+| Thêm chương vào Outline | **Kiểm thật** (06/11) | |
+| Start (nút chung dưới Outline + chọn chương) → tài liệu chương | **Kiểm thật** (06/11, bấm tay + engine mở tài liệu); chọn chương bằng engine: **Giả lập** | lần chạy thật Start được bấm tay vì engine 0.7.0 chưa biết nút chung |
+| Mở Generate a Rough Draft | **Kiểm thật** (06/11, engine) | |
+| Generate Scenes: bấm, nhận "đang chạy", chờ xong | **Kiểm thật** (06/11, engine) | tốn credit; cảnh được sinh |
+| Hết credit → dừng, báo Xưởng, không thử lại | **Kiểm thật** (06/11) | "You've used all your credits…" |
+| Tải lại tab sau khi Adapter cập nhật | **Kiểm thật** (06/11) | |
+| Plan Draft → Generate Draft, nhận biết viết xong | **Giả lập** | cần credit |
+| Đọc chương về Xưởng | **Giả lập** (mock) / **Kiểm thật** ở chế độ bán tự động (05/11) | |
+| Vòng sửa: ghi việc cần sửa vào Outline, xóa bản nháp của Adapter, viết lại | **Giả lập** | cần credit |
+| Tải lại trang giữa lúc Generate Draft → không bấm lại | **Giả lập** | |
+| Nút Write (viết tiếp) | Kiểm thật thủ công (05/11), **chưa dùng trong engine** | |
+
+## Xưởng
+
+| Chức năng | Trạng thái |
+|---|---|
+| Tạo truyện thử, concept, Story Bible, nhân vật, dàn ý bằng ChatGPT (Bridge) | **Kiểm thật** (06/11) |
+| ChatGPT chấm chương (7 tiêu chí) | **Kiểm thật** (06/11, 83/100) |
+| Tự tạo yêu cầu sửa khi < 85 | **Kiểm thật** (06/11, 12 việc) |
+| Vòng sửa qua Sudowrite tối đa 3 lần → "Cần bạn xem" | **Giả lập** (mock 15/15) |
+| Popup chọn nơi viết (Xưởng / Sudowrite) khi tạo truyện | **Kiểm thật** trên production (06/11) |
+
+## Khi nào cần mua credit
+
+Chỉ để kiểm thật 4 dòng "Giả lập" của phần viết chương (Plan/Generate Draft, đọc chương về, vòng sửa, tải lại giữa chừng). Mọi phần còn lại đã chạy được hoặc kiểm được mà không cần credit.

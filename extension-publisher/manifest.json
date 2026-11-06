@@ -1,7 +1,7 @@
 {
  "manifest_version": 3,
  "name": "Sudowrite Adapter — Xưởng Nội Dung",
- "version": "0.7.1",
+ "version": "0.7.2",
  "description": "Sudowrite Adapter của Xưởng: điền Story Bible vào Sudowrite, tự viết chương trên Sudowrite khi Xưởng giao việc tự động (tốn credit Sudowrite), đưa chương về Xưởng, điền hồ sơ truyện vào Inkstone. Không tự đăng truyện, không lưu mật khẩu.",
  "permissions": [
   "storage",
