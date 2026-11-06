@@ -69,6 +69,8 @@ function produce(){
     lfContext:(s,n,intent)=>'CTX '+n+'\n'+intent,lfCurrentStage:()=>['ready'],uiCurrentStage:()=>['ready','Sẵn sàng',''],jobState:j=>j.status,uiStoryJob:()=>'',
     sent:[],xnDispatchText:async(job,prompt)=>{c.sent.push({job,prompt});c.db.aiJobs.push(job);job.status='waiting_send';return job}});
   c.uiState=vm.runInContext('uiState',c);return {c,s,chs}}
+// A fresh ChatGPT review that passes the approval gate (90/100, no critical errors).
+const passReview=(c,ids)=>{c.lfAIReviewFresh=x=>!!x.aiReview;c.uiConfirm=async()=>true;for(const id of ids){const x=c.db.content.find(y=>y.id===id);x.aiReview={revision:1,value:{v:2,total:90,rubric:{},contradictions:[],critical_errors:[]}}}};
 test('step 3 shows chapter list, editor and production panel without fake chapters',()=>{
   const {c,s}=produce();vm.runInContext("uiState.storySteps={b:{step:3,base:3}}",c);const html=c.uiStory();
   for(const part of['Chương','Tất cả','Bản nháp','Đã duyệt','Đã đăng','Chưa có chương. Chọn số chương','Sản xuất tiếp','Hướng phát triển','Yêu cầu bổ sung','Sản xuất 10 chương','Xưởng <b>→</b> ChatGPT','Trợ lý Xưởng (AI)'])assert.ok(html.includes(part),part);
@@ -87,14 +89,15 @@ test('batch writes chapters one by one and only moves on after the previous one 
 test('approve, then publish needs a real link; schedule spaces chapters 24h apart',async()=>{
   const {c,s,chs}=produce();for(const n of[1,2])c.db.content.push({id:'c'+n,seriesId:'b',chapterNumber:n,title:'Chương '+n+' — T'+n,status:'review',body:'Text '+n,productionTask:'chapter'});
   await assert.rejects(c.uiPublishAction(s,'one'),/Duyệt chương trước khi đăng/);
-  c.uiChapterApprove('c1');c.uiChapterApprove('c2');assert.equal(chs()[0].status,'approved');
+  assert.throws(()=>c.uiChapterApprove('c1'),/chưa được ChatGPT chấm/,'no approval without a score');passReview(c,['c1','c2']);
+  c.uiChapterApprove('c1');c.uiChapterApprove('c2');assert.equal(chs()[0].status,'approved');assert.equal(chs()[0].quality_status,'approved');assert.equal(chs()[0].publication_status,'ready');assert.equal(chs()[0].approvedSnapshot.body,'Text 1');
   c.uiState.chOpen={b:'c1'};await c.uiPublishAction(s,'one');await assert.rejects(c.uiPublishAction(s,'mark'),/Dán link chương đã đăng/);assert.equal(chs()[0].status,'approved');
   c.uiState.pubPop.link='https://www.webnovel.com/c1';await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live');assert.equal(chs()[0].link,'https://www.webnovel.com/c1');
   c.uiState.chSel=new Set(['c2']);await c.uiPublishAction(s,'schedule');Object.assign(c.uiState.pubPop,{date:'2026-11-05',time:'20:00'});await c.uiPublishAction(s,'save-schedule');assert.equal(chs()[1].scheduledAt,'2026-11-05T20:00');assert.equal(chs()[1].status,'approved','scheduling does not mark as published')});
 test('editing a chapter saves body and keeps history; approved chapters are locked',()=>{
   const {c,chs}=produce();c.db.content.push({id:'c1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'review',body:'Old',productionTask:'chapter'});
   c.uiState.chDraft={c1:{title:'T',body:'New'}};assert.equal(c.uiChapterSave('c1'),true);assert.equal(chs()[0].body,'New');assert.equal(chs()[0].history.at(-1).body,'Old');
-  c.uiChapterApprove('c1');c.uiState.chDraft={c1:{title:'T',body:'Changed'}};assert.throws(()=>c.uiChapterSave('c1'),/khóa/)});
+  passReview(c,['c1']);c.uiChapterApprove('c1');c.uiState.chDraft={c1:{title:'T',body:'Changed'}};assert.throws(()=>c.uiChapterSave('c1'),/khóa/)});
 test('chat bridge builds the chapter prompt in one place for the editor and the batch',()=>{
   const src=fs.readFileSync('dist/chatgpt-bridge.js','utf8');assert.match(src,/function xnTextPrompt\(prompt,job\)/);assert.match(src,/const textPrompt=type==='text'\?xnTextPrompt\(prompt,job\):prompt;/);assert.match(src,/async function xnDispatchText\(job,prompt\)/)});
 
@@ -182,7 +185,7 @@ test('the same Webnovel login cannot be added twice, and every story belongs to 
   answers.push({name:'Copy',loginId:'b@mail.com',password:'',penName:'',profileUrl:''});let seen='';const base=c.choose;c.input=(n,l,v)=>'<input name="'+n+'" value="'+v+'">';c.choose=async(t,h)=>{seen=h;return base(t,h)};await c.uiAccountEdit('',c.db.webnovelAccounts[0].id);assert.match(seen,/value="A \(bản sao\)"/);assert.match(seen,/data-no-paginate/);assert.equal(c.db.webnovelAccounts.length,2)});
 test('publishing needs the story\'s account once accounts exist, and records it',async()=>{
   const {c,s,chs}=produce();Object.assign(c,{crypto:globalThis.crypto});c.db.webnovelAccounts=[{id:'acc1',name:'Main',loginId:'me'}];c.db.content.push({id:'p1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'approved',body:'x',productionTask:'chapter'});
-  c.uiState.chOpen={b:'p1'};await c.uiPublishAction(s,'one');c.uiState.pubPop.link='https://www.webnovel.com/c1';await assert.rejects(c.uiPublishAction(s,'mark'),/Gán tài khoản Webnovel/);
+  passReview(c,['p1']);c.uiChapterApprove('p1');c.uiState.chOpen={b:'p1'};await c.uiPublishAction(s,'one');c.uiState.pubPop.link='https://www.webnovel.com/c1';await assert.rejects(c.uiPublishAction(s,'mark'),/Gán tài khoản Webnovel/);
   s.webnovelAccountId='acc1';await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live');assert.equal(chs()[0].publishedAccountId,'acc1')});
 
 test('publishing tab shows the Webnovel listing with copy buttons and the cover actions',()=>{
@@ -217,9 +220,11 @@ test('chapter score: ChatGPT review + automatic checks give 0–100; a pass need
   const e=c.uiChapterScore(clean,null);assert.equal(e.ai,false);assert.equal(e.pass,false);assert.match(e.label,/Chưa chấm/)});
 test('"Sửa theo góp ý" turns the review into a rewrite request',()=>{const c=runtime();const ask=c.uiScoreFixAsk({verdict:'revise',hook:{score:2,note:'Opens on weather'},ending:{score:5,note:'good'},planCoverage:'',contradictions:[{issue:'Linh biết tên cha Minh quá sớm'}],styleIssues:['Lặp "suddenly"'],summaryVi:'Tăng xung đột.'});
   assert.match(ask,/Mở đầu: Opens on weather/);assert.doesNotMatch(ask,/Kết chương/);assert.match(ask,/Sửa mâu thuẫn: Linh biết/);assert.match(ask,/Văn phong: Lặp/)});
-test('publishing a chapter below the score asks first; declining keeps it unpublished',async()=>{const {c,s,chs}=produce();let asked='';c.uiConfirm=async m=>{asked=m;return false};c.lfChapterCheck=()=>({items:[]});c.lfAIReviewFresh=()=>false;
+test('publishing a chapter that has not passed the new approval gate is blocked (no "publish anyway"); a valid one asks you to confirm',async()=>{const {c,s,chs}=produce();let asked='';c.uiConfirm=async m=>{asked=m;return true};c.lfChapterCheck=()=>({items:[]});c.lfAIReviewFresh=()=>false;
   c.db.content.push({id:'g1',seriesId:'b',chapterNumber:1,title:'Chương 1 — T',status:'approved',body:'x',productionTask:'chapter'});c.uiState.chOpen={b:'g1'};await c.uiPublishAction(s,'one');c.uiState.pubPop.link='https://www.webnovel.com/c1';
-  await c.uiPublishAction(s,'mark');assert.match(asked,/Chương 1: chưa chấm bằng ChatGPT/);assert.equal(chs()[0].status,'approved');c.uiConfirm=async()=>true;await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live')});
+  await assert.rejects(c.uiPublishAction(s,'mark'),/Chưa qua cổng duyệt/);assert.equal(chs()[0].status,'approved');assert.equal(asked,'');
+  passReview(c,['g1']);c.uiConfirm=async m=>{asked=m;return false};c.uiChapterApprove('g1');await c.uiPublishAction(s,'mark');assert.match(asked,/Xác nhận Chương 1 đã đăng lên Webnovel/);assert.equal(chs()[0].status,'approved','declined → not published');
+  c.uiConfirm=async()=>true;await c.uiPublishAction(s,'mark');assert.equal(chs()[0].status,'live');assert.equal(chs()[0].publication_status,'published')});
 test('quality loop: score → fix below target → score again; passes at the target, stops after N rounds',async()=>{const {c,s}=produce();const sent=[];let ver=1;
   const rv=total=>({v:2,total,rubric:Object.fromEntries([['plot',20],['hook',20],['characters',15],['style',15],['world',10],['pacing',10],['genre',10]].map(([k,m])=>[k,{score:Math.round(m*total/100),why:'w',fix:'f'}])),contradictions:[],fixes:[{where:'x',problem:'p',suggestion:'s'}],summaryVi:'s'});
   Object.assign(c,{LF_RUBRIC:[['plot','a',20],['hook','b',20],['characters','c',15],['style','d',15],['world','e',10],['pacing','f',10],['genre','g',10]],lfRubricLabel:(s,k)=>k,lfChapterCheck:()=>({items:[]}),lfVersion:()=>ver,lfAIReviewFresh:x=>!!x.aiReview&&x.aiReview.revision===ver,lfSend:async(x,k,sc)=>{sent.push('review:'+sc.chapterId)},uiChapterWrite:async(x,ch,mode,b,ask)=>{sent.push(mode+':'+ch.id);assert.match(ask,/Sửa chương theo góp ý/)}});
