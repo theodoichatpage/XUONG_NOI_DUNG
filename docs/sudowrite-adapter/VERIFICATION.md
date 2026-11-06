@@ -44,7 +44,7 @@ Lỗi tìm ra khi kiểm thật và đã sửa: menu chọn nhầm danh sách ch
 | Vòng sửa qua Sudowrite tối đa 3 lần → "Cần bạn xem" | **Giả lập** (mock 15/15) |
 | Popup chọn nơi viết (Xưởng / Sudowrite) khi tạo truyện | **Kiểm thật** trên production (06/11) |
 | ChatGPT chấm Story Bible (REVIEW_BIBLE) | **Kiểm thật** (06/11): truyện TEST 75/100, 5 mâu thuẫn, 0 lỗi nghiêm trọng |
-| Sudowrite hết credit → ChatGPT viết / sửa thay (mặc định bật, tắt được trong Cài đặt) | **Giả lập** (trình duyệt + trang Sudowrite giả lập, người viết ChatGPT là stub) + 5 test đơn vị; kiểm thật: xem LIVE_TEST |
+| Sudowrite hết credit → ChatGPT viết / sửa thay (mặc định bật, tắt được trong Cài đặt) | **Kiểm thật** (06/11 13:49–13:55, truyện TEST Chương 2): Adapter 0.7.4 dừng out_of_credits, không bấm nút tốn credit → Xưởng ghi nhận hết credit → ChatGPT viết 1.282 chữ → ChatGPT chấm 77 (2 lỗi nghiêm trọng) → ChatGPT sửa vòng 1 (1.640 chữ, bản cũ giữ trong lịch sử) → chấm lại tự động. Cũng có giả lập + 5 test đơn vị |
 | Việc tự động tiếp theo đi thẳng sang ChatGPT khi đã biết hết credit; kiểm tra credit thật > 0 thì quay lại Sudowrite | **Giả lập** + test đơn vị |
 
 ## Khi nào cần mua credit
