@@ -21,7 +21,7 @@
  <nav aria-label="Story Bible sections">
   <a href="#story-bible-braindump">Braindump</a><br><a href="#story-bible-genre">Genre</a><br><a href="#story-bible-outline">Outline</a>
  </nav>
- <h4>Documents</h4>
+ <p id="credit-line"></p><h4>Documents</h4>
  <div id="docs"></div>
 </aside>
 <section>
@@ -48,7 +48,7 @@ function drawRows(){$('#rows').replaceChildren(...S.rows.map(r=>{const name=h('i
  return h('div',{class:'row',id:'story-bible-outline-chapter-'+r.id},name,sum)}));drawStart()}
 let startPick=null,startMenu=false;
 function drawStart(){const tgt=S.rows.find(r=>r.id===startPick)||S.rows.find(r=>!r.docId)||S.rows[0];$('#start-box')?.remove();if(!tgt)return;
- const menu=startMenu?h('div',{role:'listbox'},...S.rows.map(r=>h('button',{role:'option',text:r.name,onclick:e=>{e.stopPropagation();startPick=r.id;startMenu=false;drawStart()}}))):'';
+ const menu=startMenu?h('div',{class:'CreateDocument__PickerContainer-mock'},...S.rows.map(r=>h('div',{class:'option',text:r.name,onclick:e=>{e.stopPropagation();startPick=r.id;startMenu=false;drawStart()}}))):'';
  const chev=h('div',{class:'CreateDocument__ChevronContainer-mock',text:'⌄',onclick:e=>{e.stopPropagation();startMenu=!startMenu;drawStart()}});
  const st=h('div',{id:'button-create-document',role:'button',class:'CreateDocument__ButtonContainer-mock',onclick:()=>{const d={id:'d'+(++S.n),title:tgt.name,row:tgt.id,body:[]};S.docs.push(d);tgt.docId=d.id;startPick=null;save();drawStart();drawDocs()}},h('div',{class:'CreateDocument__ButtonText-mock'},h('b',{text:'Start'}),h('br'),h('small',{text:tgt.name})),chev,menu);
  $('#story-bible-outline').append(h('div',{id:'start-box',class:'CreateDocument__Container-mock'},h('p',{text:"Now the fun part begins! Click Start when you're ready to draft your Chapter."}),st))}
@@ -72,7 +72,7 @@ function drawPanel(d,row,ed){const p=panelState,P=h('div',{class:'GeneratePanel_
  gs.onclick=async()=>{S.presses.scenes++;save();if(S.credits<=0){p.error='0 credits left, sign up for a plan to keep using Sudowrite.';return drawDoc()}S.credits--;save();p.phase='scenes';
   for(const t of['Checking Characters…','Checking Worldbuilding…','Checking Style and Genre…','Checking Synopsis and Outline…','Reviewing Scenes Best Practices…','Ensuring Perfect Formatting…']){p.progress=t;drawDoc();await wait(450)}
   const sum=row.summary||'';p.scenes=[1,2,3].map(i=>'Scene '+i+': '+sum.split(/[.!?]/)[i-1]?.trim()+' — the scene builds on the outline and the Story Bible, with a clear goal, a turn and a hook to the next scene.');p.phase='ready';drawDoc()};
- SC.append(gs);
+ if(S.credits>0||p.phase!=='idle')SC.append(gs);
  if(p.scenes.length)SC.append(h('h4',{text:'Scenes'}),...p.scenes.map(s=>h('p',{text:s})));
  if(p.phase!=='review'&&p.phase!=='draft'){const pd=h('button',{text:p.phase==='plan'?'Checking scenes…':'Plan Draft · All Scenes'});if(p.phase==='plan'||p.phase==='scenes')pd.disabled=true;
   pd.onclick=async()=>{S.presses.plan++;save();if(!p.scenes.length){p.error='There was an error estimating credits for this chapter. Retry / Cancel';return drawDoc()}p.phase='plan';drawDoc();await wait(800);if(S.credits<=0){p.phase='ready';p.error='0 credits left, sign up for a plan to keep using Sudowrite.';return drawDoc()}p.phase='review';drawDoc()};P.append(pd)}
@@ -84,7 +84,7 @@ function drawPanel(d,row,ed){const p=panelState,P=h('div',{class:'GeneratePanel_
  if(p.error)P.append(h('p',{class:'err',text:p.error}));
  return h('div',{},SC,P)}
 addEventListener('hashchange',()=>{if(panelState&&!location.hash.includes('doc='+panelState.doc))panelState=null;drawDoc()});
-drawRows();drawDocs();drawDoc();
+drawRows();drawDocs();drawDoc();setInterval(()=>{$('#credit-line').textContent=S.credits>0?S.credits+' credits left in free trial.':'0 credits left, sign up for a plan to keep using Sudowrite.'},300);
 </script>
 </body>
 </html>

@@ -23,7 +23,7 @@ Lỗi tìm ra khi kiểm thật và đã sửa: menu chọn nhầm danh sách ch
 |---|---|---|
 | Giao việc Xưởng → Adapter, bảng tiến trình, tạm dừng / tiếp tục / thử lại / bỏ | **Kiểm thật** (06/11) | |
 | Thêm chương vào Outline | **Kiểm thật** (06/11) | |
-| Start (nút chung dưới Outline + chọn chương) → tài liệu chương | **Kiểm thật** (06/11, bấm tay + engine mở tài liệu); chọn chương bằng engine: **Giả lập** | lần chạy thật Start được bấm tay vì engine 0.7.0 chưa biết nút chung |
+| Start (nút chung dưới Outline + chọn chương) → tài liệu chương — chọn chương bằng click thường vào `PickerContainer .option`: **Kiểm thật** (06/11 chiều); engine 0.7.4 dùng cách này | **Kiểm thật** (06/11, bấm tay + engine mở tài liệu); chọn chương bằng engine: **Giả lập** | lần chạy thật Start được bấm tay vì engine 0.7.0 chưa biết nút chung |
 | Mở Generate a Rough Draft | **Kiểm thật** (06/11, engine) | |
 | Generate Scenes: bấm, nhận "đang chạy", chờ xong | **Kiểm thật** (06/11, engine) | tốn credit; cảnh được sinh |
 | Hết credit → dừng, báo Xưởng, không thử lại | **Kiểm thật** (06/11) | "You've used all your credits…" |
@@ -50,3 +50,9 @@ Lỗi tìm ra khi kiểm thật và đã sửa: menu chọn nhầm danh sách ch
 ## Khi nào cần mua credit
 
 Chỉ để kiểm thật 4 dòng "Giả lập" của phần viết chương (Plan/Generate Draft, đọc chương về, vòng sửa, tải lại giữa chừng). Mọi phần còn lại đã chạy được hoặc kiểm được mà không cần credit.
+
+## Ghi nhận thêm 06/11 (chiều)
+
+- Khi hết credit, Sudowrite **ẩn** nút Generate Scenes (chỉ còn Add Scenes). Từ 0.7.4 Adapter kiểm tra thông báo hết credit trước khi tìm nút, nên dừng đúng mã out_of_credits (để Xưởng chuyển sang ChatGPT).
+- "+ Thêm" chương trong truyện Sudowrite: **Kiểm thật** — thêm chương trống, 0 việc ChatGPT.
+- Tạo tài liệu bằng Start + mở Rough Draft bằng engine: **Kiểm thật** (Chương 2 truyện TEST).

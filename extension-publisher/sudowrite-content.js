@@ -101,7 +101,7 @@ async function sendBack(btn){const doc=readDoc();if(!doc.ok){drawBrief({ok:false
 async function loadBrief(){try{const r=await chrome.runtime.sendMessage({kind:'XP_SUDO_ACTIVE'});const b=r?.ok?r.brief:null;if(JSON.stringify(b)!==JSON.stringify(brief)){brief=b;drawBrief()}}catch{}}
 
 // Shared with sudowrite-auto.js (same content-script world).
-window.__xpSudoKit={fillBible,wait,norm,setNative,setRich,richText,press,until,buttonByText,outlineRows,rowParts,openBible,editor,readDoc,fitWords,inProject};
+window.__xpSudoKit={fillBible,openMenu,choose,visibleOptions,wait,norm,setNative,setRich,richText,press,until,buttonByText,outlineRows,rowParts,openBible,editor,readDoc,fitWords,inProject};
 chrome.runtime.onMessage.addListener((m,_s,reply)=>{if(m?.kind==='XP_SUDO_READ'){reply(readDoc());return}if(m?.kind==='XP_SUDO_HEALTH'){reply(health());return}if(m?.kind==='XP_SUDO_SHOW_BRIEF'){loadBrief().then(()=>reply({ok:true}));return true}});
 setInterval(check,1500);check();if(inProject())loadBrief();
 })();

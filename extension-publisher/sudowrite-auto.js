@@ -39,9 +39,13 @@ function startButton(){return [...document.querySelectorAll('#story-bible-outlin
 const startTarget=st=>norm((st.querySelector('[class*="ButtonText"]')?.innerText||st.innerText||'').replace(/^\s*start\s*/i,''));
 // Picks the chapter in the Start button's menu. The button is looked up again after each click (React may redraw it).
 const startIs=title=>{const st=startButton();return !!st&&startTarget(st).startsWith(norm(title).slice(0,18))};
-async function pickStart(title){if(startIs(title))return startButton();let st=startButton();const chev=st?.querySelector('[class*="Chevron"]');if(!chev)stop('ui_changed','Không thấy mũi tên chọn chương cạnh nút Start.');st.scrollIntoView({block:'center'});await press(chev);
- const opt=await until(()=>[...(startButton()||document).querySelectorAll('[role="option"]')].find(o=>!mine(o)&&o.getClientRects().length&&norm(o.innerText)===norm(title)),4000);if(!opt)stop('ui_changed','Danh sách chương của nút Start không có "'+title+'".');await press(opt);
- if(!await until(()=>startIs(title),4000))stop('ui_changed','Không chọn được "'+title+'" cho nút Start.');return startButton()}
+// Live 2026-11-06: the chapter menu opens with a plain click on the arrow and lists div.option elements inside
+// #button-create-document [class*=PickerContainer]; a plain click on the option selects it (verified on the real site).
+const pickerOptions=()=>{const st=startButton();return st?[...st.querySelectorAll('[class*="PickerContainer"] .option,[role="option"]')].filter(o=>o.getClientRects().length):[]};
+async function pickStart(title){if(startIs(title))return startButton();const st=startButton(),chev=st?.querySelector('[class*="Chevron"]');if(!chev)stop('ui_changed','Không thấy mũi tên chọn chương cạnh nút Start.');st.scrollIntoView({block:'center'});
+ chev.click();const match=o=>norm(o.innerText)===norm(title);const opt=await until(()=>pickerOptions().find(match),4000);
+ if(!opt){if(pickerOptions().length)chev.click();stop('ui_changed','Danh sách chương của nút Start không có "'+title+'".')}
+ opt.click();if(!await until(()=>startIs(title),4000))stop('ui_changed','Không chọn được "'+title+'" cho nút Start.');return startButton()}
 function rowFor(title){return outlineRows().find(r=>norm(rowParts(r).name?.value)===norm(title))||null}
 function blankRow(){return outlineRows().find(r=>{const p=rowParts(r);return /^(chapter\s*\d*)?$/i.test(String(p.name?.value||'').trim())&&!richText(p.summary)})||null}
 function summaryText(b){const notes=(b.revision_instructions||[]).length?'\n\nRevision notes (round '+b.round+') — fix all of these:\n- '+b.revision_instructions.join('\n- '):'';const prev=b.previous_ending?'\n\nThe previous chapter ended with: '+b.previous_ending.slice(-400):'';return fitWords((b.beats||b.title)+prev+notes,1500)}
@@ -57,7 +61,7 @@ async function waitDone(step,ready,sample){const end=Date.now()+LIMIT[step];let 
 // pressedHere: presses made by this page load. A press recorded before a reload is trusted only while Sudowrite is
 // visibly still busy; text already on the page may be half-written, so it is never read as the result.
 const pressedHere=new Set();
-async function creditPress(step,find,started){if(run.pressed?.step===step){if(pressedHere.has(step)&&(busy()||started(run.pressed)))return run.pressed;if(!pressedHere.has(step)&&busy()){pressedHere.add(step);return run.pressed}stop('needs_check','Trang đã tải lại sau khi Adapter bấm "'+LABEL[step]+'". Nếu chương trong tài liệu đã xong, bấm "Gửi chương về Xưởng". Nếu chưa, xóa phần viết dở rồi bấm Thử lại (Adapter mở lại Rough Draft; bấm lại sẽ tốn credit).')}
+async function creditPress(step,find,started){problem();if(run.pressed?.step===step){if(pressedHere.has(step)&&(busy()||started(run.pressed)))return run.pressed;if(!pressedHere.has(step)&&busy()){pressedHere.add(step);return run.pressed}stop('needs_check','Trang đã tải lại sau khi Adapter bấm "'+LABEL[step]+'". Nếu chương trong tài liệu đã xong, bấm "Gửi chương về Xưởng". Nếu chưa, xóa phần viết dở rồi bấm Thử lại (Adapter mở lại Rough Draft; bấm lại sẽ tốn credit).')}
  const b=find();if(!b)stop('ui_changed','Không thấy nút cho bước "'+LABEL[step]+'". Sudowrite có thể đã đổi giao diện.');if(b.disabled)stop('ui_changed','Nút của bước "'+LABEL[step]+'" đang bị khóa.');
  const rec={step,at:Date.now(),base:pageText().length,baseDoc:docText().length};await mark({pressed:rec},'Bấm '+LABEL[step]);pressedHere.add(step);await press(b);
  const ok=await until(()=>{problem();return busy()||started(rec)},20000);if(!ok)stop('no_start','Đã bấm "'+LABEL[step]+'" nhưng Sudowrite không bắt đầu.');return rec}
@@ -94,7 +98,7 @@ const STEP={
   const rec=await creditPress('scenes',()=>btn(/^generate scenes$/i),grown);
   await waitDone('scenes',()=>grown(rec)&&!!btn(/plan draft/i),()=>String(pageText().length));return {}},
  async plan(){const p=panel();if(!p)stop('needs_check','Bảng Rough Draft đã đóng. Mở lại tài liệu chương rồi bấm Thử lại.');if(btn(/^generate draft$/i,p))return {};
-  const b=btn(/plan draft/i,p);if(!b)stop('ui_changed','Không thấy nút Plan Draft.');await press(b);
+  problem();const b=btn(/plan draft/i,p);if(!b)stop('ui_changed','Không thấy nút Plan Draft.');await press(b);
   const end=Date.now()+LIMIT.plan;while(Date.now()<end){problem();if(btn(/^generate draft$/i,panel()||document))return {};await beat();await wait(1000)}stop('timeout','Plan Draft chưa xong.')},
  async draft(b){const rec=await creditPress('draft',()=>btn(/^generate draft$/i,panel()||document),r=>docText().length>(r.baseDoc||0));
   await waitDone('draft',()=>words(docText())>=Math.min(100,b.target_word_count)&&!(panel()&&btn(/^generate draft$/i,panel())?.disabled),()=>String(docText().length));return {}},
