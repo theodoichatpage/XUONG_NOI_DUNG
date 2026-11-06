@@ -61,3 +61,11 @@ test('the generic edit form cannot approve a story chapter past the gate', () =>
   const src = fs.readFileSync('dist/studio-ui.js', 'utf8');
   assert.match(src, /lfPrepareContent=function\(d,old\)\{uiBasePrepare\(d,old\);if\(old&&old\.seriesId&&\['approved','live'\]\.includes\(d\.status\)/);
 });
+test('old approvals flagged for recheck (never published) can be revised; published and newly approved chapters stay locked', () => {
+  const chapters = [ch(1, 'live'), ch(3, 'approved', { aiReview: rv(78) }), ch(5, 'review', { aiReview: rv(90) })];
+  const { c } = studio(chapters, { migrated: true }); c.uiSyncStatuses(true); c.uiChapterApprove('c5');
+  assert.equal(c.uiLocked(chapters[0]), true, 'published (even if flagged)'); assert.equal(c.uiLocked(chapters[1]), false, 'flagged old approval'); assert.equal(c.uiLocked(chapters[2]), true, 'approved under the new gate');
+  vm.runInContext("uiState.chDraft={c3:{title:'Chương 3',body:'Revised body 3'}}", c); assert.equal(c.uiChapterSave('c3'), true);
+  assert.equal(chapters[1].body, 'Revised body 3'); assert.equal(chapters[1].status, 'review', 'no longer shown as approved'); assert.equal(chapters[1].history.at(-1).body, 'Body 3', 'old text kept');
+  vm.runInContext("uiState.chDraft={c1:{title:'Chương 1',body:'x'}}", c); assert.throws(() => c.uiChapterSave('c1'), /khóa/);
+});
