@@ -69,3 +69,9 @@ test('old approvals flagged for recheck (never published) can be revised; publis
   assert.equal(chapters[1].body, 'Revised body 3'); assert.equal(chapters[1].status, 'review', 'no longer shown as approved'); assert.equal(chapters[1].history.at(-1).body, 'Body 3', 'old text kept');
   vm.runInContext("uiState.chDraft={c1:{title:'Chương 1',body:'x'}}", c); assert.throws(() => c.uiChapterSave('c1'), /khóa/);
 });
+test('asking ChatGPT to revise a flagged old approval turns its label back to review first (so the result can be applied)', async () => {
+  const chapters = [ch(3, 'approved', { aiReview: rv(78) })]; const { c } = studio(chapters, { migrated: true }); c.uiSyncStatuses(true);
+  c.xnDispatchText = async job => { c.db.aiJobs.push(job); return job; }; c.lfContext = () => 'ctx'; c.lfPlans = () => []; c.lfChapterDefaults = () => ({});
+  try { await c.uiChapterWrite(c.db.series[0], chapters[0], 'fix', null, 'Sửa'); } catch (e) { /* the send itself is not under test */ }
+  assert.equal(chapters[0].status, 'review');
+});
