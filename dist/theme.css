@@ -8,11 +8,11 @@ body.u-app #nav a{font-family:Arial,Helvetica,sans-serif!important;font-size:14p
 body.u-app #main .u-kpi strong{font-size:22px!important}
 body.u-app #main .st-initial{font-size:16px!important}
 
-/* Buttons: 32px high, square corners (not library rows, thumbnails, text links or icon buttons). */
+/* Buttons: 32px high, rounded corners (not library rows, thumbnails, text links or icon buttons). */
 body.u-app #main button:not(.st-item):not(.pr-item):not(.u-library-item):not(.st-link):not(.pr-link):not(.u-text):not(.st-icon-btn):not(.pr-ref-thumb):not(.pr-design-thumb):not(.pr-ref-check):not(.u-character):not(.u-reference):not(.u-design),
 body.u-app #main .u-button,
-dialog button,dialog .u-button{height:32px;min-height:32px;border-radius:0}
-body.u-app #main .u-segment,dialog .u-segment{border-radius:0}
+dialog button,dialog .u-button{height:32px;min-height:32px;border-radius:8px}
+body.u-app #main .u-segment,dialog .u-segment{border-radius:8px;overflow:hidden}
 
 /* Tabs sit at the top now that the page heading is gone. */
 .st-tabs,.pr-tabs{margin-top:0}
@@ -22,3 +22,34 @@ body.u-app #main :is(.u-badge.green,.u-badge.blue,.pr-badge.green,.pr-badge.blue
 body.u-app #main .u-blue{color:#a83210}
 html.dark body.u-app #main .u-blue{color:#ff9a78}
 html.dark body.u-app #main :is(.pr-badge.green,.pr-badge.blue){color:#ffb59c}
+
+/* 06/11/2026: rounded UI — controls 8px, panels 12px, chips/badges pill; inputs 32px high, Arial 14px. */
+body.u-app #main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),select),dialog :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),select){height:32px;min-height:32px;border-radius:8px;font-family:Arial,Helvetica,sans-serif;font-size:14px}
+body.u-app #main textarea,dialog textarea{border-radius:8px}
+body.u-app #main :is(.u-card,.st-panel,.pr-panel,.sb-nav,.sb-blk,.sb-card,.u-job,.pl-blk,.st-assistant,.st-steps,.u-integration,.sw-sec,.rv-scroll,.u-table,.st-library,.u-library),dialog{border-radius:12px}
+body.u-app #main :is(.sb-card,.u-integration,.sw-sec){overflow:hidden}
+body.u-app :is(.u-chip,.sb-tag,.u-badge,.pr-badge,.st-pill,.sp-st){border-radius:999px}
+body.u-app #main .sb-item{border-radius:8px}
+.u-chip{height:30px}
+.u-chip.warn i{background:#e8b33a}
+/* Settings popup: outer glow, cards aligned to the top, every action button the same size. */
+.u-settings-modal{border-radius:14px;border-color:rgba(255,90,31,.55);box-shadow:0 0 0 1px rgba(255,90,31,.25),0 0 28px rgba(255,90,31,.35),0 24px 60px rgba(0,0,0,.55)}
+.u-writer-modal{border-radius:14px;border-color:rgba(255,90,31,.55);box-shadow:0 0 0 1px rgba(255,90,31,.25),0 0 28px rgba(255,90,31,.35),0 24px 60px rgba(0,0,0,.55)}
+.u-settings-modal .u-card{align-self:start}
+.u-settings-modal :is(.u-card button,.u-card .u-button):not(.u-modal-x):not(.st-link){width:168px;min-width:168px;height:32px;justify-content:center;text-align:center;border-radius:8px;padding:0 10px}
+.u-settings-modal .u-segment button{width:120px;min-width:120px}
+.u-settings-modal .u-modal-x{border-radius:8px}
+/* Step 3: manual Sudowrite actions tucked away */
+.sp-more{display:inline-block;position:relative}.sp-more summary{list-style:none;cursor:pointer;height:32px;line-height:30px;padding:0 12px;border:1px solid var(--st-line,#2a2a2f);border-radius:8px;color:var(--st-muted,#9a9aa2)}
+.sp-more summary::-webkit-details-marker{display:none}.sp-more[open]>div{position:absolute;z-index:20;top:36px;left:0;display:grid;gap:6px;padding:8px;background:var(--st-panel,#121214);border:1px solid var(--st-line,#2a2a2f);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.u-settings-modal .u-settings-grid{align-items:start}
+.u-settings-modal :is(.u-settings-left,.u-settings-right)>*{flex:none!important}
+.u-settings-modal .u-settings-right .u-hint{margin-top:8px}
+.u-settings-modal .u-card :is(.u-text,a.u-text){display:inline-flex;align-items:center;height:32px}
+.u-settings-modal .u-card :is(.u-text,a.u-text,button.u-text){width:168px;min-width:168px;height:32px;justify-content:center;border:1px solid var(--u-line);border-radius:8px;text-decoration:none}
+/* Top bar: the menu never shrinks; connection chips compact on narrower screens (details in the tooltip). */
+#nav{flex-shrink:0;white-space:nowrap}
+.u-top-tools{min-width:0}
+.u-chips{min-width:0;flex-wrap:nowrap}
+@media(max-width:1600px){.u-chip small{display:none}}
+@media(max-width:1000px){.u-chips{display:flex}.u-chip{font-size:0!important;gap:0;width:30px;justify-content:center;padding:0}.u-chip i{width:10px;height:10px}}

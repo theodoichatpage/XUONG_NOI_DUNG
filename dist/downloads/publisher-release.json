@@ -1,8 +1,8 @@
 {
-  "version": "0.7.4",
-  "filename": "Xuong_Sudowrite_Adapter_v0.7.4.zip",
+  "version": "0.7.5",
+  "filename": "Xuong_Sudowrite_Adapter_v0.7.5.zip",
   "folder": "Xuong_Sudowrite_Adapter",
-  "sha256": "97d3aaf45d9038893b438792f93b08804d4a583b97ae7d2aba21258f6222f864",
+  "sha256": "ec1b0e38b1c33b4b92a1f94ac2f791a2779c06c2fbbbaebbf2e7afda77ed1667",
   "files": [
     "background.js",
     "HUONG_DAN.md",
