@@ -28,9 +28,9 @@ async function until(fn, ms, every = 500) { const end = Date.now() + ms; while (
     // Xưởng with a test story in the throwaway profile; the reviewer stub gives scores from a list.
     const x = await ctx.newPage(); await x.goto('http://127.0.0.1:8080/#series'); await sleep(2500);
     await x.evaluate(() => {
-      db.series.push({ id: 'e2eAuto01', title: 'E2E Auto', chapterLength: 1500, story: { plans: [2, 3, 4, 5].map(n => ({ kind: 'chapter', startChapter: n, title: 'Part ' + n, body: 'Shen Yan buys the field nobody wants. The headman laughs at him. At night he finds the old ledger under the floor.' })), glossary: [{ term: 'Shen Yan', kind: 'Nhân vật', note: 'protagonist' }] } });
+      db.series.push({ id: 'e2eAuto01', title: 'E2E Auto', chapterLength: 1500, story: { plans: [2, 3, 4, 5, 6, 7].map(n => ({ kind: 'chapter', startChapter: n, title: 'Part ' + n, body: 'Shen Yan buys the field nobody wants. The headman laughs at him. At night he finds the old ledger under the floor.' })), glossary: [{ term: 'Shen Yan', kind: 'Nhân vật', note: 'protagonist' }] } });
       db.content.push({ id: 'e2eA1', seriesId: 'e2eAuto01', chapterNumber: 1, title: 'Chương 1', status: 'approved', body: 'The gate closed behind him.', history: [] });
-      for (const n of [2, 3, 4, 5]) db.content.push({ id: 'e2eA' + n, seriesId: 'e2eAuto01', chapterNumber: n, title: 'Chương ' + n, status: 'draft', body: '', history: [] });
+      for (const n of [2, 3, 4, 5, 6, 7]) db.content.push({ id: 'e2eA' + n, seriesId: 'e2eAuto01', chapterNumber: n, title: 'Chương ' + n, status: 'draft', body: '', history: [] });
       save();
       const R = { 70: [14, 14, 10, 11, 7, 7, 7], 80: [16, 16, 12, 12, 8, 8, 8], 90: [18, 18, 14, 13, 9, 9, 9] }, keys = ['plot', 'hook', 'characters', 'style', 'world', 'pacing', 'genre'];
       window.__scores = {}; window.__reviews = [];
@@ -72,8 +72,9 @@ async function until(fn, ms, every = 500) { const end = Date.now() + ms; while (
     check('B: 3 rounds below 85 → Cần bạn xem', doneB?.qa?.status === 'needs-human' && doneB?.qa?.round === 3, { status: doneB?.qa?.status, round: doneB?.qa?.round, note: doneB?.qa?.note, presses: pB });
     check('B: no 4th Sudowrite run', pB.draft === 4, pB);
 
-    // ---- C: out of credits → stops, Xưởng is told, nothing retried
+    // ---- C: out of credits with the ChatGPT fallback OFF → stops, Xưởng is told, nothing retried
     await mockReset(1);
+    await x.evaluate(() => { uiPersist(() => { (db.uiSettings ??= {}).sudoFallback = false; delete db.uiSettings.sudoCreditsOutAt; }); });
     await startAuto('e2eA4', [90]);
     const stopC = await until(async () => { const r = await run('xw-ser-e2eAuto01:4'); return r?.state === 'stopped' ? r : null; }, 90000);
     await sleep(4000);
@@ -83,6 +84,19 @@ async function until(fn, ms, every = 500) { const end = Date.now() + ms; while (
     check('C: Generate Draft never pressed, nothing retried', pC.draft === 0 && pC.scenes === 1, pC);
     await sp.bringToFront(); await sp.screenshot({ path: path.join(SHOTS, 'auto-C-credits.png') });
 
+    // ---- C2: out of credits with the fallback ON (default) → ChatGPT writes the chapter instead (STUB writer: records the call)
+    await mockReset(1);
+    await x.evaluate(() => { uiPersist(() => { db.uiSettings ??= {}; delete db.uiSettings.sudoFallback; delete db.uiSettings.sudoCreditsOutAt; }); window.__gptWrites = []; uiChapterWrite = async (s, c, mode) => { window.__gptWrites.push({ chapter: c.id, mode }); }; });
+    await startAuto('e2eA6', [90]);
+    const gpt = await until(async () => { const w = await x.evaluate(() => window.__gptWrites); return w.length ? w : null; }, 90000);
+    const cC2 = await chapter('e2eA6'), pC2 = await presses(), outAt = await x.evaluate(() => db.uiSettings.sudoCreditsOutAt || null);
+    check('C2: Sudowrite out of credits → ChatGPT writes Chapter 6 instead', gpt?.[0]?.chapter === 'e2eA6' && gpt[0].mode === 'rewrite' && cC2.qa?.fallback === true, { gpt, qa: cC2.qa?.status });
+    check('C2: Xưởng remembers the credits are out; Generate Draft never pressed', !!outAt && pC2.draft === 0, { outAt, presses: pC2 });
+    await x.evaluate(async () => { const s = db.series.find(v => v.id === 'e2eAuto01'), c = db.content.find(v => v.id === 'e2eA7'); window.__gptWrites = []; await uiSudoSend(s, c, 'write', { auto: true }); });
+    const direct = await x.evaluate(() => window.__gptWrites), pC3 = await presses();
+    check('C2: the next auto job goes straight to ChatGPT (no Sudowrite press)', direct[0]?.chapter === 'e2eA7' && pC3.scenes === pC2.scenes, { direct, presses: pC3 });
+
+    await x.evaluate(() => uiPersist(() => { delete db.uiSettings.sudoCreditsOutAt; }));
     // ---- D: pause / resume, then a reload while Sudowrite writes → no second press, asks you
     await mockReset(20);
     await startAuto('e2eA5', [90]);

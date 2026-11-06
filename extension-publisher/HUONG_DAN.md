@@ -41,3 +41,8 @@ Extension không đọc và không lưu mật khẩu. Hồ sơ chờ điền t�
 4. Xưởng nhờ ChatGPT chấm. Dưới 85 điểm: Adapter ghi việc cần sửa vào Outline và cho Sudowrite viết lại, tối đa 3 vòng. Vẫn chưa đạt thì chương chuyển sang **Cần bạn xem**. Đạt thì chờ bạn duyệt; Adapter không tự đăng.
 5. Khi Sudowrite báo **hết credit** hoặc trang thay đổi, việc dừng lại, Xưởng ghi lý do ở chương. Không có gì tự thử lại: xử lý xong rồi bấm **Thử lại** trên bảng Sudowrite.
 6. Đừng tải lại tab Sudowrite khi Adapter đang chạy. Nếu lỡ tải lại sau lúc Adapter bấm nút tốn credit, Adapter không bấm lần nữa mà hỏi bạn: chương xong rồi thì bấm **Gửi chương về Xưởng**, chưa xong thì xóa phần viết dở rồi bấm **Thử lại**.
+
+## Khi Sudowrite hết credit (Xưởng, từ 06/11/2026)
+- Mặc định **ChatGPT viết thay**: việc tự viết / tự sửa đang chạy mà Sudowrite báo hết credit sẽ chuyển sang ChatGPT. ChatGPT vẫn chấm; dưới 85 thì ChatGPT sửa, tối đa 3 vòng, rồi "Cần bạn xem".
+- Khi đã biết Sudowrite hết credit, các việc tự động sau đi thẳng sang ChatGPT. Lần kiểm tra credit thật thấy còn credit (bước 2 → Kiểm tra lại), hoặc bạn bấm **Đã nạp credit** trong Cài đặt → Sudowrite Adapter, thì quay lại dùng Sudowrite.
+- Tắt / bật trong Cài đặt → Sudowrite Adapter.

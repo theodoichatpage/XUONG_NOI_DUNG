@@ -43,6 +43,9 @@ Lỗi tìm ra khi kiểm thật và đã sửa: menu chọn nhầm danh sách ch
 | Tự tạo yêu cầu sửa khi < 85 | **Kiểm thật** (06/11, 12 việc) |
 | Vòng sửa qua Sudowrite tối đa 3 lần → "Cần bạn xem" | **Giả lập** (mock 15/15) |
 | Popup chọn nơi viết (Xưởng / Sudowrite) khi tạo truyện | **Kiểm thật** trên production (06/11) |
+| ChatGPT chấm Story Bible (REVIEW_BIBLE) | **Kiểm thật** (06/11): truyện TEST 75/100, 5 mâu thuẫn, 0 lỗi nghiêm trọng |
+| Sudowrite hết credit → ChatGPT viết / sửa thay (mặc định bật, tắt được trong Cài đặt) | **Giả lập** (trình duyệt + trang Sudowrite giả lập, người viết ChatGPT là stub) + 5 test đơn vị; kiểm thật: xem LIVE_TEST |
+| Việc tự động tiếp theo đi thẳng sang ChatGPT khi đã biết hết credit; kiểm tra credit thật > 0 thì quay lại Sudowrite | **Giả lập** + test đơn vị |
 
 ## Khi nào cần mua credit
 

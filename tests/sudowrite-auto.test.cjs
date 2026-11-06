@@ -144,12 +144,40 @@ test('Xưởng: a passing chapter stops the loop', async () => {
   c.db.sudoJobs = {}; ch2.qa = { round: 1, scores: [74], sudoAuto: true, status: 'fixing' }; ch2.aiReview = review(88, 1); ch2.aiReview.value.rubric.plot.score = 20; ch2.aiReview.value.rubric.hook.score = 18;
   await c.uiQaTick(); assert.equal(ch2.qa.status, 'passed'); assert.equal(c.calls.length, 0);
 });
-test('Xưởng: a stopped Sudowrite job (out of credits) puts the chapter in Cần bạn xem with the reason', () => {
-  const { c, content } = studio();
-  c.db.sudoJobs = { 'xw-ser-ser1:2': { seriesId: 'ser1', chapterId: 'c2', mode: 'write', auto: true, round: 0, status: 'sent', at: new Date().toISOString() } };
-  const r = c.uiSudoStatus({ job_key: 'xw-ser-ser1:2', mode: 'write', round: 0, status: 'stopped', code: 'out_of_credits', error: 'Sudowrite báo hết credit', at: 1 });
+const stopped = (c, mode = 'write') => { c.db.sudoJobs = { 'xw-ser-ser1:2': { seriesId: 'ser1', chapterId: 'c2', mode, auto: true, round: mode === 'revise' ? 1 : 0, status: 'sent', at: new Date().toISOString() } }; return { job_key: 'xw-ser-ser1:2', mode, round: 0, status: 'stopped', code: 'out_of_credits', error: 'Sudowrite báo hết credit', at: 1 }; };
+const runTimers = c => { c.later = []; c.setTimeout = fn => { c.later.push(fn); }; };
+const gptCalls = c => { c.writes = []; c.uiChapterWrite = async (_s, ch, mode, _b, ask) => { c.writes.push({ chapter: ch.id, mode, ask }); }; };
+test('Xưởng: out of credits with the fallback off → Cần bạn xem with the reason (no ChatGPT)', () => {
+  const { c, content } = studio(); gptCalls(c); c.db.uiSettings.sudoFallback = false;
+  const r = c.uiSudoStatus(stopped(c));
   assert.equal(r.ok, true); assert.equal(c.db.sudoJobs['xw-ser-ser1:2'].status, 'stopped'); assert.equal(content[1].qa.status, 'needs-human'); assert.match(content[1].qa.note, /hết credit/); assert.match(c.toasted, /hết credit/);
+  assert.equal(c.writes.length, 0); assert.ok(c.db.uiSettings.sudoCreditsOutAt, 'Xưởng remembers Sudowrite is out of credits');
   assert.equal(c.uiSudoStatus({ job_key: 'xw-none-x:1' }).final, true);
+});
+test('Xưởng: out of credits (fallback on by default) → ChatGPT writes the chapter instead, then reviews as usual', async () => {
+  const { c, content } = studio(); gptCalls(c); runTimers(c);
+  const r = c.uiSudoStatus(stopped(c)); assert.equal(r.fallback, 'chatgpt'); await Promise.all(c.later.map(f => f()));
+  assert.deepEqual(c.writes.map(w => w.mode), ['rewrite']); assert.equal(content[1].qa.fallback, true); assert.equal(content[1].qa.sudoAuto, false); assert.equal(content[1].writtenBy, 'chatgpt-fallback');
+  assert.match(c.toasted, /ChatGPT viết thay Chương 2/); assert.equal(c.db.sudoJobs['xw-ser-ser1:2'].fallback, 'chatgpt');
+  // the chapter comes back from ChatGPT (new version): the loop reviews it although the qa setting is off
+  content[1].bodyRevision = 2; content[1].body = 'ChatGPT chapter two.'; assert.equal(await c.uiQaTick(), true); assert.deepEqual(c.reviews, ['c2']);
+});
+test('Xưởng: out of credits during a fix round → ChatGPT fixes with the reviewer’s notes', async () => {
+  const { c, content } = studio(); gptCalls(c); runTimers(c); content[1].aiReview = review(74, 1); content[1].qa = { round: 1, scores: [74], sudoAuto: true, status: 'fixing' };
+  c.uiSudoStatus(stopped(c, 'revise')); await Promise.all(c.later.map(f => f()));
+  assert.equal(c.writes[0].mode, 'fix'); assert.match(c.writes[0].ask, /Mở bằng cảnh chợ/); assert.equal(content[1].qa.round, 1, 'the round count is kept');
+});
+test('Xưởng: while Sudowrite is out of credits, new auto jobs and fix rounds go straight to ChatGPT; a live credit check switches back', async () => {
+  const { c, s, content } = studio(); gptCalls(c); c.db.uiSettings.sudoCreditsOutAt = '2026-11-06T09:00:00Z';
+  await c.uiSudoSend(s, content[1], 'write', { auto: true }); assert.equal(c.calls.length, 0, 'nothing sent to Sudowrite'); assert.equal(c.writes[0].mode, 'rewrite');
+  content[1].qa = { round: 0, scores: [], sudoAuto: true }; content[1].aiReview = review(70, 1); c.writes = [];
+  await c.uiQaTick(); assert.equal(c.calls.length, 0); assert.equal(c.writes[0].mode, 'fix');
+  c.uiSudoMarkCredits(5000); assert.equal(c.db.uiSettings.sudoCreditsOutAt, undefined); assert.equal(c.uiSudoUseGpt(), false);
+  c.uiSudoMarkCredits(0); assert.ok(c.uiSudoUseGpt());
+});
+test('Xưởng: ChatGPT fallback chapters also stop after 3 rounds below 85', async () => {
+  const { c, content } = studio(); gptCalls(c); content[1].qa = { round: 3, scores: [70, 72, 80], fallback: true, status: 'fixing' }; content[1].aiReview = review(80, 1);
+  assert.equal(await c.uiQaTick(), false); assert.equal(content[1].qa.status, 'needs-human'); assert.equal(c.writes.length, 0);
 });
 test('Xưởng: if the Adapter is missing, the fix round goes to Cần bạn xem instead of looping', async () => {
   const { c, content } = studio(); const ch2 = content[1];
