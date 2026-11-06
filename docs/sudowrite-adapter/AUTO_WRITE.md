@@ -47,10 +47,10 @@ Stop codes: `out_of_credits`, `sudowrite_error`, `timeout`, `needs_check`, `ui_c
 
 | Step | Live Sudowrite (2026-11-05) | Mock page |
 |---|---|---|
-| Outline row name + summary | Verified (persists after reload) | Tested |
-| Start → linked document | Verified, no credits | Tested |
+| Outline row name + summary | Verified (persists after reload); engine run live 2026-11-06 | Tested |
+| Start → linked document | Verified: ONE Start under the Outline with a chapter picker (fixed in 0.7.1) | Tested |
 | Generate a Rough Draft panel | Verified | Tested |
-| Generate Scenes + progress texts | Verified (~50 s) | Tested |
+| Generate Scenes + progress texts | Verified; pressed by the engine live 2026-11-06, scenes generated (button is in the Scenes section, not the panel) | Tested |
 | Plan Draft → Generate Draft, its done signal | **Not verified** — account had 0 credits | Tested (assumed behaviour) |
 | Clearing the Adapter's document, Rough Draft button coming back | **Not verified** | Tested (assumed behaviour) |
 | "0 credits left" message | Verified (text seen on Plan Draft) | Tested |
