@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>MOCK Inkstone create chapter (test page)</title>
+<style>body{font:14px Arial;margin:0;padding:40px}#mock-label{position:fixed;left:0;top:0;background:#d00;color:#fff;font-weight:700;padding:4px 10px}iframe{width:700px;height:300px;border:1px solid #ccc}</style></head>
+<body>
+<div id="mock-label">MOCK INKSTONE — trang giả lập để kiểm thử, không phải Inkstone thật</div>
+<!-- Mirrors what was read on the real page (06/11/2026): title input "Title Here", TinyMCE iframe .tox-edit-area__iframe with <p> paragraphs, hidden textarea, buttons save / publish. -->
+<input class="ant-input" placeholder="Title Here" type="text">
+<div class="editor_wrap"><textarea style="display:none"></textarea><iframe class="tox-edit-area__iframe" id="tiny-mock_ifr"></iframe></div>
+<button id="save">save</button><button id="publish">publish</button>
+<script>
+window.__clicks=[];for(const id of ['save','publish'])document.getElementById(id).onclick=()=>window.__clicks.push(id);
+const f=document.getElementById('tiny-mock_ifr');f.contentDocument.open();f.contentDocument.write('<!doctype html><html><body contenteditable="true"></body></html>');f.contentDocument.close();
+const body=()=>f.contentDocument.body;
+window.tinymce={activeEditor:{setContent(h){body().innerHTML=h;window.__setContent=(window.__setContent||0)+1},getContent(o){return o&&o.format==='text'?body().innerText:body().innerHTML},getBody:body,undoManager:{add(){}},fire(){},save(){document.querySelector('textarea').value=body().innerHTML}},get(){return [this.activeEditor]}};
+</script></body></html>

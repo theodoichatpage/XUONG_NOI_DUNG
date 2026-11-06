@@ -41,3 +41,21 @@ let busy=false;
 async function check(){if(busy||!location.pathname.startsWith('/novels/create'))return;if(!document.getElementById('bookTitle'))return;busy=true;try{const r=await chrome.runtime.sendMessage({kind:'XP_TAKE_PENDING'});if(r?.ok&&r.pending){await wait(600);const items=await fill(r.pending.listing);banner(items);chrome.runtime.sendMessage({kind:'XP_REPORT',items}).catch(()=>{})}}catch{}finally{busy=false}}
 setInterval(check,1200);check();
 })();
+
+// ---- New chapter page (/novels/chapter/create/<book>): title + body from Xưởng. Never presses save or publish.
+(()=>{if(window.__xpInkCh)return;window.__xpInkCh=true;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));async function until(fn,ms=10000){const end=Date.now()+ms;while(Date.now()<end){const v=fn();if(v)return v;await wait(200)}return null}
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function toHtml(body){return String(body).split(/\n\s*\n|\n/).map(x=>x.trim()).filter(Boolean).map(x=>'<p>'+esc(x)+'</p>').join('')}
+function setNative(el,value){Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))}
+function show(lines,ok){let el=document.getElementById('xp-ink-chapter');if(!el){el=document.createElement('div');el.id='xp-ink-chapter';el.style.cssText='position:fixed;top:16px;right:16px;z-index:2147483647;width:380px;background:#121213;color:#f2f2f2;border:1px solid #ff5a1f;border-radius:12px;box-shadow:0 0 24px rgba(255,90,31,.3);font:13px/1.5 Arial,sans-serif;padding:14px';document.body.append(el)}el.replaceChildren();const h=document.createElement('strong');h.textContent=ok?'Xưởng đã điền chương':'Xưởng chưa điền được chương';h.style.cssText='display:block;color:#ff7a45;margin-bottom:6px';el.append(h);for(const l of lines){const d=document.createElement('div');d.textContent=l;d.style.padding='3px 0';el.append(d)}const tip=document.createElement('p');tip.style.cssText='margin:8px 0 0;color:#d6d6da';tip.textContent='Đọc lại chương, rồi tự bấm publish (hoặc save). Adapter không bấm save hay publish.';el.append(tip);const b=document.createElement('button');b.textContent='Đóng';b.style.cssText='margin-top:8px;height:28px;padding:0 12px;background:#ff5a1f;color:#0b0b0c;border:0;border-radius:8px;font-weight:700;cursor:pointer';b.onclick=()=>el.remove();el.append(b)}
+let busy=false;
+async function check(){if(busy||!/^\/novels\/chapter\/create\/\d+/.test(location.pathname))return;busy=true;try{
+ const title=await until(()=>document.querySelector('input[placeholder="Title Here"]'),8000),frame=await until(()=>document.querySelector('iframe.tox-edit-area__iframe')?.contentDocument?.body,8000);if(!title||!frame)return;
+ const r=await chrome.runtime.sendMessage({kind:'XP_INK_TAKE'});const p=r?.ok&&r.pending;if(!p)return;await wait(500);const lines=[];
+ setNative(title,p.title);lines.push((title.value===p.title?'✓ ':'✗ ')+'Tiêu đề: '+p.title);
+ const res=await chrome.runtime.sendMessage({kind:'XP_INK_SETBODY',html:toHtml(p.body)});const want=(p.body.match(/\S+/g)||[]).length;
+ const got=(frame.innerText.match(/\S+/g)||[]).length;const ok=!!res?.ok&&title.value===p.title&&got>=want*0.98;
+ lines.push((res?.ok?'✓ ':'✗ ')+'Nội dung: '+(res?.ok?got.toLocaleString('vi-VN')+' / '+want.toLocaleString('vi-VN')+' chữ, '+(res.paragraphs||0)+' đoạn':(res?.error||'không điền được')));
+ show(lines,ok);chrome.runtime.sendMessage({kind:'XP_REPORT',items:[{field:'Inkstone chương '+(p.chapterNo||''),ok,note:lines.join(' · ')}]}).catch(()=>{})}catch{}finally{busy=false}}
+setInterval(check,1500);check()})();

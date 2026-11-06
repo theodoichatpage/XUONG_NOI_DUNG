@@ -56,3 +56,11 @@ Chỉ để kiểm thật 4 dòng "Giả lập" của phần viết chương (Pl
 - Khi hết credit, Sudowrite **ẩn** nút Generate Scenes (chỉ còn Add Scenes). Từ 0.7.4 Adapter kiểm tra thông báo hết credit trước khi tìm nút, nên dừng đúng mã out_of_credits (để Xưởng chuyển sang ChatGPT).
 - "+ Thêm" chương trong truyện Sudowrite: **Kiểm thật** — thêm chương trống, 0 việc ChatGPT.
 - Tạo tài liệu bằng Start + mở Rough Draft bằng engine: **Kiểm thật** (Chương 2 truyện TEST).
+
+## Inkstone — điền chương (0.8.0, 06/11/2026)
+
+| Chức năng | Trạng thái |
+|---|---|
+| Trang tạo chương `/novels/chapter/create/<mã truyện>`: ô "Title Here", TinyMCE trong iframe (cùng nguồn, đoạn `<p>`), nút save / publish | **Khảo sát thật, chỉ đọc** (truyện The Ashen Crown; không tạo nháp: Draft vẫn 0) |
+| Adapter điền tiêu đề + nội dung qua TinyMCE của trang, không bấm save/publish | **Giả lập** (Chromium + extension thật + trang Inkstone giả lập, 6/6) + 5 test đơn vị |
+| Hộp thoại publish / hẹn giờ của Inkstone | **Chưa khảo sát** — chỉ thấy được khi đăng một chương thật |

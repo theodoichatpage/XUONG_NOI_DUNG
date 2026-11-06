@@ -13,7 +13,7 @@ test('option matching picks the closest genre, length bucket and "no warning"',(
  assert.equal(c.lengthMatch('long')(['Short (under 100 chapters)','Medium (100-300 chapters)','Long (over 300 chapters)']),2);assert.equal(c.lengthMatch('medium')(['A','B','C']),1);
  assert.equal(c.warningMatch('none')(['Violence','No warning']),1);assert.equal(c.warningMatch('violence, gore')(['None','Violence and gore']),1)});
 test('the extension never presses Create',()=>{assert.doesNotMatch(ink,/postcreate|create'\)\.click|\.click\(\)\s*;?\s*\/\/\s*create/i);assert.match(ink,/tự bấm CREATE/)});
-test('Xưởng hands the listing to the Publisher and requires the story account first',()=>{const ui=fs.readFileSync('dist/studio-ui.js','utf8');assert.match(ui,/data-ui-listing=\\?"inkstone\\?"/);assert.match(ui,/xpCall\('XP_FILL_LISTING'/);assert.match(ui,/Gán tài khoản Webnovel cho truyện này trước \(ô bên phải thẻ Webnovel\)/);assert.match(ui,/\/downloads\/Xuong_Sudowrite_Adapter_v0.7.5\.zip\?sha=[0-9a-f]{16}/)});
+test('Xưởng hands the listing to the Publisher and requires the story account first',()=>{const ui=fs.readFileSync('dist/studio-ui.js','utf8');assert.match(ui,/data-ui-listing=\\?"inkstone\\?"/);assert.match(ui,/xpCall\('XP_FILL_LISTING'/);assert.match(ui,/Gán tài khoản Webnovel cho truyện này trước \(ô bên phải thẻ Webnovel\)/);assert.match(ui,/\/downloads\/Xuong_Sudowrite_Adapter_v0.8.0\.zip\?sha=[0-9a-f]{16}/)});
 
 const sudo={url:'https://editor.sudowrite.com/app/project/abc',tab:{id:7}};
 test('Story Bible kit goes from Xưởng to Sudowrite once; only Sudowrite can take it',async()=>{const f=fixture();globalThis.__sudoTabs=[];const kit={braindump:'B',genre:'G',synopsis:'S',style:'',characters:'',worldbuilding:'',outline:'',secret:'x'};

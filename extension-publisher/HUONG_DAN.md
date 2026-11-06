@@ -1,4 +1,4 @@
-# Sudowrite Adapter 0.7.5 (Xưởng × Sudowrite × Webnovel)
+# Sudowrite Adapter 0.8.0 (Xưởng × Sudowrite × Webnovel)
 
 Trước đây tên là "Xưởng Webnovel Publisher". Nếu đã cài bản cũ: giải nén đè vào đúng thư mục cũ rồi bấm Tải lại, hoặc gỡ bản cũ rồi cài thư mục mới.
 
@@ -46,3 +46,9 @@ Extension không đọc và không lưu mật khẩu. Hồ sơ chờ điền t�
 - Mặc định **ChatGPT viết thay**: việc tự viết / tự sửa đang chạy mà Sudowrite báo hết credit sẽ chuyển sang ChatGPT. ChatGPT vẫn chấm; dưới 85 thì ChatGPT sửa, tối đa 3 vòng, rồi "Cần bạn xem".
 - Khi đã biết Sudowrite hết credit, các việc tự động sau đi thẳng sang ChatGPT. Lần kiểm tra credit thật thấy còn credit (bước 2 → Kiểm tra lại), hoặc bạn bấm **Đã nạp credit** trong Cài đặt → Sudowrite Adapter, thì quay lại dùng Sudowrite.
 - Tắt / bật trong Cài đặt → Sudowrite Adapter.
+
+## Điền chương vào Inkstone (từ 0.8.0)
+1. Chương phải qua cổng duyệt (ChatGPT chấm ≥ 85, không lỗi nghiêm trọng, đã bấm Duyệt).
+2. Xưởng → bước 4 → Đăng lên Webnovel → **Điền vào Inkstone**. Lần đầu dán link truyện trên Inkstone (trang /novels/view/…).
+3. Adapter mở trang tạo chương của truyện đó, điền tiêu đề và nội dung. **Bạn đọc lại rồi tự bấm publish** — Adapter không bấm save hay publish.
+4. Dán link chương đã đăng vào Xưởng → Xác nhận đã đăng.

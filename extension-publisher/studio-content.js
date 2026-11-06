@@ -1,9 +1,9 @@
 'use strict';
 // Bridges the Xưởng page and the Adapter background. Only allow-listed kinds pass in either direction.
 (()=>{if(window.__xpStudio)return;window.__xpStudio=true;
-const allowed=new Set(['XP_PING','XP_FILL_LISTING','XP_SUDO_FILL','XP_SUDO_PULL','XP_SUDO_BRIEF','XP_SUDO_LAST_REPORT']);
+const allowed=new Set(['XP_PING','XP_FILL_LISTING','XP_SUDO_FILL','XP_SUDO_PULL','XP_SUDO_BRIEF','XP_SUDO_LAST_REPORT','XP_INK_CHAPTER']);
 // Page → extension
-window.addEventListener('message',e=>{if(e.source!==window||e.origin!==location.origin||e.data?.source!=='XP_STUDIO_V1'||!allowed.has(e.data.kind))return;const {requestId,kind,listing,kit,overwrite,brief}=e.data;if(typeof requestId!=='string')return;chrome.runtime.sendMessage({kind,listing,kit,overwrite,brief}).then(result=>window.postMessage({source:'XP_EXTENSION_V1',requestId,result},location.origin)).catch(err=>window.postMessage({source:'XP_EXTENSION_V1',requestId,result:{ok:false,error:err.message}},location.origin))});
+window.addEventListener('message',e=>{if(e.source!==window||e.origin!==location.origin||e.data?.source!=='XP_STUDIO_V1'||!allowed.has(e.data.kind))return;const {requestId,kind,listing,kit,overwrite,brief,chapter}=e.data;if(typeof requestId!=='string')return;chrome.runtime.sendMessage({kind,listing,kit,overwrite,brief,chapter}).then(result=>window.postMessage({source:'XP_EXTENSION_V1',requestId,result},location.origin)).catch(err=>window.postMessage({source:'XP_EXTENSION_V1',requestId,result:{ok:false,error:err.message}},location.origin))});
 // Extension → page: the page answers with {source:'XP_STUDIO_V1', kind:'XP_REPLY', requestId, result}.
 const toPage=new Set(['XP_SUDO_RESULT','XP_SUDO_STATUS']),waiting=new Map();
 window.addEventListener('message',e=>{if(e.source!==window||e.origin!==location.origin||e.data?.source!=='XP_STUDIO_V1'||e.data.kind!=='XP_REPLY')return;const done=waiting.get(e.data.requestId);if(done){waiting.delete(e.data.requestId);done(e.data.result&&typeof e.data.result==='object'?e.data.result:{ok:false,error:'Phản hồi không hợp lệ'})}});
