@@ -10,7 +10,7 @@ function sudoCls(r) { if (!r.tabs.sudo) return ''; if (r.sudoHealth && r.sudoHea
 function sudoText(r) {
   if (!r.tabs.sudo) return r.lastSudoProject ? 'Chưa mở (nhớ dự án gần nhất)' : 'Chưa mở dự án';
   if (r.sudoHealth && r.sudoHealth.ok === false) return r.sudoHealth.error;
-  const miss = sudoMissing(r), extra = [r.sudoBrief ? (r.sudoBrief.mode === 'revise' ? 'đang sửa' : 'đang viết') + ' Ch.' + r.sudoBrief.chapter_no : '', r.sudoWaiting ? r.sudoWaiting + ' chương chờ về Xưởng' : ''].filter(Boolean).join(' · ');
+  const miss = sudoMissing(r), extra = [r.sudoBrief ? (r.sudoBrief.mode === 'revise' ? 'đang sửa' : 'đang viết') + ' Ch.' + r.sudoBrief.chapter_no : '', r.sudoRun ? 'tự động: ' + ({ running: r.sudoRun.paused ? 'tạm dừng' : 'đang chạy' + (r.sudoRun.step ? ' (' + r.sudoRun.step + ')' : ''), stopped: 'đã dừng — ' + (r.sudoRun.code === 'out_of_credits' ? 'hết credit' : r.sudoRun.code), done: 'xong', cancelled: 'đã bỏ' }[r.sudoRun.state] || r.sudoRun.state) : '', r.sudoWaiting ? r.sudoWaiting + ' chương chờ về Xưởng' : ''].filter(Boolean).join(' · ');
   return (miss.length ? 'Không thấy ' + miss.join(', ') : 'Đang mở dự án') + (extra ? ' · ' + extra : '');
 }
 function ago(t) { if (!t) return ''; const s = Math.round((Date.now() - t) / 1000); return s < 60 ? s + ' giây trước' : Math.round(s / 60) + ' phút trước'; }

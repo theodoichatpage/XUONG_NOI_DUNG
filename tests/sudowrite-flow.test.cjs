@@ -95,7 +95,7 @@ test('Adapter: only Xưởng can hand over a brief; it opens the Sudowrite proje
   assert.equal((await a.send({ kind: 'XP_SUDO_ACTIVE' }, STUDIO)).ok, false, 'only Sudowrite reads the active brief');
   const act = (await a.send({ kind: 'XP_SUDO_ACTIVE' }, SUDO)).brief; assert.equal(act.chapter_no, 2); assert.equal(act.extra, undefined);
   a.tabs.all = []; a.storage.lastSudoProject = 'https://editor.sudowrite.com/app/project/abc';
-  assert.deepEqual(JSON.parse(JSON.stringify(await a.send({ kind: 'XP_SUDO_BRIEF', brief }, STUDIO))), { ok: true, opened: true, project: true }); assert.deepEqual(a.opened, ['https://editor.sudowrite.com/app/project/abc']);
+  assert.deepEqual(JSON.parse(JSON.stringify(await a.send({ kind: 'XP_SUDO_BRIEF', brief }, STUDIO))), { ok: true, opened: true, project: true, already: false }); assert.deepEqual(a.opened, ['https://editor.sudowrite.com/app/project/abc']);
 });
 test('Adapter: a chapter is kept until Xưởng confirms it, then delivered when Xưởng opens', async () => {
   const a = adapter(); a.tabs.all = [{ id: 7, url: SUDO.url }];

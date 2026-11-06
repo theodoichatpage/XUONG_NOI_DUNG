@@ -1,7 +1,7 @@
 {
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/sudowrite-brief.schema.json",
- "title": "Semi-automatic Sudowrite task shown in the banner",
+ "title": "Sudowrite chapter task (semi-automatic banner, or automatic when auto is true)",
  "type": "object",
  "additionalProperties": false,
  "required": [
@@ -70,6 +70,10 @@
    "type": "integer",
    "minimum": 0,
    "maximum": 3
+  },
+  "auto": {
+   "type": "boolean",
+   "description": "true: the Adapter presses Sudowrite Generate buttons itself (spends credits). See sudowrite-auto.js."
   }
  }
 }

@@ -6,7 +6,7 @@ Write was run twice in the test project (Sudowrite credits used for 2 Write call
 
 Legend: **SUPPORTED** = verified live, including after a page reload. **PARTIAL** = works but needs the user for a step, or has a known quirk. **UNSUPPORTED** = not verified / not stable / not allowed. **Not tested** = not tried yet.
 
-Automation policy (decided 2026-11-05 Phase 1): Sudowrite has no public API; its Terms forbid "spider, crawl, or scrape". The Adapter only works inside the user's own project, on the user's request, at human pace. Whether the Adapter may press credit-spending buttons (Write, Rewrite, First Draft, Generate…) is the user's decision; the current Adapter (0.6.0) does not.
+Automation policy (decided 2026-11-05 Phase 1): Sudowrite has no public API; its Terms forbid "spider, crawl, or scrape". The Adapter only works inside the user's own project, on the user's request, at human pace. The user allowed credit-spending presses on 2026-11-05: Adapter 0.7.0 presses Generate Scenes and Generate Draft only for chapters Xưởng sends as automatic jobs (see AUTO_WRITE.md).
 
 ## 1. Project list
 

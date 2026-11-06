@@ -1,0 +1,73 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "https://xuong-noi-dung-khaki.vercel.app/schemas/sudowrite-status.schema.json",
+ "title": "Automatic Sudowrite job stopped (Adapter → Xưởng, kind XP_SUDO_STATUS)",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "job_key",
+  "mode",
+  "round",
+  "status",
+  "code",
+  "error",
+  "at"
+ ],
+ "properties": {
+  "job_key": {
+   "type": "string",
+   "pattern": "^[A-Za-z0-9_-]{8,64}:[0-9]{1,5}$"
+  },
+  "mode": {
+   "enum": [
+    "write",
+    "revise"
+   ]
+  },
+  "round": {
+   "type": "integer",
+   "minimum": 0,
+   "maximum": 3
+  },
+  "status": {
+   "const": "stopped"
+  },
+  "code": {
+   "enum": [
+    "out_of_credits",
+    "sudowrite_error",
+    "timeout",
+    "needs_check",
+    "ui_changed",
+    "no_start",
+    "doc_not_empty",
+    "wrong_project",
+    "empty",
+    "deliver",
+    "lost",
+    "error"
+   ],
+   "description": "Why the job stopped. Nothing is retried automatically; the user presses Thử lại on the Sudowrite panel."
+  },
+  "error": {
+   "type": "string",
+   "maxLength": 400
+  },
+  "step": {
+   "enum": [
+    "outline",
+    "start",
+    "clear",
+    "rough",
+    "scenes",
+    "plan",
+    "draft",
+    "read",
+    null
+   ]
+  },
+  "at": {
+   "type": "integer"
+  }
+ }
+}

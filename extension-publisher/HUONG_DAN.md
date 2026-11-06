@@ -1,4 +1,4 @@
-# Sudowrite Adapter 0.6.0 (Xưởng × Sudowrite × Webnovel)
+# Sudowrite Adapter 0.7.0 (Xưởng × Sudowrite × Webnovel)
 
 Trước đây tên là "Xưởng Webnovel Publisher". Nếu đã cài bản cũ: giải nén đè vào đúng thư mục cũ rồi bấm Tải lại, hoặc gỡ bản cũ rồi cài thư mục mới.
 
@@ -33,3 +33,11 @@ Extension không đọc và không lưu mật khẩu. Hồ sơ chờ điền t�
 2. Bạn viết bằng các nút của Sudowrite (New, First Draft, Write…). Adapter không bấm các nút tốn credit.
 3. Xong bấm **Gửi chương về Xưởng** trên bảng. Chương thay bản nháp trong Xưởng (bản cũ giữ trong lịch sử). Nếu tab Xưởng đang đóng, chương được giữ lại và tự về khi mở Xưởng.
 4. Bước 4: ChatGPT chấm 7 tiêu chí. Chưa đạt → **Sửa trên Sudowrite** gửi danh sách việc cần sửa sang bảng Sudowrite (nội dung chương hiện tại được chép sẵn vào bộ nhớ tạm).
+
+## Tự viết chương trên Sudowrite (từ 0.7.0, tự động — tốn credit Sudowrite)
+1. Cần tài khoản Sudowrite còn credit, và dự án Sudowrite của truyện đang mở trong một tab.
+2. Xưởng → bước 3 → chọn chương → **Tự viết trên Sudowrite** → xác nhận.
+3. Adapter tự làm trên Sudowrite: ghi tên + tóm tắt chương vào Outline → Start → Generate a Rough Draft → Generate Scenes → Plan Draft → Generate Draft → đợi Sudowrite viết xong → gửi chương về Xưởng. Bảng góc phải dưới hiện từng bước; có nút **Tạm dừng / Tiếp tục**, **Bỏ việc này**.
+4. Xưởng nhờ ChatGPT chấm. Dưới 85 điểm: Adapter ghi việc cần sửa vào Outline và cho Sudowrite viết lại, tối đa 3 vòng. Vẫn chưa đạt thì chương chuyển sang **Cần bạn xem**. Đạt thì chờ bạn duyệt; Adapter không tự đăng.
+5. Khi Sudowrite báo **hết credit** hoặc trang thay đổi, việc dừng lại, Xưởng ghi lý do ở chương. Không có gì tự thử lại: xử lý xong rồi bấm **Thử lại** trên bảng Sudowrite.
+6. Đừng tải lại tab Sudowrite khi Adapter đang chạy. Nếu lỡ tải lại sau lúc Adapter bấm nút tốn credit, Adapter không bấm lần nữa mà hỏi bạn: chương xong rồi thì bấm **Gửi chương về Xưởng**, chưa xong thì xóa phần viết dở rồi bấm **Thử lại**.

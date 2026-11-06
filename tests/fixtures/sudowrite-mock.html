@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MOCK Sudowrite (test page)</title>
+<style>
+ body{margin:0;font:14px/1.5 Arial,sans-serif;background:#fafafa;color:#222;display:grid;grid-template-columns:240px 1fr 1fr;min-height:100vh}
+ #mock-label{position:fixed;left:0;top:0;z-index:5;background:#d00;color:#fff;font-weight:700;padding:4px 10px}
+ aside,section,main{padding:36px 14px 14px;border-right:1px solid #ddd}
+ .row{border:1px solid #ccc;padding:8px;margin:8px 0;background:#fff}
+ [contenteditable]{min-height:24px;border:1px dashed #bbb;padding:4px}
+ [data-placeholder]:empty::before{content:attr(data-placeholder);color:#999}
+ .GeneratePanel__InnerContainer-mock{border:2px solid #7a5cff;padding:10px;margin-top:10px;background:#f3f0ff}
+ .err{color:#b00;font-weight:700}
+ button[disabled]{opacity:.6}
+</style>
+</head>
+<body>
+<div id="mock-label">MOCK SUDOWRITE — trang giả lập để kiểm thử, không phải Sudowrite thật</div>
+<aside>
+ <nav aria-label="Story Bible sections">
+  <a href="#story-bible-braindump">Braindump</a><br><a href="#story-bible-genre">Genre</a><br><a href="#story-bible-outline">Outline</a>
+ </nav>
+ <h4>Documents</h4>
+ <div id="docs"></div>
+</aside>
+<section>
+ <div id="story-bible-braindump"><textarea id="textarea-seed"></textarea></div>
+ <div id="story-bible-genre"><textarea id="textarea-genre"></textarea><textarea id="textarea-synopsis"></textarea></div>
+ <div id="story-bible-outline"><h3>Outline</h3><div id="rows"></div><button id="add-chapter">Add Chapter</button></div>
+</section>
+<main id="doc"></main>
+<script>
+// Mock of the parts of Sudowrite the Adapter uses (selectors and signals from SUDOWRITE_AUTOMATION_MAP.md).
+// State lives in localStorage so a reload keeps documents, like the real site. Query ?credits=N sets credits once.
+const S=JSON.parse(localStorage.getItem('mockSudo')||'null')||{rows:[],docs:[],credits:Number(new URLSearchParams(location.search).get('credits')??20),presses:{scenes:0,draft:0,plan:0},n:0};
+const save=()=>localStorage.setItem('mockSudo',JSON.stringify(S));save();
+window.__mock=S;
+const $=s=>document.querySelector(s),h=(t,a={},...kids)=>{const e=document.createElement(t);for(const[k,v]of Object.entries(a))k.startsWith('on')?e.addEventListener(k.slice(2),v):k==='text'?e.textContent=v:e.setAttribute(k,v);e.append(...kids);return e};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function paras(el){return [...el.querySelectorAll('p')].map(p=>p.textContent.trim()).filter(Boolean)}
+function richSet(el,text){el.replaceChildren(...String(text).split(/\n{2,}|\n/).filter(Boolean).map(t=>h('p',{text:t})))}
+function richEditor(text,onSave,placeholder,extra={}){const e=h('div',{contenteditable:'true',...extra});if(text)richSet(e,text);else e.append(h('p',{'data-placeholder':placeholder}));
+ e.addEventListener('paste',ev=>{ev.preventDefault();richSet(e,ev.clipboardData.getData('text/plain'));onSave(paras(e).join('\n'))});
+ e.addEventListener('input',()=>onSave(paras(e).join('\n')));e.addEventListener('focusout',()=>onSave(paras(e).join('\n')));return e}
+function drawRows(){$('#rows').replaceChildren(...S.rows.map(r=>{const name=h('input',{placeholder:'Chapter Name'});name.value=r.name;name.addEventListener('change',()=>{r.name=name.value;save();drawDocs()});name.addEventListener('blur',()=>{r.name=name.value;save()});
+ const sum=richEditor(r.summary,t=>{r.summary=t;save()},'Chapter Summary');
+ const act=r.docId?h('button',{onclick:()=>openDoc(r.docId),text:'Open'}):h('button',{text:'Start',onclick:()=>{const d={id:'d'+(++S.n),title:r.name,row:r.id,body:[]};S.docs.push(d);r.docId=d.id;save();drawRows();drawDocs();openDoc(d.id)}});
+ return h('div',{class:'row',id:'story-bible-outline-chapter-'+r.id},name,sum,h('small',{text:"Click Start when you're ready to draft your Chapter "}),act)}))}
+$('#add-chapter').onclick=async()=>{await wait(300);S.rows.push({id:'r'+(++S.n),name:'Chapter 1',summary:''});save();drawRows()};
+function drawDocs(){$('#docs').replaceChildren(...S.docs.map(d=>h('div',{role:'button','aria-label':d.title,onclick:()=>openDoc(d.id),text:d.title})))}
+function openDoc(id){location.hash='doc='+id}
+let panelState=null;// {scenes:[], phase:'idle'|'scenes'|'plan'|'review'|'draft', error}
+function drawDoc(){const id=(location.hash.match(/doc=(\w+)/)||[])[1],d=S.docs.find(x=>x.id===id),m=$('#doc');if(!d){m.replaceChildren(h('p',{text:'Open a document'}));return}
+ const title=h('textarea',{'aria-label':'Edit Title'});title.value=d.title;title.addEventListener('blur',()=>{d.title=title.value;save();drawDocs()});
+ const row=S.rows.find(r=>r.id===d.row);
+ const ed=richEditor(d.body.join('\n\n'),t=>{d.body=t?t.split('\n').filter(Boolean):[];save();drawDoc.soft()},'',{class:'tiptap ProseMirror'});
+ const wrap=h('div',{'aria-label':'Document editor'},ed);
+ const kids=[title,row?h('p',{text:'Linked to '+row.name+' in your Outline'}):'',h('button',{'aria-label':'Write',text:'Write'}),wrap];
+ if(row&&!d.body.length&&!panelState)kids.push(h('button',{'aria-label':'Generate a Rough Draft',text:'Generate a Rough Draft',onclick:()=>{panelState={scenes:[],phase:'idle',doc:d.id};drawDoc()}}));
+ if(panelState&&panelState.doc===d.id)kids.push(drawPanel(d,row,ed));
+ m.replaceChildren(...kids)}
+drawDoc.soft=()=>{const id=(location.hash.match(/doc=(\w+)/)||[])[1],d=S.docs.find(x=>x.id===id);if(d&&!d.body.length&&!panelState&&!$('[aria-label="Generate a Rough Draft"]'))drawDoc()};
+function drawPanel(d,row,ed){const p=panelState,P=h('div',{class:'GeneratePanel__InnerContainer-mock'});
+ P.append(h('div',{text:'POV: Third person · Length: Auto · Tense: Past · Prose Mode: Muse'}));
+ const gs=h('button',{text:p.phase==='scenes'?p.progress:'Generate Scenes'});if(p.phase!=='idle'&&p.phase!=='ready')gs.disabled=true;
+ gs.onclick=async()=>{S.presses.scenes++;save();if(S.credits<=0){p.error='0 credits left, sign up for a plan to keep using Sudowrite.';return drawDoc()}S.credits--;save();p.phase='scenes';
+  for(const t of['Checking Characters…','Checking Worldbuilding…','Checking Style and Genre…','Checking Synopsis and Outline…','Reviewing Scenes Best Practices…','Ensuring Perfect Formatting…']){p.progress=t;drawDoc();await wait(450)}
+  const sum=row.summary||'';p.scenes=[1,2,3].map(i=>'Scene '+i+': '+sum.split(/[.!?]/)[i-1]?.trim()+' — the scene builds on the outline and the Story Bible, with a clear goal, a turn and a hook to the next scene.');p.phase='ready';drawDoc()};
+ P.append(gs);
+ if(p.scenes.length)P.append(h('h4',{text:'Scenes'}),...p.scenes.map(s=>h('p',{text:s})));
+ if(p.phase!=='review'&&p.phase!=='draft'){const pd=h('button',{text:p.phase==='plan'?'Checking scenes…':'Plan Draft · All Scenes'});if(p.phase==='plan'||p.phase==='scenes')pd.disabled=true;
+  pd.onclick=async()=>{S.presses.plan++;save();if(!p.scenes.length){p.error='There was an error estimating credits for this chapter. Retry / Cancel';return drawDoc()}p.phase='plan';drawDoc();await wait(800);if(S.credits<=0){p.phase='ready';p.error='0 credits left, sign up for a plan to keep using Sudowrite.';return drawDoc()}p.phase='review';drawDoc()};P.append(pd)}
+ if(p.phase==='review'||p.phase==='draft'){P.append(h('h4',{text:'Review Plan'}));const gd=h('button',{text:p.phase==='draft'?p.progress:'Generate Draft'});if(p.phase==='draft')gd.disabled=true;
+  gd.onclick=async()=>{S.presses.draft++;save();if(S.credits<=0){p.error='0 credits left, sign up for a plan to keep using Sudowrite.';return drawDoc()}S.credits--;save();p.phase='draft';
+   const notes=(row.summary.match(/Revision notes[^\n]*\n([\s\S]*)/)||[])[1]||'';(S.applied??=[]).push(notes.split('\n')[0].replace(/^- /,'').slice(0,160));save();const out=[];
+   for(let i=0;i<3;i++){p.progress='Writing scene '+(i+1)+' of 3…';for(let k=0;k<3;k++){out.push(['At dawn','By noon','At dusk','Near midnight','Before the rain'][(S.applied.length-1)%5]+', '+p.scenes[i].replace(/^Scene \d+: /,'')+' '+'He weighed every choice against the debt his family carried, and the village watched him do it. '.repeat(10));d.body=[...out];save();drawDoc();await wait(350)}await wait(600)}
+   panelState=null;drawDoc()};P.append(gd)}
+ if(p.error)P.append(h('p',{class:'err',text:p.error}));
+ return P}
+addEventListener('hashchange',()=>{if(panelState&&!location.hash.includes('doc='+panelState.doc))panelState=null;drawDoc()});
+drawRows();drawDocs();drawDoc();
+</script>
+</body>
+</html>

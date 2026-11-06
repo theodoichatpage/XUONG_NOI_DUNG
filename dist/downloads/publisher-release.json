@@ -1,8 +1,8 @@
 {
-  "version": "0.6.0",
-  "filename": "Xuong_Sudowrite_Adapter_v0.6.0.zip",
+  "version": "0.7.0",
+  "filename": "Xuong_Sudowrite_Adapter_v0.7.0.zip",
   "folder": "Xuong_Sudowrite_Adapter",
-  "sha256": "4bd23bb1576ac1a37adeb38645d5a04e02f6052b0129e496a0cd4958004296d2",
+  "sha256": "f73a8d1b66711693a7ace9eba1c926314003f97984be9b84bb6e0502b43b5d4c",
   "files": [
     "background.js",
     "HUONG_DAN.md",
@@ -12,6 +12,7 @@
     "popup.html",
     "popup.js",
     "studio-content.js",
+    "sudowrite-auto.js",
     "sudowrite-brief.js",
     "sudowrite-content.js"
   ]

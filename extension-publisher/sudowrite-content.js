@@ -1,7 +1,8 @@
 'use strict';
 // Sudowrite side of the Xưởng connector: fills the Story Bible from Xưởng and reads the open document back.
 // Text fields and cards that already have content are kept unless Xưởng asks to overwrite.
-// It only adds blank cards (Blank Character, Add Element, Add Chapter); it never presses Generate, Write or Go.
+// It only adds blank cards (Blank Character, Add Element, Add Chapter). Generate buttons are pressed only by
+// sudowrite-auto.js, and only for a chapter Xưởng sent as an automatic job.
 (()=>{if(window.__xpSudo)return;window.__xpSudo=true;
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const FIELDS=[['braindump','textarea-seed','Braindump'],['genre','textarea-genre','Genre'],['synopsis','textarea-synopsis','Synopsis']];
@@ -62,7 +63,7 @@ let brief=null,mini=false;
 function briefText(b){return [b.title,b.beats&&'Outline / beats:\n'+b.beats,b.previous_ending&&'Previous chapter ended with:\n'+b.previous_ending,b.canon_notes&&'Canon notes:\n'+b.canon_notes,(b.revision_instructions||[]).length&&'Revision instructions:\n- '+b.revision_instructions.join('\n- '),'Target: about '+b.target_word_count+' words.'].filter(Boolean).join('\n\n')}
 function copy(text,btn){navigator.clipboard.writeText(text).then(()=>{const t=btn.textContent;btn.textContent='Đã chép ✓';setTimeout(()=>btn.textContent=t,1500)},()=>{btn.textContent='Không chép được'})}
 function section(title,text){if(!text)return null;const w=el('div','margin-top:8px');const h=el('div','display:flex;justify-content:space-between;align-items:center;color:#ff7a45;font-weight:700;font-size:12px',title);const b=el('button',BTN+';height:22px;font-size:11px','Sao chép');b.onclick=()=>copy(text,b);h.append(b);w.append(h,el('div','white-space:pre-wrap;max-height:140px;overflow:auto;background:#0f0f11;border:1px solid #26262a;padding:6px;margin-top:4px;color:#d6d6da',text));return w}
-function drawBrief(note){document.getElementById('xp-sudo-brief')?.remove();if(!brief)return;const box=el('div','position:fixed;right:16px;bottom:16px;z-index:2147483646;width:'+(mini?'auto':'420px')+';max-height:80vh;overflow:auto;background:#121213;color:#f2f2f2;border:1px solid #ff5a1f;box-shadow:0 14px 40px rgba(0,0,0,.45);font:13px/1.5 Arial,sans-serif;padding:12px');box.id='xp-sudo-brief';
+function drawBrief(note){document.getElementById('xp-sudo-brief')?.remove();if(!brief||brief.auto)return;const box=el('div','position:fixed;right:16px;bottom:16px;z-index:2147483646;width:'+(mini?'auto':'420px')+';max-height:80vh;overflow:auto;background:#121213;color:#f2f2f2;border:1px solid #ff5a1f;box-shadow:0 14px 40px rgba(0,0,0,.45);font:13px/1.5 Arial,sans-serif;padding:12px');box.id='xp-sudo-brief';
  const head=el('div','display:flex;gap:8px;align-items:center');head.append(el('strong','flex:1;color:#ff7a45',(brief.mode==='revise'?'Xưởng · Sửa ':'Xưởng · Viết ')+'Chương '+brief.chapter_no+(brief.round?' · vòng '+brief.round:'')));const tog=el('button',BTN,mini?'Mở':'Thu gọn');tog.onclick=()=>{mini=!mini;drawBrief()};head.append(tog);box.append(head);
  if(!mini){box.append(el('div','font-weight:700;margin-top:4px',brief.title),el('div','color:#8b8b90;font-size:12px','Mục tiêu khoảng '+brief.target_word_count+' chữ'),el('p','margin:8px 0',brief.instructions));
   for(const s of [section('Việc cần sửa',(brief.revision_instructions||[]).length?'- '+brief.revision_instructions.join('\n- '):''),section('Dàn ý chương',brief.beats),section('Cuối chương trước',brief.previous_ending),section('Lưu ý canon',brief.canon_notes)])if(s)box.append(s);
@@ -79,6 +80,8 @@ async function sendBack(btn){const doc=readDoc();if(!doc.ok){drawBrief({ok:false
  catch(e){drawBrief({ok:false,text:e.message})}}
 async function loadBrief(){try{const r=await chrome.runtime.sendMessage({kind:'XP_SUDO_ACTIVE'});const b=r?.ok?r.brief:null;if(JSON.stringify(b)!==JSON.stringify(brief)){brief=b;drawBrief()}}catch{}}
 
+// Shared with sudowrite-auto.js (same content-script world).
+window.__xpSudoKit={wait,norm,setNative,setRich,richText,press,until,buttonByText,outlineRows,rowParts,openBible,editor,readDoc,fitWords,inProject};
 chrome.runtime.onMessage.addListener((m,_s,reply)=>{if(m?.kind==='XP_SUDO_READ'){reply(readDoc());return}if(m?.kind==='XP_SUDO_HEALTH'){reply(health());return}if(m?.kind==='XP_SUDO_SHOW_BRIEF'){loadBrief().then(()=>reply({ok:true}));return true}});
 setInterval(check,1500);check();if(inProject())loadBrief();
 })();

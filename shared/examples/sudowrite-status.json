@@ -1,0 +1,10 @@
+{
+ "job_key": "ord_7Kq2mX9a:8",
+ "mode": "write",
+ "round": 0,
+ "status": "stopped",
+ "code": "out_of_credits",
+ "error": "Sudowrite báo hết credit (\"0 credits left\"). Mua gói Sudowrite, rồi bấm Thử lại.",
+ "step": "draft",
+ "at": 1793750400000
+}

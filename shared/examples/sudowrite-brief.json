@@ -9,5 +9,6 @@
  "canon_notes": "Han Qirong does not know about the debt.",
  "instructions": "Write chapter 8 in Sudowrite with Write or First Draft, then press \"Gửi chương về Xưởng\".",
  "target_word_count": 2200,
- "round": 0
+ "round": 0,
+ "auto": true
 }

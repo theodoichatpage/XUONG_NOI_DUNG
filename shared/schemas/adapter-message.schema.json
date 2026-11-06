@@ -30,7 +30,8 @@
     "XP_ORDER_STATUS",
     "XP_JOB_EVENT",
     "XP_SUDO_BRIEF",
-    "XP_SUDO_RESULT"
+    "XP_SUDO_RESULT",
+    "XP_SUDO_STATUS"
    ]
   },
   "payload": {
