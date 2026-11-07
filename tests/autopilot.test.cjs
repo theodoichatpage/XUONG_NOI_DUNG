@@ -124,3 +124,11 @@ test('only one Xưởng tab runs the automation; another takes over after the le
   assert.equal(c.uiIsLeader(), false); assert.equal(await c.uiAutopilotTick(), false); assert.equal(c.writes.length, 0, 'a second tab sends nothing');
   assert.equal(c.uiIsLeader(Date.now() + 151000), true, 'takes over a silent leader');
 });
+test('a send the Bridge refuses as busy leaves no error job; failed jobs drop their text after 10 minutes', async () => {
+  const src = fs.readFileSync('dist/studio-ui.js', 'utf8'), i = src.indexOf('if(typeof xnDispatchText===\'function\'){'), block = src.slice(i, src.indexOf('// ---- Simplified production screens', i));
+  const c = vm.createContext({ db: { aiJobs: [] }, bridgeStatus: {}, Promise, Error, save: () => true });
+  vm.runInContext('function xnDispatchText(job){db.aiJobs.push({...job,status:"queued"});job.status="error";return Promise.reject(Error("Đang có công việc chạy. Hoàn tất hoặc dừng trước."))}\n' + block, c);
+  await assert.rejects(c.xnDispatchText({ id: 'a' }), e => e.busy === true); assert.equal(c.db.aiJobs.length, 0);
+  const t = setup(); t.c.db.aiJobs.push({ id: 'e', status: 'error', createdAt: '2026-11-07T06:00:00Z', prompt: 'P' });
+  assert.equal(await t.c.uiJobCompact(Date.parse('2026-11-07T06:11:00Z'), async () => {}), 1); assert.equal(t.c.db.aiJobs[0].prompt, undefined);
+});
