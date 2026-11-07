@@ -113,7 +113,7 @@ test('a job the Bridge lost on reload does not stop the autopilot (it is re-sent
   await t.c.uiAutopilotTick(); assert.notEqual(t.s.autopilot.state, 'error');
 });
 test('one door to ChatGPT: two senders at the same moment → the second waits (busy, no error job)', async () => {
-  const src = fs.readFileSync('dist/studio-ui.js', 'utf8'), i = src.indexOf('if(typeof xnDispatchText===\'function\'){'), block = src.slice(i, src.indexOf('\n', i));
+  const src = fs.readFileSync('dist/studio-ui.js', 'utf8'), i = src.indexOf('if(typeof xnDispatchText===\'function\'){'), block = src.slice(i, src.indexOf('// ---- Simplified production screens', i));
   const c = vm.createContext({ db: { aiJobs: [] }, bridgeStatus: {}, Promise, Error });
   vm.runInContext('function xnDispatchText(job){db.aiJobs.push({...job,status:"queued"});return Promise.resolve(job)}\n' + block, c);
   const r = await Promise.allSettled([c.xnDispatchText({ id: 'a' }), c.xnDispatchText({ id: 'b' })]);
