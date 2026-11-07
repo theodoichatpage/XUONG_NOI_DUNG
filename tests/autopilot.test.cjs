@@ -102,3 +102,7 @@ test('a job left queued (never handed to the Bridge) expires after 3 minutes and
   assert.equal(await c.uiStuckTick(Date.parse('2026-11-07T03:57:40Z')), false); assert.equal(c.uiBridgeBusy(), true);
   assert.equal(await c.uiStuckTick(Date.parse('2026-11-07T03:59:00Z')), true); assert.equal(j.status, 'error'); assert.equal(c.uiBridgeBusy(), false);
 });
+test('every chapter of a run (Viết tiếp N chương) is reviewed, even one re-sent without its autopilot mark', async () => {
+  const { c, s, chapters } = setup({ chapters: [ch(8, { qa: null, body: 'Text 8' })] }); s.autopilot.until = 17; s.autopilot.from = 8;
+  await c.uiAutopilotTick(); assert.equal(chapters[0].qa.autopilot, true); assert.deepEqual(c.reviews, ['c8']);
+});
