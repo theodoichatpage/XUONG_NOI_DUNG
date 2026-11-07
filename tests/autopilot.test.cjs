@@ -91,3 +91,9 @@ test('old finished ChatGPT jobs drop their heavy text after a full snapshot; rec
   assert.equal(nw.prompt, 'P'); assert.equal(r.prompt, 'P');
   assert.equal(await c.uiJobCompact(Date.parse('2026-11-07T00:00:00Z'), async () => { throw Error('no IDB'); }), 0, 'nothing left to archive');
 });
+test('one sender at a time: nothing new is sent while any ChatGPT job is in flight', async () => {
+  const { c, chapters } = setup({ chapters: [ch(1, { qa: { round: 0, scores: [], autopilot: true } })] });
+  c.db.aiJobs.push({ seriesId: 'other', storyTask: 'REVIEW_CHAPTER', status: 'running', createdAt: new Date().toISOString() });
+  await c.uiQaTick(); await c.uiAutopilotTick(); assert.deepEqual(c.reviews, []); assert.equal(c.writes.length, 0);
+  c.db.aiJobs[0].status = 'applied'; await c.uiAutopilotTick(); assert.deepEqual(c.reviews, ['c1'], 'sent once the Bridge is free'); void chapters;
+});
