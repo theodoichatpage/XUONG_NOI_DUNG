@@ -106,3 +106,7 @@ test('every chapter of a run (Viết tiếp N chương) is reviewed, even one re
   const { c, s, chapters } = setup({ chapters: [ch(8, { qa: null, body: 'Text 8' })] }); s.autopilot.until = 17; s.autopilot.from = 8;
   await c.uiAutopilotTick(); assert.equal(chapters[0].qa.autopilot, true); assert.deepEqual(c.reviews, ['c8']);
 });
+test('a job the Bridge lost on reload does not stop the autopilot (it is re-sent automatically)', async () => {
+  const t = setup(); t.c.db.aiJobs.push({ seriesId: 'ser1', storyTask: 'WRITE_CHAPTER', status: 'error', error: 'Bridge đã tải lại nên không còn theo dõi việc này.', createdAt: '2026-11-06T01:00:00Z' });
+  await t.c.uiAutopilotTick(); assert.notEqual(t.s.autopilot.state, 'error');
+});
