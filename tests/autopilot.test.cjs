@@ -80,3 +80,14 @@ test('a ChatGPT job with no answer for 20 minutes is cancelled and the fix is se
   chapters[0].qa.stuck = 2; c.db.aiJobs.forEach(j => { if (j.status === 'queued') { j.status = 'running'; j.createdAt = '2026-11-06T16:00:00Z'; } });
   await c.uiStuckTick(Date.parse('2026-11-06T17:00:00Z')); assert.equal(chapters[0].qa.status, 'needs-human'); assert.match(chapters[0].qa.note, /3 lần/);
 });
+test('old finished ChatGPT jobs drop their heavy text after a full snapshot; recent and running jobs keep it', async () => {
+  const { c } = setup(); const snaps = [];
+  c.db.aiJobs.push({ id: 'old', status: 'applied', createdAt: '2026-11-05T00:00:00Z', prompt: 'P'.repeat(1000), resultText: 'R', baseBody: 'B', storyTask: 'WRITE_CHAPTER' },
+    { id: 'new', status: 'applied', createdAt: '2026-11-06T22:00:00Z', prompt: 'P', resultText: 'R' },
+    { id: 'run', status: 'running', createdAt: '2026-11-05T00:00:00Z', prompt: 'P' });
+  const n = await c.uiJobCompact(Date.parse('2026-11-07T00:00:00Z'), async l => { snaps.push([l, JSON.stringify(c.db.aiJobs).includes('P'.repeat(1000))]); });
+  assert.equal(n, 1); assert.deepEqual(snaps, [['before-job-archive', true]], 'snapshot taken while the text was still there');
+  const [o, nw, r] = c.db.aiJobs; assert.equal(o.prompt, undefined); assert.equal(o.resultText, undefined); assert.ok(o.archived); assert.equal(o.status, 'applied');
+  assert.equal(nw.prompt, 'P'); assert.equal(r.prompt, 'P');
+  assert.equal(await c.uiJobCompact(Date.parse('2026-11-07T00:00:00Z'), async () => { throw Error('no IDB'); }), 0, 'nothing left to archive');
+});
