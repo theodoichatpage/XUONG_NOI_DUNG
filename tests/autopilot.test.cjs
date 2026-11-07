@@ -119,8 +119,8 @@ test('one door to ChatGPT: two senders at the same moment → the second waits (
   const r = await Promise.allSettled([c.xnDispatchText({ id: 'a' }), c.xnDispatchText({ id: 'b' })]);
   assert.equal(r[0].status, 'fulfilled'); assert.equal(r[1].status, 'rejected'); assert.equal(r[1].reason.busy, true); assert.equal(c.db.aiJobs.length, 1);
 });
-test('only one Xưởng tab runs the automation; another takes over after the leader is silent for 20 s', async () => {
+test('only one Xưởng tab runs the automation; another takes over after the leader is silent for 150 s', async () => {
   const { c } = setup(); c.localStorage.setItem('xuong-leader', JSON.stringify({ id: 'other-tab', at: Date.now() }));
   assert.equal(c.uiIsLeader(), false); assert.equal(await c.uiAutopilotTick(), false); assert.equal(c.writes.length, 0, 'a second tab sends nothing');
-  assert.equal(c.uiIsLeader(Date.now() + 21000), true, 'takes over a silent leader');
+  assert.equal(c.uiIsLeader(Date.now() + 151000), true, 'takes over a silent leader');
 });
