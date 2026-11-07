@@ -44,11 +44,13 @@ test('a chapter waiting for you (after 3 rounds) does not block the next one; th
   t = setup({ chapters: [ok(1), ok(2)], buffer: 3, planned: 2 }); await t.c.uiAutopilotTick(); assert.equal(t.c.writes.length, 0); assert.equal(t.s.autopilot.state, 'done');
   void chapters;
 });
-test('a ChatGPT error stops the autopilot; an empty chapter stops it and is retried on resume', async () => {
+test('a ChatGPT error stops the autopilot; an empty chapter is written again (3 tries), then it stops', async () => {
   let t = setup(); t.c.db.aiJobs.push({ seriesId: 'ser1', storyTask: 'WRITE_CHAPTER', status: 'error', error: 'ChatGPT quá tải', createdAt: '2026-11-06T01:00:00Z' });
   await t.c.uiAutopilotTick(); assert.equal(t.s.autopilot.state, 'error'); assert.match(t.s.autopilot.note, /quá tải/); assert.equal(t.c.writes.length, 0);
-  t = setup({ chapters: [ch(1, { body: '' })] }); await t.c.uiAutopilotTick(); assert.equal(t.s.autopilot.state, 'error'); assert.match(t.s.autopilot.note, /Chương 1 chưa có nội dung/);
-  await t.c.uiAutopilotSwitch(t.s, 'resume'); await t.c.uiAutopilotTick(); assert.deepEqual(t.c.writes.map(w => [w.id, w.mode]), [['c1', 'rewrite']], 'the same chapter is written again, no gap');
+  t = setup({ chapters: [ch(1, { body: '' })] }); t.c.uiChapterWrite = async (_s, x, mode) => { t.c.writes.push({ id: x.id, mode }); };
+  for (let i = 0; i < 4; i++) await t.c.uiAutopilotTick();
+  assert.deepEqual(t.c.writes.map(w => [w.id, w.mode]), [['c1', 'rewrite'], ['c1', 'rewrite'], ['c1', 'rewrite']], 'the same chapter is written again, no gap');
+  assert.equal(t.s.autopilot.state, 'error'); assert.match(t.s.autopilot.note, /Chương 1 chưa có nội dung/);
 });
 test('Sudowrite story: the chapter goes to Sudowrite; when credits are out, ChatGPT writes it instead', async () => {
   let t = setup({ writer: 'sudowrite' }); await t.c.uiAutopilotTick();
@@ -109,4 +111,11 @@ test('every chapter of a run (Viết tiếp N chương) is reviewed, even one re
 test('a job the Bridge lost on reload does not stop the autopilot (it is re-sent automatically)', async () => {
   const t = setup(); t.c.db.aiJobs.push({ seriesId: 'ser1', storyTask: 'WRITE_CHAPTER', status: 'error', error: 'Bridge đã tải lại nên không còn theo dõi việc này.', createdAt: '2026-11-06T01:00:00Z' });
   await t.c.uiAutopilotTick(); assert.notEqual(t.s.autopilot.state, 'error');
+});
+test('one door to ChatGPT: two senders at the same moment → the second waits (busy, no error job)', async () => {
+  const src = fs.readFileSync('dist/studio-ui.js', 'utf8'), i = src.indexOf('if(typeof xnDispatchText===\'function\'){'), block = src.slice(i, src.indexOf('\n', i));
+  const c = vm.createContext({ db: { aiJobs: [] }, bridgeStatus: {}, Promise, Error });
+  vm.runInContext('function xnDispatchText(job){db.aiJobs.push({...job,status:"queued"});return Promise.resolve(job)}\n' + block, c);
+  const r = await Promise.allSettled([c.xnDispatchText({ id: 'a' }), c.xnDispatchText({ id: 'b' })]);
+  assert.equal(r[0].status, 'fulfilled'); assert.equal(r[1].status, 'rejected'); assert.equal(r[1].reason.busy, true); assert.equal(c.db.aiJobs.length, 1);
 });
