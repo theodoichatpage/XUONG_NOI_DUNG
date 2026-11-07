@@ -547,9 +547,9 @@ function uiPaginateWorkflow(){uiPaginateContainer($('#workflowFields'),5)}
 // A fix or review is then retried by the quality loop (same round); an empty chapter is written again. 3 timeouts → Cần bạn xem.
 const UI_STUCK_MIN={WRITE_CHAPTER:20,REVIEW_CHAPTER:12,REVIEW_BIBLE:12};
 let uiStuckBusy=false;
-async function uiStuckTick(now=Date.now()){if(uiStuckBusy)return false;uiStuckBusy=true;let n=0;try{for(const j of [...(db.aiJobs||[])]){if(!j.storyTask||!['waiting_send','running'].includes(j.status))continue;const lim=(UI_STUCK_MIN[j.storyTask]||20)*6e4,age=now-Date.parse(j.createdAt||0);if(!(age>=lim))continue;
+async function uiStuckTick(now=Date.now()){if(uiStuckBusy)return false;uiStuckBusy=true;let n=0;try{for(const j of [...(db.aiJobs||[])]){if(!j.storyTask||!['queued','waiting_send','running'].includes(j.status))continue;const lim=(j.status==='queued'?3:(UI_STUCK_MIN[j.storyTask]||20))*6e4,age=now-Date.parse(j.createdAt||0);if(!(age>=lim))continue;
   const s=db.series.find(x=>x.id===j.seriesId),c=db.content.find(x=>x.id===(j.targetId||j.scope?.chapterId)),tries=(c?.qa?.stuck||0)+1;
-  if(typeof bridgeCall==='function')await bridgeCall('XN_CANCEL',{},5000).catch(()=>null);
+  const act=typeof bridgeStatus!=='undefined'?bridgeStatus.activeJob:null;if(typeof bridgeCall==='function'&&(!act||act.id===j.id))await bridgeCall('XN_CANCEL',{},5000).catch(()=>null);
   uiPersist(()=>{j.status='error';j.timedOut=true;j.autoResent=true;j.error='ChatGPT không trả lời sau '+Math.round(age/6e4)+' phút — Xưởng đã hủy và tự gửi lại.';j.updatedAt=new Date(now).toISOString();if(c)c.qa={...(c.qa||{round:0,scores:[]}),stuck:tries,...(tries>=3?{status:'needs-human',version:lfVersion(c),note:'ChatGPT không trả lời 3 lần liền'}:{})};if(s?.autopilot)uiApLog(s,'ChatGPT không trả lời '+(lfJobKinds[j.storyTask]||j.storyTask)+(c?' Chương '+Number(c.chapterNumber):'')+' — gửi lại')});n++;
   if(s&&c&&tries<3&&j.storyTask==='WRITE_CHAPTER'&&!String(c.body||'').trim()){try{await uiChapterWrite(s,c,'new',null)}catch(e){toast(e.message)}}}}
  finally{uiStuckBusy=false}return n>0}

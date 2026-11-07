@@ -97,3 +97,8 @@ test('one sender at a time: nothing new is sent while any ChatGPT job is in flig
   await c.uiQaTick(); await c.uiAutopilotTick(); assert.deepEqual(c.reviews, []); assert.equal(c.writes.length, 0);
   c.db.aiJobs[0].status = 'applied'; await c.uiAutopilotTick(); assert.deepEqual(c.reviews, ['c1'], 'sent once the Bridge is free'); void chapters;
 });
+test('a job left queued (never handed to the Bridge) expires after 3 minutes and frees the sender', async () => {
+  const { c } = setup(); const j = { seriesId: 'ser1', storyTask: 'WRITE_CHAPTER', status: 'queued', createdAt: '2026-11-07T03:55:40Z' }; c.db.aiJobs.push(j);
+  assert.equal(await c.uiStuckTick(Date.parse('2026-11-07T03:57:40Z')), false); assert.equal(c.uiBridgeBusy(), true);
+  assert.equal(await c.uiStuckTick(Date.parse('2026-11-07T03:59:00Z')), true); assert.equal(j.status, 'error'); assert.equal(c.uiBridgeBusy(), false);
+});
