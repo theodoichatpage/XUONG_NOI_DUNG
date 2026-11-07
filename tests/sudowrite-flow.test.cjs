@@ -6,9 +6,13 @@ const schema = n => JSON.parse(fs.readFileSync('shared/schemas/' + n + '.schema.
 // ---- Review v3 (dist/story-longform-v2.js)
 function reviewRuntime() {
   const src = fs.readFileSync('dist/story-longform-v2.js', 'utf8'), c = vm.createContext({});
-  vm.runInContext(src.match(/const LF_RUBRIC=.*?;/)[0] + '\n' + src.match(/function lfValidateChapterReview\(v\)\{[^\n]*/)[0], c);
+  vm.runInContext(src.match(/const LF_RUBRIC=.*?;/)[0] + '\n' + src.match(/function lfUnwrapRubric\(v,list\)\{[^\n]*/)[0] + '\n' + src.match(/function lfValidateChapterReview\(v\)\{[^\n]*/)[0], c);
   return c;
 }
+test('review: ChatGPT answering the 7 criteria at the top level (no "rubric" wrapper) is accepted', () => {
+  const c = reviewRuntime(); const v = c.lfValidateChapterReview({ ...rubric(9), summaryVi: 'Tốt', critical_errors: [] });
+  assert.equal(v.total, 90); assert.equal(v.rubric.plot.score, 18); assert.equal(v.plot, undefined);
+});
 const rubric = (n) => ({ plot: { score: 18 }, hook: { score: 18 }, characters: { score: 14 }, style: { score: 13 }, world: { score: n }, pacing: { score: 9 }, genre: { score: 9 } });
 
 test('review v3: a critical error blocks approval even at 90 points', () => {
