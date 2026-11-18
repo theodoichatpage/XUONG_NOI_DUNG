@@ -1,6 +1,6 @@
 'use strict';
 // Sudowrite Adapter (formerly Xưởng Webnovel Publisher): Xưởng hands over a listing; this opens Inkstone's create page where the content script fills it.
-const STUDIO_ORIGINS=new Set(['https://xuong-noi-dung-khaki.vercel.app','https://xuong-truyen.vercel.app','http://localhost:8080','http://127.0.0.1:8080']);
+const STUDIO_ORIGINS=new Set(['https://xuong-noi-dung-khaki.vercel.app','https://xuongtruyen-ashy.vercel.app','http://localhost:8080','http://127.0.0.1:8080']);
 const CREATE_URL='https://inkstone.webnovel.com/novels/create';
 const VERSION=chrome.runtime.getManifest().version;
 function err(e){return {ok:false,error:String(e?.message||e)}}
@@ -37,4 +37,4 @@ async function handle(m,sender){if(sender.id!==chrome.runtime.id)return err('Ngu
 chrome.runtime.onMessage.addListener((m,sender,reply)=>{handle(m||{},sender).then(reply,e=>reply(err(e)));return true});
 importScripts('manager.js','sudowrite-brief.js');
 
-chrome.runtime.onInstalled?.addListener(async d=>{if(d.reason!=='update')return;for(const t of await chrome.tabs.query({url:['https://editor.sudowrite.com/*','https://xuong-noi-dung-khaki.vercel.app/*','https://xuong-truyen.vercel.app/*']}))chrome.tabs.reload(t.id).catch(()=>{})});
+chrome.runtime.onInstalled?.addListener(async d=>{if(d.reason!=='update')return;for(const t of await chrome.tabs.query({url:['https://editor.sudowrite.com/*','https://xuong-noi-dung-khaki.vercel.app/*','https://xuongtruyen-ashy.vercel.app/*']}))chrome.tabs.reload(t.id).catch(()=>{})});
